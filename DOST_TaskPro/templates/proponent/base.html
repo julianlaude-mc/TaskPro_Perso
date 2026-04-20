@@ -9,8 +9,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Proponent Dashboard{% endblock %}</title>
 
-  <!-- Compiled Tailwind CSS (built locally) -->
-  <link href="{% static 'css/tailwind.css' %}" rel="stylesheet">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Alpine.js for interactivity -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
@@ -23,12 +23,152 @@
 
   <!-- Project custom styles (moved from inline to static/css/custom.css) -->
   <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20260413a">
-        display: block; text-align: center; font-size: 16pt; font-weight: bold;
-        margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid #0072CE;
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="{% static 'img/dost.png' %}" type="image/png">
+
+  {% block styles %}{% endblock %}
+
+  <style>
+    [x-cloak] { display: none !important; }
+
+    .active-nav {
+      background-color: #ffffff33;
+      color: #ffffff !important;
+      font-weight: 600;
+    }
+
+    .theme-toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .theme-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-toggle .material-icons {
+      font-size: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    #sidebar {
+      transition: none;
+    }
+
+    @media (min-width: 768px) {
+      #sidebar.hidden-sidebar {
+        width: 80px;
+        min-width: 80px;
+        overflow: visible;
+        border-right: 1px solid #e5e7eb;
+      }
+
+      #sidebar.hidden-sidebar .sidebar-header {
+        padding: 0.75rem;
+        text-align: center;
+      }
+
+      #sidebar.hidden-sidebar .sidebar-header img {
+        margin: 0 auto;
+      }
+
+      #sidebar.hidden-sidebar .sidebar-header div {
+        display: none;
+      }
+
+      #sidebar.hidden-sidebar nav > div:first-child span {
+        display: none;
+      }
+
+      #sidebar.hidden-sidebar nav > div:first-child img,
+      #sidebar.hidden-sidebar nav > div:first-child div {
+        margin: 0 auto;
+      }
+
+      #sidebar.hidden-sidebar nav a {
+        position: relative;
+        justify-content: center;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+
+      #sidebar.hidden-sidebar nav a span:not(.material-icons) {
+        display: none;
+      }
+
+      #sidebar.hidden-sidebar nav a .material-icons {
+        margin: 0 !important;
+        font-size: 24px;
       }
     }
+
+    .sidebar-toggle-btn {
+      background: #f8fafc;
+      border: 1px solid #dbe3ee;
+      color: #334155;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-toggle-btn:hover {
+      border-color: #b6c3d7;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .expanded-content {
+      width: calc(100vw - 80px);
+    }
+
+    @media (max-width: 767px) {
+      .expanded-content {
+        width: 100%;
+      }
+    }
+
+    .safe-sidebar-logo {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      max-width: 48px;
+      max-height: 48px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .safe-sidebar-avatar {
+      width: 64px;
+      height: 64px;
+      min-width: 64px;
+      min-height: 64px;
+      max-width: 64px;
+      max-height: 64px;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 font-sans modern-ui {% if simple_mode %}simple-mode{% endif %}">
+<body class="bg-gray-50 font-sans modern-ui">
 
   {% if request.GET.splash == '1' %}
   <div id="taskproLoginSplash" class="taskpro-login-splash">
@@ -70,13 +210,14 @@
   <div class="min-h-screen flex flex-col md:flex-row">
     <!-- Sidebar -->
     <aside id="sidebar" 
-      class="w-64 bg-[#0072CE] text-white shadow-lg flex flex-col fixed md:sticky md:top-0 md:h-screen md:overflow-y-auto inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-y-auto">
+      class="w-64 bg-[#0072CE] text-white shadow-lg flex flex-col fixed md:sticky md:top-0 md:h-screen md:overflow-y-auto inset-y-0 left-0 transform -translate-x-full md:translate-x-0 z-50 overflow-y-auto"
+      :class="{ 'hidden-sidebar': !sidebarOpen }">
       <!-- Header -->
-      <div class="flex items-center px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-500 shadow-md border-b border-blue-700">
+      <div class="sidebar-header flex items-center px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-500 shadow-md border-b border-blue-700">
         <a href="{% url 'proponent_dashboard_url' %}" class="flex items-center hover:opacity-90 transition-opacity duration-200">
           <img src="{% static 'img/dost.png' %}" 
                alt="DOST Logo" 
-               class="h-12 w-12 rounded-full border-2 border-white shadow-lg transition-transform duration-300 hover:scale-110 cursor-pointer">
+            class="safe-sidebar-logo rounded-full border-2 border-white shadow-lg transition-transform duration-300 hover:scale-110 cursor-pointer">
           <div class="ml-3 flex flex-col">
             <span class="text-2xl font-extrabold text-white drop-shadow-md leading-tight">TaskPro</span>
             <span class="text-xs text-blue-200 font-medium">DOST Biliran</span>
@@ -87,30 +228,6 @@
 
       <!-- Navigation -->
       <nav class="flex-1 px-4 py-6 flex flex-col space-y-2">
-
-          <!-- Profile Section -->
-        <div class="flex flex-col items-center mb-2">
-            {% if user.profile_picture %}
-                <img src="{{ user.profile_picture.url }}" 
-                    alt="{{ user.get_full_name }}" 
-                    class="h-16 w-16 rounded-full border-2 border-[#0072CE] shadow-md object-cover">
-            {% else %}
-                <img src="https://via.placeholder.com/64" 
-                    alt="User" 
-                    class="h-16 w-16 rounded-full border-2 border-[#0072CE] shadow-md object-cover">
-            {% endif %}
-            <span class="mt-3 font-semibold text-white text-center">{{ user.get_full_name }}</span>
-            <span class="text-gray-300 text-sm text-center">
-                {% if user.role == 'admin' %}
-                    base
-                {% elif user.role == 'dost_base' %}
-                    PSTO Staff
-                {% else %}
-                    {{ user.role|capfirst }}
-                {% endif %}
-            </span>
-
-        </div>
 
         <a href="{% url 'proponent_dashboard_url' %}" 
           class="flex items-center px-3 py-2 rounded-lg transition duration-200
@@ -196,12 +313,18 @@
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden md:hidden z-40"></div>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col w-full">
+    <main class="flex-1 flex flex-col min-w-0" :class="{ 'expanded-content': !sidebarOpen }">
       <!-- Top Navbar -->
       <header class="bg-white shadow-md rounded-b-xl px-6 py-4 flex justify-between items-center sticky top-0 z-30 transition-all duration-300">
         <div class="flex items-center space-x-4">
           <button id="menu-btn" class="md:hidden text-gray-700 focus:outline-none hover:text-[#0072CE] transition">
             <span class="material-icons">menu</span>
+          </button>
+          <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('sidebarOpen', sidebarOpen)"
+                  class="hidden md:flex sidebar-toggle-btn"
+                  :title="sidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'"
+                  :aria-label="sidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'">
+            <span class="material-icons" x-text="sidebarOpen ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'"></span>
           </button>
           <h1 class="text-xl font-bold text-gray-800">
             {% block page-title %}Dashboard{% endblock %}
@@ -212,11 +335,6 @@
           <!-- Theme Toggle Button -->
           <button id="theme-toggle" class="theme-toggle" title="Toggle Dark/Light Mode">
             <span class="material-icons">dark_mode</span>
-          </button>
-
-          <!-- Simple Mode Toggle -->
-          <button id="simple-toggle" class="theme-toggle" title="Toggle Simple Mode" aria-pressed="false" aria-label="Toggle simple mode">
-            <span id="simple-toggle-icon" class="material-icons">format_size</span>
           </button>
 
           <!-- Help button removed (temporarily hidden per user request) -->
@@ -367,51 +485,27 @@
     const themeIcon = themeToggle.querySelector('.material-icons');
     const html = document.documentElement;
 
-    // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') {
-        html.classList.add('dark');
-        themeIcon.textContent = 'light_mode';
-    } else {
-        themeIcon.textContent = 'dark_mode';
+    // Keep one source of truth for theme persistence across all proponent modules.
+    const isDarkMode = localStorage.getItem('darkMode') === 'true' || localStorage.getItem('theme') === 'dark';
+    html.classList.toggle('dark', isDarkMode);
+    localStorage.setItem('darkMode', String(isDarkMode));
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    if (html._x_dataStack && html._x_dataStack[0]) {
+      html._x_dataStack[0].darkMode = isDarkMode;
     }
+    themeIcon.textContent = isDarkMode ? 'light_mode' : 'dark_mode';
 
     themeToggle.addEventListener('click', () => {
-        if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            themeIcon.textContent = 'dark_mode';
-            localStorage.setItem('theme', 'light');
-        } else {
-            html.classList.add('dark');
-            themeIcon.textContent = 'light_mode';
-            localStorage.setItem('theme', 'dark');
-        }
+      const nextDarkMode = !html.classList.contains('dark');
+      html.classList.toggle('dark', nextDarkMode);
+      localStorage.setItem('darkMode', String(nextDarkMode));
+      localStorage.setItem('theme', nextDarkMode ? 'dark' : 'light');
+      if (html._x_dataStack && html._x_dataStack[0]) {
+        html._x_dataStack[0].darkMode = nextDarkMode;
+      }
+      themeIcon.textContent = nextDarkMode ? 'light_mode' : 'dark_mode';
     });
     
-  // Simple Mode Toggle Functionality
-  const simpleToggle = document.getElementById('simple-toggle');
-  const simpleIcon = document.getElementById('simple-toggle-icon');
-  const body = document.body;
-
-  // Initialize simple mode from localStorage
-  const savedSimple = localStorage.getItem('simpleMode') === 'true';
-  if (savedSimple) {
-    body.classList.add('simple-mode');
-    simpleToggle.setAttribute('aria-pressed', 'true');
-    simpleIcon.textContent = 'format_size';
-  } else {
-    simpleToggle.setAttribute('aria-pressed', 'false');
-    simpleIcon.textContent = 'format_size';
-  }
-
-  simpleToggle.addEventListener('click', () => {
-    const isActive = body.classList.toggle('simple-mode');
-    simpleToggle.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    // persist preference
-    localStorage.setItem('simpleMode', isActive ? 'true' : 'false');
-    // Optionally change icon or provide visual cue — we keep same icon for now
-  });
-
   // Help modal wiring
   const helpBtn = document.getElementById('help-btn');
   const helpModal = document.getElementById('helpModal');
@@ -595,34 +689,130 @@
 
   <!-- Notification Polling Script -->
   <script>
+    let notificationEventSource = null;
+    let notificationPollInterval = null;
+    let notificationReconnectTimeout = null;
+
+    function applyNotificationData(data) {
+      if (!data || !data.success) {
+        return;
+      }
+
+      const badge = document.querySelector('#notifBtn .bg-red-600');
+      const notifBtn = document.getElementById('notifBtn');
+      const notifList = document.querySelector('#notifDropdown ul');
+
+      if (data.unread_count > 0) {
+        if (badge) {
+          badge.textContent = data.unread_count;
+        } else if (notifBtn) {
+          const newBadge = document.createElement('span');
+          newBadge.className = 'absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full';
+          newBadge.textContent = data.unread_count;
+          notifBtn.appendChild(newBadge);
+        }
+      } else if (badge) {
+        badge.remove();
+      }
+
+      if (notifList) {
+        if (data.notifications && data.notifications.length > 0) {
+          const rows = data.notifications.map((notif) => {
+            const unreadClass = notif.status === 'unread' ? 'bg-blue-50' : '';
+            const unreadDot = notif.status === 'unread'
+              ? '<span class="w-2 h-2 bg-red-500 rounded-full mt-1"></span>'
+              : '';
+            return `
+              <li class="border-b">
+                <a href="${notif.link || '#'}"
+                   data-id="${notif.id}"
+                   class="flex items-start gap-3 p-3 hover:bg-gray-50 notification-item ${unreadClass}">
+                  <span class="material-icons text-[#0072CE] text-lg">circle_notifications</span>
+                  <div class="flex-1">
+                    <p class="text-sm text-gray-700">${notif.message}</p>
+                    <p class="text-xs text-gray-500">${notif.timestamp}</p>
+                  </div>
+                  ${unreadDot}
+                </a>
+              </li>`;
+          }).join('');
+          notifList.innerHTML = rows;
+
+          notifList.querySelectorAll('.notification-item').forEach(item => {
+            item.addEventListener('click', function () {
+              const notifId = this.dataset.id;
+              fetch(`/notifications/read/${notifId}/`).catch(() => {});
+            });
+          });
+        } else {
+          notifList.innerHTML = '<li class="p-4 text-center text-gray-500 text-sm">No notifications</li>';
+        }
+      }
+    }
+
     function pollNotifications() {
       fetch('/notifications/count/')
         .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const badge = document.querySelector('#notifBtn .bg-red-600');
-            const notifBtn = document.getElementById('notifBtn');
-            
-            if (data.unread_count > 0) {
-              if (badge) {
-                badge.textContent = data.unread_count;
-              } else if (notifBtn) {
-                const newBadge = document.createElement('span');
-                newBadge.className = 'absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full';
-                newBadge.textContent = data.unread_count;
-                notifBtn.appendChild(newBadge);
-              }
-            } else if (badge) {
-              badge.remove();
-            }
-          }
-        })
+        .then(applyNotificationData)
         .catch(err => console.log('Notification poll error:', err));
+    }
+
+    function startFallbackPolling() {
+      if (notificationPollInterval) {
+        return;
+      }
+      pollNotifications();
+      notificationPollInterval = setInterval(pollNotifications, 5000);
+    }
+
+    function stopFallbackPolling() {
+      if (!notificationPollInterval) {
+        return;
+      }
+      clearInterval(notificationPollInterval);
+      notificationPollInterval = null;
+    }
+
+    function connectNotificationStream() {
+      if (!window.EventSource) {
+        startFallbackPolling();
+        return;
+      }
+
+      if (notificationEventSource) {
+        notificationEventSource.close();
+      }
+
+      notificationEventSource = new EventSource('/notifications/stream/');
+
+      notificationEventSource.addEventListener('notification', function(event) {
+        try {
+          const streamData = JSON.parse(event.data);
+          applyNotificationData({ success: true, ...streamData });
+          stopFallbackPolling();
+        } catch (err) {
+          console.log('Notification stream parse error:', err);
+        }
+      });
+
+      notificationEventSource.onerror = function() {
+        if (notificationEventSource) {
+          notificationEventSource.close();
+          notificationEventSource = null;
+        }
+        startFallbackPolling();
+        if (!notificationReconnectTimeout) {
+          notificationReconnectTimeout = setTimeout(() => {
+            notificationReconnectTimeout = null;
+            connectNotificationStream();
+          }, 7000);
+        }
+      };
     }
     
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(pollNotifications, 5000);
-      setInterval(pollNotifications, 30000);
+      pollNotifications();
+      connectNotificationStream();
     });
   </script>
 
@@ -729,9 +919,6 @@
 
   <!-- Floating Help FAB (always visible bottom-right) -->
   <!-- Removed duplicate; static FAB inserted near <body> opening to ensure visibility -->
-
-  <!-- Shared Simple Mode behavior script -->
-  <script src="{% static 'js/simplemode.js' %}"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {

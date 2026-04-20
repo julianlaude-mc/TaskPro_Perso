@@ -6,6 +6,77 @@
 {% block nav-budgets %}active-nav{% endblock %}
 {% block page-title %}Budget Management{% endblock %}
 
+{% block styles %}
+<style>
+    .module-hero {
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        background: linear-gradient(120deg, #0f3a66 0%, #135a9b 55%, #0a79bf 100%);
+        border-radius: 1rem;
+        color: #fff;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 16px 30px -24px rgba(15, 58, 102, 0.7);
+    }
+
+    .module-surface {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 0.95rem;
+        box-shadow: 0 10px 22px -24px rgba(15, 23, 42, 0.55);
+    }
+
+    .fund-filter-select {
+        min-width: 200px;
+        background: #ffffff;
+        color: #1f2937;
+    }
+
+    .allocation-card {
+        background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .allocation-card .card-title {
+        color: #1f2937;
+    }
+
+    .allocation-card .card-subtle {
+        color: #64748b;
+    }
+
+    .dark .module-surface {
+        background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+        border-color: rgba(100, 116, 139, 0.38);
+        box-shadow: 0 20px 32px -28px rgba(2, 6, 23, 0.72);
+    }
+
+    .dark .fund-filter-select {
+        background: #1f2937;
+        color: #e5e7eb;
+        border-color: #475569;
+    }
+
+    .dark .allocation-card {
+        background: linear-gradient(165deg, #172233 0%, #1e2b3f 100%);
+        border-color: rgba(96, 165, 250, 0.35) !important;
+    }
+
+    .dark .allocation-card .card-title {
+        color: #f8fafc !important;
+    }
+
+    .dark .allocation-card .card-subtle {
+        color: #cbd5e1 !important;
+    }
+
+    .dark .allocation-card .progress-track {
+        background-color: #334155 !important;
+    }
+
+    .dark .allocation-card .usage-text {
+        color: #cbd5e1 !important;
+    }
+</style>
+{% endblock %}
+
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
 
 {% block content %}
@@ -30,6 +101,12 @@
             </div>
         {% endfor %}
     {% endif %}
+
+    <section class="module-hero mb-4">
+        <p class="text-xs uppercase tracking-[0.2em] text-blue-100">Budget Allocation Module</p>
+        <h2 class="mt-1 text-xl font-semibold">Monitor allocation health and fund utilization</h2>
+        <p class="mt-1 text-sm text-blue-100">Track fiscal performance, allocation progress, and equipment-value consumption in one place.</p>
+    </section>
 
     <!-- Summary Statistics Cards -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -74,13 +151,13 @@
     {% endif %}
 
     <!-- Fund Filter -->
-    <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <div class="module-surface p-4 mb-6">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-700">Filter by Fund Source</h3>
             <form method="GET" class="flex items-center space-x-2">
                 <label for="fund" class="text-sm font-medium text-gray-600">Select Fund:</label>
                 <select name="fund" id="fund" onchange="this.form.submit()" 
-                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="fund-filter-select border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="all" {% if selected_fund == 'all' %}selected{% endif %}>All Funds</option>
                     {% for fund_source in all_fund_sources %}
                     <option value="{{ fund_source }}" {% if selected_fund == fund_source %}selected{% endif %}>{{ fund_source }}</option>
@@ -96,7 +173,7 @@
     <!-- Data Visualizations -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <!-- Budget Status Pie Chart -->
-            <div class="bg-white p-4 rounded-lg shadow chart-section">
+            <div class="module-surface p-4 chart-section">
             <h3 class="text-lg font-semibold mb-3 text-gray-700">Budget Status</h3>
             <div style="max-width: 200px; margin: 0 auto;">
                 <canvas id="statusChart"></canvas>
@@ -104,7 +181,7 @@
         </div>
         
         <!-- Utilization by Fund Source -->
-        <div class="bg-white p-4 rounded-lg shadow chart-section">
+        <div class="module-surface p-4 chart-section">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold mb-3 text-gray-700">Allocation by Fund Source</h3>
             </div>
@@ -112,7 +189,7 @@
         </div>
         
         <!-- Allocation by Fiscal Year -->
-        <div class="bg-white p-4 rounded-lg shadow chart-section">
+        <div class="module-surface p-4 chart-section">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold mb-3 text-gray-700">Allocation by Fiscal Year</h3>
             </div>
@@ -121,7 +198,7 @@
     </div>
 
     <!-- Budget Allocation Details - Collapsible Cards -->
-    <div class="bg-white p-6 rounded-lg shadow mb-6">
+    <div class="module-surface p-6 mb-6">
         <h3 class="text-xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
             <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
@@ -134,8 +211,8 @@
             {% for allocation in budget_allocations %}
             <div x-data="{ expanded: false }" class="relative">
                 <!-- Card -->
-                <div @click="expanded = true" 
-                     class="group bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl p-5 cursor-pointer 
+                 <div @click="expanded = true" 
+                     class="allocation-card group bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl p-5 cursor-pointer 
                             hover:border-blue-400 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
                             {% if allocation.remaining_amount <= 0 %}border-green-300 from-green-50 to-white
                             {% elif allocation.allocated_amount > 0 %}border-blue-300 from-blue-50 to-white
@@ -153,37 +230,50 @@
                                 </svg>
                             </div>
                             <div>
-                                <h4 class="font-bold text-gray-800 text-lg truncate">{{ allocation.fund_source }}</h4>
-                                <span class="text-sm text-gray-500">FY {{ allocation.fiscal_year }}</span>
+                                <h4 class="card-title font-bold text-gray-800 text-lg truncate">{{ allocation.fund_source }}</h4>
+                                <span class="card-subtle text-sm text-gray-500">FY {{ allocation.fiscal_year }}</span>
                             </div>
                         </div>
-                        <span class="shrink-0 whitespace-nowrap text-xs px-2 py-1 rounded-full font-medium
-                            {% if allocation.remaining_amount <= 0 %}bg-green-100 text-green-700
-                            {% elif allocation.allocated_amount > 0 %}bg-blue-100 text-blue-700
-                            {% else %}bg-gray-100 text-gray-600{% endif %}">
-                            {{ allocation.allocation_count }} items
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="shrink-0 whitespace-nowrap text-xs px-2 py-1 rounded-full font-medium
+                                {% if allocation.remaining_amount <= 0 %}bg-green-100 text-green-700
+                                {% elif allocation.allocated_amount > 0 %}bg-blue-100 text-blue-700
+                                {% else %}bg-gray-100 text-gray-600{% endif %}">
+                                {{ allocation.allocation_count }} items
+                            </span>
+                            <button type="button"
+                                class="editBtn px-2 py-1 text-xs font-medium text-white bg-yellow-500 rounded hover:bg-yellow-600"
+                                data-id="{{ allocation.budget_id }}"
+                                data-fiscal_year="{{ allocation.fiscal_year }}"
+                                data-fund_source="{{ allocation.fund_source }}"
+                                data-total_amount="{{ allocation.total_amount }}"
+                                data-remaining_amount="{{ allocation.remaining_amount }}"
+                                data-status="{{ allocation.status }}"
+                                title="Edit Budget">
+                                Edit
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Card Stats -->
                     <div class="space-y-2 mb-4">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Total Value</span>
+                            <span class="card-subtle text-sm text-gray-600">Total Value</span>
                             <span class="font-bold text-gray-800">₱{{ allocation.total_amount|floatformat:0|intcomma }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Allocated</span>
+                            <span class="card-subtle text-sm text-gray-600">Allocated</span>
                             <span class="font-semibold text-green-600">₱{{ allocation.allocated_amount|floatformat:0|intcomma }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Remaining</span>
+                            <span class="card-subtle text-sm text-gray-600">Remaining</span>
                             <span class="font-semibold text-blue-600">₱{{ allocation.remaining_amount|floatformat:0|intcomma }}</span>
                         </div>
                     </div>
                     
                     <!-- Progress Bar -->
                     <div class="relative pt-1">
-                        <div class="overflow-hidden h-2 text-xs flex rounded-full bg-gray-200">
+                        <div class="progress-track overflow-hidden h-2 text-xs flex rounded-full bg-gray-200">
                             {% widthratio allocation.allocated_amount allocation.total_amount 100 as percent %}
                             <div style="width:{{ percent|default:0 }}%" 
                                  class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center
@@ -192,7 +282,7 @@
                                  {% else %}bg-gray-400{% endif %} transition-all duration-500"></div>
                         </div>
                         <div class="text-right mt-1">
-                            <span class="text-xs font-semibold text-gray-600">{{ percent|default:0 }}% used</span>
+                            <span class="usage-text text-xs font-semibold text-gray-600">{{ percent|default:0 }}% used</span>
                         </div>
                     </div>
                     

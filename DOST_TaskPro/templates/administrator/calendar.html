@@ -173,49 +173,141 @@
     <span class="current">Calendar</span>
 </nav>
 
-<div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-    <!-- Header with Add Event Button -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+<section class="mb-6 overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-r from-[#0f3a66] via-[#135a9b] to-[#0a79bf] p-5 text-white shadow-xl">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-            <h2 class="text-xl font-bold text-gray-800">Project & Task Calendar</h2>
-            <p class="text-sm text-gray-500">View all deadlines, tasks, and events in one place</p>
+            <p class="text-xs uppercase tracking-[0.2em] text-blue-100">Administrator Calendar Module</p>
+            <h2 class="mt-2 text-2xl font-semibold">Plan operations with a single scheduling surface</h2>
+            <p class="mt-2 max-w-3xl text-sm text-blue-100">
+                Track calendar events, project deadlines, and task due dates with quick filters and a live agenda panel.
+            </p>
         </div>
-        <div class="flex items-center gap-3">
-            <button onclick="openAddEventModal()" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
-                    data-tooltip="Add a new event to the calendar">
-                <span class="material-icons">add</span>
-                Add Event
-            </button>
-        </div>
-    </div>
-
-    <!-- Event Legend -->
-    <div class="event-legend bg-gray-50 p-4 rounded-lg mb-6">
-        <div class="legend-item">
-            <span class="legend-dot" style="background-color: #ef4444"></span>
-            <span>Project Deadlines</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-dot" style="background-color: #3b82f6"></span>
-            <span>Tasks (Pending)</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-dot" style="background-color: #10b981"></span>
-            <span>Tasks (Completed)</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-dot" style="background-color: #8b5cf6"></span>
-            <span>Meetings</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-dot" style="background-color: #f59e0b"></span>
-            <span>Reminders</span>
+        <div class="grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
+            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
+                <p class="text-blue-100">Events</p>
+                <p class="text-xl font-bold">{{ calendar_stats.events_total }}</p>
+            </div>
+            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
+                <p class="text-blue-100">This Week</p>
+                <p class="text-xl font-bold">{{ calendar_stats.upcoming_week }}</p>
+            </div>
+            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
+                <p class="text-blue-100">Deadlines</p>
+                <p class="text-xl font-bold">{{ calendar_stats.project_deadlines }}</p>
+            </div>
+            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
+                <p class="text-blue-100">Tasks Due</p>
+                <p class="text-xl font-bold">{{ calendar_stats.tasks_due }}</p>
+            </div>
         </div>
     </div>
+</section>
 
-    <!-- Calendar Container -->
-    <div id="calendar"></div>
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
+    <aside class="space-y-4 xl:col-span-4">
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 class="mb-3 text-sm font-semibold text-slate-700">Quick Actions</h3>
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                <button onclick="openAddEventModal()" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition">
+                    <span class="material-icons text-base">add</span>
+                    Add Event
+                </button>
+                <button id="goTodayBtn" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                    <span class="material-icons text-base">today</span>
+                    Jump to Today
+                </button>
+                <button id="goWeekBtn" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                    <span class="material-icons text-base">view_week</span>
+                    This Week
+                </button>
+                <button id="goMonthBtn" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                    <span class="material-icons text-base">calendar_view_month</span>
+                    This Month
+                </button>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-slate-700">Filter Events</h3>
+                <button id="resetFiltersBtn" class="text-xs font-medium text-blue-700 hover:text-blue-800">Reset</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label for="calendarSearch" class="mb-1 block text-xs font-medium text-slate-500">Search title or description</label>
+                    <input id="calendarSearch" type="text" placeholder="Type keyword..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                </div>
+
+                <div>
+                    <p class="mb-1 text-xs font-medium text-slate-500">Source</p>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="legend-item m-0"><input type="checkbox" class="source-filter" value="event" checked> <span>Events</span></label>
+                        <label class="legend-item m-0"><input type="checkbox" class="source-filter" value="project" checked> <span>Deadlines</span></label>
+                        <label class="legend-item m-0"><input type="checkbox" class="source-filter" value="task" checked> <span>Tasks</span></label>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="mb-1 text-xs font-medium text-slate-500">Type</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="task" checked>Task</label>
+                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="deadline" checked>Deadline</label>
+                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="meeting" checked>Meeting</label>
+                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="reminder" checked>Reminder</label>
+                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="milestone" checked>Milestone</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 class="mb-3 text-sm font-semibold text-slate-700">Upcoming Agenda (30 days)</h3>
+            <div class="max-h-72 space-y-2 overflow-y-auto pr-1">
+                {% if upcoming_agenda %}
+                    {% for item in upcoming_agenda %}
+                    <a href="{{ item.url|default:'#' }}" class="block rounded-lg border border-slate-200 p-2.5 hover:bg-slate-50 transition">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2.5 w-2.5 rounded-full" style="background-color: {{ item.color }}"></span>
+                            <p class="truncate text-sm font-medium text-slate-700">{{ item.title }}</p>
+                        </div>
+                        <p class="mt-1 text-xs text-slate-500">{{ item.date|date:"M d, Y" }} • {{ item.source|capfirst }}</p>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">No upcoming items in the next 30 days.</div>
+                {% endif %}
+            </div>
+        </div>
+    </aside>
+
+    <section class="xl:col-span-8">
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:p-5">
+            <div class="event-legend bg-gray-50 p-3 rounded-lg mb-4">
+                <div class="legend-item">
+                    <span class="legend-dot" style="background-color: #ef4444"></span>
+                    <span>Project Deadlines</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background-color: #3b82f6"></span>
+                    <span>Tasks (Pending)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background-color: #10b981"></span>
+                    <span>Tasks (Completed)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background-color: #8b5cf6"></span>
+                    <span>Meetings</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background-color: #f59e0b"></span>
+                    <span>Reminders</span>
+                </div>
+            </div>
+
+            <div id="calendar"></div>
+        </div>
+    </section>
 </div>
 
 <!-- Add Event Modal -->
@@ -389,6 +481,10 @@
                 </button>
             </div>
             <div class="flex gap-3">
+                <a id="openEventLinkBtn" href="#" target="_self" class="hidden px-5 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition font-semibold items-center gap-2">
+                    <span class="material-icons text-lg">open_in_new</span>
+                    Open Record
+                </a>
                 <button onclick="closeEventDetailsModal()" class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition font-semibold">
                     Close
                 </button>
@@ -429,6 +525,14 @@
 <script>
     // Store current event data for actions
     let currentEventData = null;
+    let calendarInstance = null;
+    let allEventsCache = [];
+    let eventsLoaded = false;
+    const calendarFilterState = {
+        search: '',
+        sources: new Set(['event', 'project', 'task']),
+        types: new Set(['task', 'deadline', 'meeting', 'reminder', 'milestone'])
+    };
     
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
@@ -436,11 +540,11 @@
         // Calculate available height for calendar (viewport height minus header/padding)
         function getCalendarHeight() {
             const viewportHeight = window.innerHeight;
-            const headerOffset = 350; // Approximate space for header, legend, breadcrumb, toolbar
-            return Math.max(viewportHeight - headerOffset, 400); // Minimum 400px
+            const headerOffset = 280;
+            return Math.max(viewportHeight - headerOffset, 500);
         }
         
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        calendarInstance = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             height: getCalendarHeight(),
             headerToolbar: {
@@ -448,7 +552,21 @@
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,listWeek'
             },
-            events: '{% url "administrator_calendar_events_api" %}',
+            events: function(fetchInfo, successCallback, failureCallback) {
+                if (eventsLoaded) {
+                    successCallback(getFilteredCalendarEvents());
+                    return;
+                }
+
+                fetch('{% url "administrator_calendar_events_api" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        allEventsCache = Array.isArray(data) ? data : [];
+                        eventsLoaded = true;
+                        successCallback(getFilteredCalendarEvents());
+                    })
+                    .catch(error => failureCallback(error));
+            },
             eventClick: function(info) {
                 info.jsEvent.preventDefault();
                 openEventDetailsModal(info.event);
@@ -471,13 +589,127 @@
                 info.el.setAttribute('title', info.event.title);
             }
         });
-        calendar.render();
+        calendarInstance.render();
+        bindFilterControls();
         
         // Resize calendar when window resizes
         window.addEventListener('resize', function() {
-            calendar.setOption('height', getCalendarHeight());
+            if (calendarInstance) {
+                calendarInstance.setOption('height', getCalendarHeight());
+            }
         });
+
+        const goTodayBtn = document.getElementById('goTodayBtn');
+        const goWeekBtn = document.getElementById('goWeekBtn');
+        const goMonthBtn = document.getElementById('goMonthBtn');
+
+        if (goTodayBtn) {
+            goTodayBtn.addEventListener('click', function() {
+                calendarInstance.changeView('dayGridMonth');
+                calendarInstance.today();
+            });
+        }
+        if (goWeekBtn) {
+            goWeekBtn.addEventListener('click', function() {
+                calendarInstance.changeView('timeGridWeek');
+                calendarInstance.today();
+            });
+        }
+        if (goMonthBtn) {
+            goMonthBtn.addEventListener('click', function() {
+                calendarInstance.changeView('dayGridMonth');
+                calendarInstance.today();
+            });
+        }
     });
+
+    function normalizeEventSource(item) {
+        const explicitSource = item?.extendedProps?.source;
+        if (explicitSource) return explicitSource;
+
+        const eventId = String(item?.id || '');
+        if (eventId.startsWith('project_')) return 'project';
+        if (eventId.startsWith('task_')) return 'task';
+        return 'event';
+    }
+
+    function getFilteredCalendarEvents() {
+        return allEventsCache.filter(item => {
+            const source = normalizeEventSource(item);
+            const type = String(item?.extendedProps?.type || '').toLowerCase();
+            const title = String(item?.title || '').toLowerCase();
+            const description = String(item?.extendedProps?.description || '').toLowerCase();
+
+            if (!calendarFilterState.sources.has(source)) return false;
+            if (type && !calendarFilterState.types.has(type)) return false;
+
+            if (calendarFilterState.search) {
+                const haystack = `${title} ${description}`;
+                if (!haystack.includes(calendarFilterState.search)) return false;
+            }
+            return true;
+        });
+    }
+
+    function applyFiltersToCalendar() {
+        if (!calendarInstance) return;
+        calendarInstance.refetchEvents();
+    }
+
+    function bindFilterControls() {
+        const searchInput = document.getElementById('calendarSearch');
+        const sourceFilters = document.querySelectorAll('.source-filter');
+        const typeFilters = document.querySelectorAll('.type-filter');
+        const resetButton = document.getElementById('resetFiltersBtn');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                calendarFilterState.search = this.value.trim().toLowerCase();
+                applyFiltersToCalendar();
+            });
+        }
+
+        sourceFilters.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    calendarFilterState.sources.add(this.value);
+                } else {
+                    calendarFilterState.sources.delete(this.value);
+                }
+                applyFiltersToCalendar();
+            });
+        });
+
+        typeFilters.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    calendarFilterState.types.add(this.value);
+                } else {
+                    calendarFilterState.types.delete(this.value);
+                }
+                applyFiltersToCalendar();
+            });
+        });
+
+        if (resetButton) {
+            resetButton.addEventListener('click', function() {
+                if (searchInput) searchInput.value = '';
+                calendarFilterState.search = '';
+
+                sourceFilters.forEach(checkbox => {
+                    checkbox.checked = true;
+                    calendarFilterState.sources.add(checkbox.value);
+                });
+
+                typeFilters.forEach(checkbox => {
+                    checkbox.checked = true;
+                    calendarFilterState.types.add(checkbox.value);
+                });
+
+                applyFiltersToCalendar();
+            });
+        }
+    }
     
     // Event Type Icons and Colors
     const eventTypeConfig = {
@@ -518,7 +750,8 @@
         currentEventData = {
             id: eventId,
             title: eventTitle,
-            isCustomEvent: !String(eventId).includes('project_') && !String(eventId).includes('task_')
+            isCustomEvent: !String(eventId).includes('project_') && !String(eventId).includes('task_'),
+            url: event.url || ''
         };
         
         // Set header color
@@ -557,12 +790,23 @@
         // Show/hide delete button based on event type
         const deleteBtn = document.getElementById('deleteEventBtn');
         const actionsLeft = document.getElementById('eventActionsLeft');
+        const openEventLinkBtn = document.getElementById('openEventLinkBtn');
         if (currentEventData.isCustomEvent) {
             deleteBtn.style.display = 'flex';
             actionsLeft.style.display = 'block';
         } else {
             deleteBtn.style.display = 'none';
             actionsLeft.style.display = 'none';
+        }
+
+        if (currentEventData.url) {
+            openEventLinkBtn.href = currentEventData.url;
+            openEventLinkBtn.classList.remove('hidden');
+            openEventLinkBtn.classList.add('inline-flex');
+        } else {
+            openEventLinkBtn.href = '#';
+            openEventLinkBtn.classList.add('hidden');
+            openEventLinkBtn.classList.remove('inline-flex');
         }
         
         // Show modal
@@ -574,6 +818,10 @@
         const modal = document.getElementById('eventDetailsModal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        const openEventLinkBtn = document.getElementById('openEventLinkBtn');
+        openEventLinkBtn.href = '#';
+        openEventLinkBtn.classList.add('hidden');
+        openEventLinkBtn.classList.remove('inline-flex');
         currentEventData = null;
     }
     

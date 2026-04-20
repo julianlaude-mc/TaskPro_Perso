@@ -133,8 +133,9 @@
     }
 </style>
 
+{{ logs_json|json_script:"audit-log-data" }}
 <script>
-    window.auditLogData = {{ logs_json|safe }};
+    window.auditLogData = JSON.parse(document.getElementById('audit-log-data').textContent || '{}');
 </script>
 
 <div class="container mt-4" x-data="{ 
@@ -144,7 +145,7 @@
         this.modalData = window.auditLogData[logId] || {};
         this.openModal = true;
     }
-}">
+}" x-on:audit-open.window="showDetails($event.detail.logId)">
 
     {% if messages %}
         {% for message in messages %}
@@ -324,7 +325,7 @@
                             </div>
                         </td>
                         <td class="px-4 py-3 text-center">
-                            <button @click="showDetails('{{ log.id }}')" class="view-details-btn">
+                            <button onclick="window.dispatchEvent(new CustomEvent('audit-open', { detail: { logId: '{{ log.id }}' } }))" class="view-details-btn">
                                 <span class="flex items-center gap-1">
                                     <span class="material-icons text-sm">visibility</span>
                                     View

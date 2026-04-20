@@ -600,6 +600,129 @@ html.dark .shadow-md {
 }
 
 /* ========================================
+   CROSS-MODULE DARK MODE FOUNDATION
+   ======================================== */
+html.dark {
+  --ui-dark-bg-0: #0b1220;
+  --ui-dark-bg-1: #0f172a;
+  --ui-dark-bg-2: #111c30;
+  --ui-dark-bg-3: #1b2a3f;
+  --ui-dark-border: #334155;
+  --ui-dark-border-strong: #42556f;
+  --ui-dark-text: #e5edf7;
+  --ui-dark-muted: #b9c7d8;
+}
+
+html.dark body,
+html.dark main,
+html.dark .min-h-screen {
+  background-color: var(--ui-dark-bg-0) !important;
+  color: var(--ui-dark-text) !important;
+}
+
+html.dark .module-hero,
+html.dark .reports-hero,
+html.dark .admin-surface,
+html.dark .admin-surface-soft,
+html.dark .module-surface,
+html.dark .report-filter-card,
+html.dark .chart-panel,
+html.dark .assistant-panel {
+  background: linear-gradient(180deg, var(--ui-dark-bg-1) 0%, var(--ui-dark-bg-2) 100%) !important;
+  border-color: var(--ui-dark-border) !important;
+  box-shadow: 0 16px 34px -24px rgba(2, 6, 23, 0.96) !important;
+}
+
+html.dark .module-hero {
+  background: linear-gradient(135deg, #132b45 0%, #14466f 55%, #1166a8 100%) !important;
+  border-color: rgba(148, 190, 236, 0.35) !important;
+}
+
+html.dark .module-hero h1,
+html.dark .module-hero h2,
+html.dark .module-hero h3,
+html.dark .reports-hero h1,
+html.dark .reports-hero h2,
+html.dark .reports-hero h3 {
+  color: #f3f8ff !important;
+}
+
+html.dark .module-hero p,
+html.dark .reports-hero p {
+  color: #d7e8fc !important;
+}
+
+html.dark .summary-card,
+html.dark .summary-cards > div,
+html.dark .kpi-card,
+html.dark .stats-card {
+  background: linear-gradient(180deg, #121d31 0%, #162338 100%) !important;
+  border: 1px solid var(--ui-dark-border) !important;
+  box-shadow: 0 16px 30px -24px rgba(2, 6, 23, 0.9) !important;
+}
+
+html.dark .summary-value,
+html.dark .summary-cards > div p.text-3xl,
+html.dark .summary-cards > div p.text-2xl,
+html.dark .summary-cards > div p.text-xl {
+  color: #f8fbff !important;
+}
+
+html.dark .summary-label,
+html.dark .summary-cards > div h3,
+html.dark .summary-cards > div .text-gray-500 {
+  color: #c8d6e6 !important;
+}
+
+html.dark .border-l-4 {
+  border-left-color: #5b7ea5 !important;
+}
+
+html.dark .bg-gray-50,
+html.dark .bg-slate-50 {
+  background-color: rgba(24, 35, 55, 0.75) !important;
+}
+
+html.dark .bg-gray-100,
+html.dark .bg-slate-100 {
+  background-color: rgba(32, 48, 72, 0.88) !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-slate-900,
+html.dark .text-slate-800 {
+  color: #f4f8ff !important;
+}
+
+html.dark .text-gray-700,
+html.dark .text-gray-600,
+html.dark .text-slate-700,
+html.dark .text-slate-600 {
+  color: var(--ui-dark-muted) !important;
+}
+
+html.dark .text-gray-500,
+html.dark .text-slate-500,
+html.dark .text-gray-400,
+html.dark .text-slate-400 {
+  color: #9fb2c9 !important;
+}
+
+html.dark .table-container,
+html.dark .table-section,
+html.dark .chart-section,
+html.dark .bg-white.shadow,
+html.dark .bg-white.shadow-md,
+html.dark .bg-white.shadow-lg,
+html.dark .bg-white.rounded,
+html.dark .bg-white.rounded-lg,
+html.dark .bg-white.rounded-xl,
+html.dark .bg-white.rounded-2xl {
+  border-color: var(--ui-dark-border) !important;
+}
+
+/* ========================================
    LOADING & ANIMATION STYLES
    ======================================== */
 @keyframes fadeIn {

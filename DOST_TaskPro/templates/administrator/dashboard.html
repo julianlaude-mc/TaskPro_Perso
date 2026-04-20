@@ -327,6 +327,77 @@
         height: 180px;
     }
 
+    .simple-mode-banner {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(59, 130, 246, 0.24);
+      border-radius: 1rem;
+      background:
+        radial-gradient(1000px 360px at -15% -30%, rgba(0, 114, 206, 0.14), transparent 48%),
+        radial-gradient(900px 320px at 115% 130%, rgba(16, 185, 129, 0.14), transparent 44%),
+        linear-gradient(135deg, #f8fbff 0%, #eef5ff 48%, #f4fbff 100%);
+      box-shadow: 0 18px 36px -26px rgba(30, 58, 95, 0.42);
+    }
+
+    .simple-mode-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(30, 58, 95, 0.04), transparent 45%);
+      pointer-events: none;
+    }
+
+    .simple-mode-title {
+      color: #0369a1;
+      letter-spacing: -0.01em;
+    }
+
+    .simple-mode-subtitle {
+      color: #475569;
+    }
+
+    .simple-mode-action {
+      background: linear-gradient(170deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(59, 130, 246, 0.22);
+      border-radius: 0.85rem;
+      box-shadow: 0 10px 20px -20px rgba(15, 23, 42, 0.5);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .simple-mode-action:hover {
+      transform: translateY(-2px);
+      border-color: rgba(14, 116, 144, 0.45);
+      box-shadow: 0 18px 28px -20px rgba(14, 116, 144, 0.38);
+    }
+
+    .dark .simple-mode-banner {
+      border-color: rgba(56, 189, 248, 0.28);
+      background:
+        radial-gradient(1000px 360px at -15% -30%, rgba(56, 189, 248, 0.16), transparent 48%),
+        radial-gradient(900px 320px at 115% 130%, rgba(16, 185, 129, 0.16), transparent 44%),
+        linear-gradient(135deg, #0f172a 0%, #111f35 52%, #0e2439 100%);
+      box-shadow: 0 20px 38px -26px rgba(2, 6, 23, 0.85);
+    }
+
+    .dark .simple-mode-title {
+      color: #7dd3fc !important;
+    }
+
+    .dark .simple-mode-subtitle {
+      color: #cbd5e1 !important;
+    }
+
+    .dark .simple-mode-action {
+      background: linear-gradient(170deg, #152235 0%, #1a2940 100%);
+      border-color: rgba(125, 211, 252, 0.28);
+      box-shadow: 0 12px 24px -20px rgba(2, 6, 23, 0.85);
+    }
+
+    .dark .simple-mode-action:hover {
+      border-color: rgba(56, 189, 248, 0.52);
+      box-shadow: 0 18px 32px -22px rgba(14, 116, 144, 0.5);
+    }
+
       @media (max-width: 1023px) {
         .admin-chart-height {
           height: 200px;
@@ -337,32 +408,32 @@
     <div class="space-y-3 admin-dashboard-compact">
 
   <!-- Simple Mode Notice (Only shows in Simple Mode) -->
-  <div class="hidden simple-mode-notice bg-gradient-to-r from-[#0072CE]/10 to-blue-50 border border-[#0072CE]/20 rounded-2xl p-6 text-center">
+    <div class="hidden simple-mode-notice simple-mode-banner p-6 text-center">
       <div class="flex items-center justify-center gap-3 mb-3">
-          <span class="material-icons text-[#0072CE] text-3xl">check_circle</span>
-          <h2 class="text-xl font-bold text-[#0072CE]">Simple Mode Active</h2>
+        <span class="material-icons text-[#0284c7] text-3xl">check_circle</span>
+        <h2 class="simple-mode-title text-xl font-bold">Simple Mode Active</h2>
       </div>
-      <p class="text-slate-600 mb-4">Charts and complex features are hidden. You're viewing essential information only.</p>
+      <p class="simple-mode-subtitle mb-4">Charts and complex features are hidden. You're viewing essential information only.</p>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-          <a href="{% url 'administrator_proposals_url' %}" class="bg-white border border-[#0072CE]/20 rounded-xl p-4 hover:shadow-lg hover:border-[#0072CE]/40 transition-all duration-200">
+        <a href="{% url 'administrator_proposals_url' %}" class="simple-mode-action rounded-xl p-4 transition-all duration-200">
               <span class="material-icons text-[#0072CE] text-2xl mb-2">description</span>
               <p class="font-medium text-slate-700">View Proposals</p>
           </a>
-          <a href="{% url 'administrator_projects_url' %}" class="bg-white border border-[#0072CE]/20 rounded-xl p-4 hover:shadow-lg hover:border-[#0072CE]/40 transition-all duration-200">
+        <a href="{% url 'administrator_projects_url' %}" class="simple-mode-action rounded-xl p-4 transition-all duration-200">
               <span class="material-icons text-[#0072CE] text-2xl mb-2">folder</span>
               <p class="font-medium text-slate-700">View Projects</p>
           </a>
-          <a href="{% url 'administrator_users_url' %}" class="bg-white border border-[#0072CE]/20 rounded-xl p-4 hover:shadow-lg hover:border-[#0072CE]/40 transition-all duration-200">
+        <a href="{% url 'administrator_users_url' %}" class="simple-mode-action rounded-xl p-4 transition-all duration-200">
               <span class="material-icons text-[#0072CE] text-2xl mb-2">people</span>
               <p class="font-medium text-slate-700">View Users</p>
           </a>
-          <a href="{% url 'administrator_extension_requests_url' %}" class="bg-white border border-[#0072CE]/20 rounded-xl p-4 hover:shadow-lg hover:border-[#0072CE]/40 transition-all duration-200">
+        <a href="{% url 'administrator_extension_requests_url' %}" class="simple-mode-action rounded-xl p-4 transition-all duration-200">
               <span class="material-icons text-[#0072CE] text-2xl mb-2">schedule</span>
               <p class="font-medium text-slate-700">Extensions</p>
           </a>
       </div>
   </div>
-  
+
   <!-- =========================== -->
   <!-- 1. GIS MAP SECTION (Hidden in Simple Mode) -->
   <!-- =========================== -->
@@ -391,8 +462,8 @@
       <div class="p-3 lg:p-2.5">
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-2.5 items-start">
           <!-- Left: Balanced rectangular map -->
-          <div class="xl:col-span-8 flex flex-col space-y-2.5">
-            <div class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50" style="aspect-ratio: 16 / 9; max-height: 340px;">
+          <div class="xl:col-span-9 flex flex-col space-y-2.5">
+            <div class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50" style="aspect-ratio: 16 / 9; min-height: 360px; max-height: 390px;">
               <div id="map" class="w-full h-full z-0" tabindex="0"></div>
             </div>
             <p class="text-xs text-slate-400 mt-2 text-center">💡 Click map to find nearest projects • Arrow keys to pan • Scroll to zoom</p>
@@ -413,7 +484,7 @@
           </div>
 
           <!-- Right: Graphs/Data rail -->
-          <div class="xl:col-span-4 space-y-2.5">
+          <div class="xl:col-span-3 space-y-2.5">
             <!-- Compact Snapshot -->
             <div class="grid grid-cols-2 gap-2">
               <div class="admin-surface-soft p-2.5">
@@ -754,7 +825,7 @@
     <div class="flex items-center gap-2">
       <label class="flex items-center gap-1.5 text-[11px] text-white/90">
         <input id="assistantModeToggle" type="checkbox" class="h-3.5 w-3.5" checked>
-        <span id="assistantModeLabel">AI mode</span>
+        AI mode
       </label>
       <button id="assistantHide" type="button" class="h-7 w-7 rounded-md bg-white/18 hover:bg-white/25 flex items-center justify-center" title="Hide Assistant" aria-label="Hide Assistant">
         <span class="material-icons text-[16px]">close</span>
@@ -762,12 +833,15 @@
     </div>
   </div>
   <div class="assistant-body">
-    <p id="assistantGuideText" class="text-[11px] text-slate-500 mb-2">Ask about projects, proposals, municipalities, names, statuses, and what this system can do.</p>
+    <p class="text-[11px] text-slate-500 mb-2">Ask about projects, proposals, municipalities, names, statuses, and what this system can do.</p>
     <div class="flex flex-wrap gap-1.5 mb-2.5" id="gisAssistantPresets">
+      <button type="button" class="gis-assistant-chip" data-question="Hello">Hello</button>
       <button type="button" class="gis-assistant-chip" data-question="Show me totals">Totals</button>
       <button type="button" class="gis-assistant-chip" data-question="Top project statuses">Top statuses</button>
-      <button type="button" class="gis-assistant-chip" data-question="How many ongoing projects?">Ongoing projects</button>
+      <button type="button" class="gis-assistant-chip" data-question="How many proposals in Naval?">Proposals by municipality</button>
+      <button type="button" class="gis-assistant-chip" data-question="Show me proposal names">Proposal names</button>
       <button type="button" class="gis-assistant-chip" data-question="What can this system do?">System capabilities</button>
+      <button type="button" class="gis-assistant-chip" data-question="Who are you?">Who are you?</button>
     </div>
     <div id="gisAssistantLog" class="gis-assistant-log">
       <div class="gis-msg gis-msg-ai">Hi! I’m your local TaskPro assistant. Ask me about project/proposal names, municipalities, statuses, and system functions.</div>
@@ -780,7 +854,6 @@
         Ask
       </button>
     </div>
-    <div id="gisKeywordSuggestions" class="mt-1.5 flex flex-wrap gap-1.5 hidden" aria-live="polite"></div>
     <div class="mt-1.5 flex items-center gap-2 text-[11px] text-slate-400">
       <span class="material-icons text-xs">lock</span>
       AI + local • Uses summary only
@@ -798,7 +871,46 @@ const PROJECTS = projectsRaw ? JSON.parse(projectsRaw) : [];
 const PROPOSALS = proposalsRaw ? JSON.parse(proposalsRaw) : [];
 
 function buildDemoMapProjects(realProjects) {
-  return realProjects;
+  const projectsWithCoords = realProjects.filter(project => project.latitude != null && project.longitude != null);
+  if (projectsWithCoords.length >= 16) return realProjects;
+
+  const municipalCenters = {
+    almeria: [11.6167, 124.4333],
+    biliran: [11.5833, 124.4667],
+    cabucgayan: [11.4667, 124.5500],
+    caibiran: [11.5500, 124.5833],
+    culaba: [11.6500, 124.5500],
+    kawayan: [11.6667, 124.5000],
+    maripipi: [11.7833, 124.3333],
+    naval: [11.5667, 124.4000]
+  };
+  const fallbackMunicipalities = Object.keys(municipalCenters);
+  const statuses = ['new', 'ongoing', 'completed', 'terminated'];
+  const needed = Math.min(22 - projectsWithCoords.length, 18);
+  const demo = [];
+
+  for (let idx = 0; idx < needed; idx += 1) {
+    const mKey = fallbackMunicipalities[idx % fallbackMunicipalities.length];
+    const center = municipalCenters[mKey];
+    const latitude = center[0] + ((idx % 3) - 1) * 0.008;
+    const longitude = center[1] + ((idx % 4) - 1.5) * 0.008;
+    demo.push({
+      id: `demo-${idx + 1}`,
+      title: `Demo Project ${idx + 1}`,
+      description: 'Demo record for GIS visualization density.',
+      municipality: mKey.charAt(0).toUpperCase() + mKey.slice(1),
+      province: 'Biliran',
+      beneficiary: 'Demo Beneficiary',
+      proponent: 'Demo Proponent',
+      status: statuses[idx % statuses.length],
+      funds: 100000 + (idx * 25000),
+      latitude,
+      longitude,
+      is_demo: true
+    });
+  }
+
+  return [...realProjects, ...demo];
 }
 
 const MAP_PROJECTS = buildDemoMapProjects(PROJECTS);
@@ -862,8 +974,7 @@ const localSystemFacts = {
   totalProjects: parseInt("{{ total_projects|default:0 }}", 10) || 0,
   totalProposals: parseInt("{{ total_proposals|default:0 }}", 10) || 0,
   totalUsers: parseInt("{{ total_users|default:0 }}", 10) || 0,
-  pendingExtensions: parseInt("{{ pending_extensions|default:0 }}", 10) || 0,
-  totalBudget: parseFloat("{{ total_budget|default:0 }}") || 0
+  pendingExtensions: parseInt("{{ pending_extensions|default:0 }}", 10) || 0
 };
 
 const mappedProjects = PROJECTS.filter(project => project.latitude != null && project.longitude != null);
@@ -986,10 +1097,7 @@ function buildSystemSnapshotAnswer() {
   const proposalMunicipalityText = topProposalMunicipality
     ? `${formatTitleCase(topProposalMunicipality[0])} has the most proposals (${topProposalMunicipality[1]}).`
     : 'Proposal municipality concentration is not available.';
-  const budgetText = localSystemFacts.totalBudget > 0
-    ? `Total equipment budget is ₱${Math.round(localSystemFacts.totalBudget).toLocaleString()}.`
-    : 'Total equipment budget is not available.';
-  return `Snapshot: ${localSystemFacts.totalProjects} projects, ${localSystemFacts.totalProposals} proposals, ${localSystemFacts.totalUsers} users, ${localSystemFacts.pendingExtensions} pending extensions, and ${mappedProjects.length} mapped projects. ${budgetText} ${municipalityText} ${proposalMunicipalityText}`;
+  return `Snapshot: ${localSystemFacts.totalProjects} projects, ${localSystemFacts.totalProposals} proposals, ${localSystemFacts.totalUsers} users, ${localSystemFacts.pendingExtensions} pending extensions, and ${mappedProjects.length} mapped projects. ${municipalityText} ${proposalMunicipalityText}`;
 }
 
 const moduleLinks = {
@@ -1011,9 +1119,7 @@ function respondToLocalGISQuestion(questionRaw) {
   const q = question.toLowerCase();
 
   if (/(^|\b)(hi|hello|hey|good morning|good afternoon|good evening)(\b|$)/i.test(q)) {
-    return {
-      answer: `Hi! Current totals are ${localSystemFacts.totalProjects} projects, ${localSystemFacts.totalProposals} proposals, ${localSystemFacts.totalUsers} users, and ${localSystemFacts.pendingExtensions} pending extensions.`
-    };
+    return { answer: 'Hi! Ask me about project/proposal names, statuses, municipalities, or system totals.' };
   }
   if (q.includes('help') || q.includes('keywords') || q.includes('commands')) {
     return { answer: 'Try: project names, proposal names, completion rate, top statuses, or a municipality name.' };
@@ -1027,116 +1133,11 @@ function respondToLocalGISQuestion(questionRaw) {
   if (q.includes('status') && !q.includes('project') && !q.includes('proposal')) {
     return { answer: `Top project status is ${topStatusLabel} (${statusCount[topStatusKey] || 0} projects).` };
   }
-  if (q.includes('where can i export reports') || q.includes('open reports module')) {
-    return {
-      answer: 'You can export files from the Reports module.',
-      linkHtml: linkTo('Reports module', moduleLinks.reports)
-    };
-  }
-  if (q.includes('what reports are available')) {
-    return {
-      answer: 'Available report exports include financial summary, proposal status, approved projects, and full report export.',
-      linkHtml: linkTo('Reports module', moduleLinks.reports)
-    };
-  }
   if (q.includes('reports')) {
-    return {
-      answer: `Reports module is available. Current snapshot: ${localSystemFacts.totalProjects} projects, ${localSystemFacts.totalProposals} proposals, and ${localSystemFacts.totalUsers} users.`,
-      linkHtml: linkTo('Reports module', moduleLinks.reports)
-    };
-  }
-  if (q.includes('how many users in total') || q.includes('total users')) {
-    return {
-      answer: `There are ${localSystemFacts.totalUsers} total users in the system.`,
-      linkHtml: linkTo('Users module', moduleLinks.users)
-    };
-  }
-  if (q.includes('open users module')) {
-    return {
-      answer: 'Opening the Users module lets you manage accounts and roles.',
-      linkHtml: linkTo('Users module', moduleLinks.users)
-    };
+    return { answer: 'Reports are available in the Reports module.', linkHtml: linkTo('Reports module', moduleLinks.reports) };
   }
   if (q.includes('users')) {
-    return {
-      answer: `There are currently ${localSystemFacts.totalUsers} users in the system.`,
-      linkHtml: linkTo('Users module', moduleLinks.users)
-    };
-  }
-  if (q.includes('how many pending extension requests') || q.includes('extension summary')) {
-    return {
-      answer: `There are currently ${localSystemFacts.pendingExtensions} pending extension requests.`,
-      linkHtml: linkTo('Reports module', moduleLinks.reports)
-    };
-  }
-  if (q.includes('where can i review extension requests')) {
-    return {
-      answer: 'Extension monitoring is available from the reports/dashboard workflow.',
-      linkHtml: linkTo('Reports module', moduleLinks.reports)
-    };
-  }
-  if (q.includes('project per municipality') || q.includes('projects by municipality')) {
-    const ranked = Object.entries(municipalityCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([name, count]) => `${formatTitleCase(name)} (${count})`);
-    if (!ranked.length) {
-      return { answer: 'No municipality-level project distribution is available yet.' };
-    }
-    return { answer: `Top municipalities by project count: ${ranked.join(', ')}.` };
-  }
-  if (q.includes('highest funds') || q.includes('highest funded') || q.includes('most funds')) {
-    const topFunded = searchableProjects
-      .filter(project => Number(project.funds) > 0)
-      .sort((a, b) => Number(b.funds || 0) - Number(a.funds || 0))
-      .slice(0, 3);
-    if (!topFunded.length) {
-      return { answer: 'No funded projects are available in the current dataset.' };
-    }
-    const list = topFunded
-      .map(project => `${project.title || 'Untitled'} (₱${Math.round(Number(project.funds || 0)).toLocaleString()})`)
-      .join(', ');
-    return { answer: `Top funded projects: ${list}.`, linkHtml: linkTo('Projects module', moduleLinks.projects) };
-  }
-  if (q.includes('top municipalities') && q.includes('projects')) {
-    const ranked = Object.entries(municipalityCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-    if (!ranked.length) {
-      return { answer: 'No municipality-level project records are available yet.' };
-    }
-    return { answer: `Project count by municipality: ${ranked.map(([name, count]) => `${formatTitleCase(name)} (${count})`).join(', ')}.` };
-  }
-  if (q.includes('budget') || q.includes('budgets') || q.includes('funds') || q.includes('allocated')) {
-    const budgetValue = `₱${Math.round(localSystemFacts.totalBudget).toLocaleString()}`;
-    return {
-      answer: `Current equipment allocated budget is ${budgetValue}. You can also ask for project-level funds or project counts by municipality.`,
-      linkHtml: linkTo('Reports module', moduleLinks.reports)
-    };
-  }
-  if ((q.includes('projects') || q.includes('project')) && !q.includes('list') && !q.includes('status') && !q.includes('municipality') && !q.includes('municipalities') && !q.includes('top')) {
-    return {
-      answer: `There are currently ${localSystemFacts.totalProjects} projects in the system.`,
-      linkHtml: linkTo('Projects module', moduleLinks.projects)
-    };
-  }
-  if ((q.includes('proposals') || q.includes('proposal')) && !q.includes('list') && !q.includes('status') && !q.includes('municipality')) {
-    return {
-      answer: `There are currently ${localSystemFacts.totalProposals} proposals in the system.`,
-      linkHtml: linkTo('Proposals module', moduleLinks.proposals)
-    };
-  }
-  if (q.includes('pending extension') || q.includes('extensions')) {
-    return {
-      answer: `There are currently ${localSystemFacts.pendingExtensions} pending extension requests.`,
-      linkHtml: linkTo('Reports module', moduleLinks.reports)
-    };
-  }
-  if (q.includes('all modules') || q.includes('module totals')) {
-    return {
-      answer: `Module totals: ${localSystemFacts.totalProjects} projects, ${localSystemFacts.totalProposals} proposals, ${localSystemFacts.totalUsers} users, ${localSystemFacts.pendingExtensions} pending extensions, and ${mappedProjects.length} mapped projects.`,
-      linkHtml: linkTo('Dashboard', moduleLinks.dashboard)
-    };
+    return { answer: 'User management is available in the Users module.', linkHtml: linkTo('Users module', moduleLinks.users) };
   }
   if ((q.includes('projects') || q.includes('project')) && q.includes('list')) {
     return { answer: 'Open the Projects module for the full list.', linkHtml: linkTo('Projects module', moduleLinks.projects) };
@@ -1235,162 +1236,11 @@ const assistantInput = document.getElementById('gisAssistantInput');
 const assistantAsk = document.getElementById('gisAssistantAsk');
 const assistantPresets = document.querySelectorAll('#gisAssistantPresets [data-question]');
 const assistantModeToggle = document.getElementById('assistantModeToggle');
-const assistantModeLabel = document.getElementById('assistantModeLabel');
-const assistantGuideText = document.getElementById('assistantGuideText');
-const keywordSuggestionBox = document.getElementById('gisKeywordSuggestions');
-
-const keywordPromptMap = {
-  budget: [
-    'What is the total allocated budget?',
-    'Show projects with highest funds',
-    'How much budget is tracked in the system?'
-  ],
-  project: [
-    'How many projects in total?',
-    topMunicipality?.[0] ? `How many projects in ${formatTitleCase(topMunicipality[0])}?` : 'How many projects by municipality?',
-    'What are the top project statuses?'
-  ],
-  proposal: [
-    'How many proposals in total?',
-    topProposalMunicipality?.[0] ? `How many proposals in ${formatTitleCase(topProposalMunicipality[0])}?` : 'How many proposals by municipality?',
-    'Show me proposal names'
-  ],
-  municipality: [
-    'How many projects in Naval?',
-    'How many proposals in Biliran?',
-    'Which municipality has the most projects?'
-  ],
-  status: [
-    'Top project statuses',
-    'How many ongoing projects?',
-    'What is the completion rate?'
-  ],
-  users: [
-    'How many users in total?',
-    'Open users module',
-    'Show all module totals'
-  ],
-  extensions: [
-    'How many pending extension requests?',
-    'Where can I review extension requests?',
-    'Show extension summary'
-  ],
-  reports: [
-    'Where can I export reports?',
-    'What reports are available?',
-    'Open reports module'
-  ],
-  dashboard: [
-    'Show all module totals',
-    'Give me a system snapshot',
-    'What can this system do?'
-  ]
-};
-
-const keywordAliases = {
-  budget: ['budget', 'budgets', 'fund', 'funds', 'allocated'],
-  project: ['project', 'projects'],
-  proposal: ['proposal', 'proposals'],
-  municipality: ['municipality', 'municipalities', 'naval', 'biliran', 'almeria', 'cabucgayan', 'caibiran', 'culaba', 'kawayan', 'maripipi'],
-  status: ['status', 'statuses', 'ongoing', 'completed', 'terminated', 'new'],
-  users: ['user', 'users', 'account', 'accounts', 'staff'],
-  extensions: ['extension', 'extensions', 'extend', 'request extension'],
-  reports: ['report', 'reports', 'export'],
-  dashboard: ['dashboard', 'modules', 'system', 'snapshot']
-};
-
-function findSuggestionKey(inputText) {
-  const text = String(inputText || '').toLowerCase().trim();
-  if (!text) return null;
-  return Object.keys(keywordAliases).find(key => keywordAliases[key].some(alias => text.includes(alias))) || null;
-}
-
-function renderKeywordSuggestions(inputText) {
-  if (!keywordSuggestionBox) return;
-  const key = findSuggestionKey(inputText);
-  if (!key || !keywordPromptMap[key] || !keywordPromptMap[key].length) {
-    keywordSuggestionBox.innerHTML = '';
-    keywordSuggestionBox.classList.add('hidden');
-    return;
-  }
-
-  const chips = keywordPromptMap[key].map(question => {
-    const safeQuestion = escapeHtml(question);
-    return `<button type="button" class="gis-assistant-chip" data-keyword-question="${safeQuestion}">${safeQuestion}</button>`;
-  }).join('');
-  keywordSuggestionBox.innerHTML = chips;
-  keywordSuggestionBox.classList.remove('hidden');
-}
 
 let aiEnabled = localStorage.getItem('assistantAiEnabled') !== 'false';
-let aiBeforeSimpleMode = aiEnabled;
-let simpleModeActiveForAssistant = false;
-
-const defaultGuideText = 'Ask about projects, proposals, municipalities, names, statuses, and what this system can do.';
-const simpleGuideText = 'Simple Mode is on. Use short questions like totals, projects, proposals, users, or extensions.';
-const simpleModePresetQuestions = [
-  'Show me totals',
-  'How many projects in total?',
-  'How many proposals in total?',
-  'How many users in total?'
-];
-
-function isSimpleModeActive() {
-  return document.documentElement.classList.contains('simple-mode');
-}
-
-function rebuildPresetButtons(presetQuestions) {
-  const container = document.getElementById('gisAssistantPresets');
-  if (!container) return;
-  container.innerHTML = '';
-  presetQuestions.forEach((text) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'gis-assistant-chip';
-    btn.setAttribute('data-question', text);
-    btn.textContent = text;
-    btn.addEventListener('click', () => handleAssistantQuestion(text, { preferLocal: simpleModeActiveForAssistant }));
-    container.appendChild(btn);
-  });
-}
-
-function applyAssistantSimpleModeUI() {
-  const nowSimple = isSimpleModeActive();
-  if (nowSimple === simpleModeActiveForAssistant) return;
-
-  simpleModeActiveForAssistant = nowSimple;
-  if (nowSimple) {
-    aiBeforeSimpleMode = aiEnabled;
-    aiEnabled = false;
-    if (assistantModeToggle) {
-      assistantModeToggle.checked = false;
-      assistantModeToggle.disabled = true;
-    }
-    if (assistantModeLabel) assistantModeLabel.textContent = 'AI mode (off in Simple Mode)';
-    if (assistantGuideText) assistantGuideText.textContent = simpleGuideText;
-    if (keywordSuggestionBox) {
-      keywordSuggestionBox.innerHTML = '';
-      keywordSuggestionBox.classList.add('hidden');
-    }
-    rebuildPresetButtons(simpleModePresetQuestions);
-    appendAssistantMessage('ai', 'Simple Mode enabled: I will use short, direct local answers.');
-    return;
-  }
-
-  aiEnabled = aiBeforeSimpleMode;
-  if (assistantModeToggle) {
-    assistantModeToggle.disabled = false;
-    assistantModeToggle.checked = aiEnabled;
-  }
-  if (assistantModeLabel) assistantModeLabel.textContent = 'AI mode';
-  if (assistantGuideText) assistantGuideText.textContent = defaultGuideText;
-  buildQuickAnswers();
-}
-
 if (assistantModeToggle) {
   assistantModeToggle.checked = aiEnabled;
   assistantModeToggle.addEventListener('change', () => {
-    if (simpleModeActiveForAssistant) return;
     aiEnabled = assistantModeToggle.checked;
     localStorage.setItem('assistantAiEnabled', aiEnabled ? 'true' : 'false');
   });
@@ -1449,8 +1299,7 @@ function buildAiContext() {
       projects: localSystemFacts.totalProjects,
       proposals: localSystemFacts.totalProposals,
       users: localSystemFacts.totalUsers,
-      pending_extensions: localSystemFacts.pendingExtensions,
-      total_budget: localSystemFacts.totalBudget
+      pending_extensions: localSystemFacts.pendingExtensions
     },
     project_status_counts: statusCount,
     proposal_status_counts: proposalStatusCount,
@@ -1505,10 +1354,9 @@ function formatAiNotice(errorText) {
   return `AI unavailable: ${errorText}`;
 }
 
-async function handleAssistantQuestion(questionText, options = {}) {
+async function handleAssistantQuestion(questionText) {
   const question = (questionText || '').trim();
   if (!question) return;
-  const preferLocal = !!options.preferLocal || simpleModeActiveForAssistant;
   appendAssistantMessage('user', question);
   const pending = appendAssistantMessage('ai', 'Thinking...', false);
   let local = { answer: buildSystemSnapshotAnswer(), linkHtml: '' };
@@ -1520,7 +1368,7 @@ async function handleAssistantQuestion(questionText, options = {}) {
   }
 
   try {
-    if (aiEnabled && !preferLocal) {
+    if (aiEnabled) {
       const aiResult = await requestAiAnswer(question);
       if (aiResult && aiResult.answer) {
         pending.textContent = aiResult.answer;
@@ -1548,18 +1396,7 @@ if (assistantAsk && assistantInput) {
   assistantAsk.addEventListener('click', () => {
     handleAssistantQuestion(assistantInput.value);
     assistantInput.value = '';
-    renderKeywordSuggestions('');
     assistantInput.focus();
-  });
-  assistantInput.addEventListener('input', () => {
-    if (simpleModeActiveForAssistant) {
-      if (keywordSuggestionBox) {
-        keywordSuggestionBox.innerHTML = '';
-        keywordSuggestionBox.classList.add('hidden');
-      }
-      return;
-    }
-    renderKeywordSuggestions(assistantInput.value);
   });
   assistantInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
@@ -1569,21 +1406,10 @@ if (assistantAsk && assistantInput) {
   });
 }
 
-if (keywordSuggestionBox) {
-  keywordSuggestionBox.addEventListener('click', (event) => {
-    const target = event.target.closest('[data-keyword-question]');
-    if (!target) return;
-    const q = target.getAttribute('data-keyword-question') || '';
-    if (!q) return;
-    handleAssistantQuestion(q, { preferLocal: true });
-    if (assistantInput) assistantInput.focus();
-  });
-}
-
 if (assistantPresets && assistantPresets.length) {
   assistantPresets.forEach(btn => {
     btn.addEventListener('click', () => {
-      handleAssistantQuestion(btn.getAttribute('data-question'), { preferLocal: simpleModeActiveForAssistant });
+      handleAssistantQuestion(btn.getAttribute('data-question'));
     });
   });
 }
@@ -1596,8 +1422,14 @@ function buildQuickAnswers() {
   if (topMunicipality?.[0]) {
     suggestions.push(`How many projects in ${formatTitleCase(topMunicipality[0])}?`);
   }
-  suggestions.push('How much budget is tracked in the system?');
-  suggestions.push('How many projects in total?');
+  if (topProposalMunicipality?.[0]) {
+    suggestions.push(`How many proposals in ${formatTitleCase(topProposalMunicipality[0])}?`);
+  }
+  suggestions.push('How many ongoing projects?');
+  suggestions.push('What is the completion rate?');
+  suggestions.push('Show me project names');
+  suggestions.push('Show me proposal names');
+  suggestions.push('What are the top project statuses?');
 
   suggestions.forEach(text => {
     const exists = Array.from(container.querySelectorAll('[data-question]'))
@@ -1614,17 +1446,6 @@ function buildQuickAnswers() {
 }
 
 buildQuickAnswers();
-applyAssistantSimpleModeUI();
-
-const simpleModeObserver = new MutationObserver((mutations) => {
-  for (let i = 0; i < mutations.length; i += 1) {
-    if (mutations[i].attributeName === 'class') {
-      applyAssistantSimpleModeUI();
-      break;
-    }
-  }
-});
-simpleModeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
 const baseMaps = { "OpenStreetMap": osm, "ESRI Satellite": esriSat };
 const overlayMaps = { "New": layers.new, "Ongoing": layers.ongoing, "Completed": layers.completed, "Terminated": layers.terminated };

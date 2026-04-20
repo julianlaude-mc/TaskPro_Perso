@@ -17,6 +17,7 @@ urlpatterns = [
 # Administrator
 
 path('administrator/dashboard/', views.administrator_dashboard_view, name='administrator_dashboard_url'),
+path('administrator/quick-actions/', views.administrator_quick_actions_view, name='administrator_quick_actions_url'),
 path('administrator/assistant/chat/', views.assistant_ai_chat_view, name='assistant_ai_chat_url'),
 
 # Users
@@ -72,6 +73,7 @@ path('notifications/read/<int:pk>/', views.mark_notification_read_view, name='ma
 path('notifications/delete/<int:pk>/', views.delete_notification_view, name='delete_notification'),
 path('notifications/clear-all/', views.clear_all_notifications_view, name='clear_all_notifications'),
 path('notifications/count/', views.get_notification_count_view, name='get_notification_count'),
+path('notifications/stream/', views.notifications_stream_view, name='notifications_stream'),
 
 
 # Administrator Task Management
@@ -133,6 +135,7 @@ path('administrator/reports/project-progress/export/excel/', views.export_projec
 
 #Staff
 path('staff/dashboard/', views.staff_dashboard_view, name='staff_dashboard_url'),
+path('staff/quick-actions/', views.staff_quick_actions_view, name='staff_quick_actions_url'),
 
 
 # Users

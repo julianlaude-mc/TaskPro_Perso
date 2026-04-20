@@ -6,18 +6,117 @@
 {% block page-title %}Reports{% endblock %}
 
 {% block content %}
-<style>[x-cloak] { display: none !important; }</style>
+<style>
+    [x-cloak] { display: none !important; }
+
+    .reports-shell {
+        background: linear-gradient(165deg, #f7fafc 0%, #edf4fc 44%, #f8fbff 100%);
+        border: 1px solid #dbe8f5;
+        border-radius: 1.1rem;
+        padding: 1.15rem;
+    }
+
+    .reports-hero {
+        border-radius: 1rem;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #bdd6ec;
+        background: linear-gradient(135deg, #11385d 0%, #1a5c92 58%, #2573b3 100%);
+        color: #f8fbff;
+    }
+
+    .reports-title {
+        font-size: 1.55rem;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+    }
+
+    .reports-subtitle {
+        margin-top: 0.35rem;
+        color: rgba(243, 249, 255, 0.92);
+        font-size: 0.9rem;
+    }
+
+    .report-action-btn {
+        border: 1px solid transparent;
+        border-radius: 0.72rem;
+        padding: 0.56rem 0.88rem;
+        font-weight: 700;
+        font-size: 0.86rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 10px 24px rgba(8, 25, 42, 0.15);
+        background: #1d4ed8;
+        color: #fff;
+    }
+
+    .report-action-btn:hover { transform: translateY(-1px); }
+
+    .report-filter-card {
+        border: 1px solid #d7e6f3;
+        border-radius: 0.95rem;
+        background: linear-gradient(180deg, #ffffff 0%, #f6faff 100%);
+        box-shadow: 0 10px 24px rgba(20, 57, 92, 0.08);
+    }
+
+    .report-filter-card input,
+    .report-filter-card select {
+        border-color: #cbdcf0;
+        border-radius: 0.62rem;
+    }
+
+    .chart-panel {
+        border: 1px solid #d5e3f2;
+        border-radius: 0.95rem;
+        background: #fff;
+        box-shadow: 0 14px 28px rgba(18, 45, 74, 0.08);
+        padding: 0.95rem;
+    }
+
+    .chart-panel h3 {
+        font-size: 1rem;
+        line-height: 1.25;
+        font-weight: 800;
+        color: #24415e;
+        margin-bottom: 0.65rem;
+    }
+
+    .pdf-btn {
+        border-radius: 0.65rem;
+        background: #db4437;
+        color: #fff;
+        font-weight: 700;
+        padding: 0.45rem 0.78rem;
+        font-size: 0.82rem;
+        transition: background 0.2s ease;
+    }
+
+    .pdf-btn:hover { background: #b8382d; }
+
+    @media (max-width: 767px) {
+        .reports-shell { padding: 0.85rem; }
+        .reports-title { font-size: 1.26rem; }
+        .report-action-btn { width: 100%; justify-content: center; }
+    }
+</style>
 
 <!-- Alpine.js -->
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js" defer></script>
 
-<h2 class="text-2xl font-bold mb-6">Overview Reports</h2>
+<div class="reports-shell">
+<div class="reports-hero">
+    <h2 class="reports-title">Overview Reports</h2>
+    <p class="reports-subtitle">Track financial movement, proposal progression, and assignment completion with a cleaner analytics-first layout.</p>
+</div>
 
 <!-- Alpine.js for collapsible filters -->
 <div x-data="{ showFilters: false }" class="mb-6">
     <!-- Filter Toggle Button -->
     <button @click="showFilters = !showFilters" 
-            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
+            class="report-action-btn">
         <svg x-show="!showFilters" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
         </svg>
@@ -28,7 +127,7 @@
     </button>
 
     <!-- Filter Form -->
-    <div x-show="showFilters" x-transition class="bg-white p-4 rounded-lg shadow mt-4" x-cloak>
+    <div x-show="showFilters" x-transition class="report-filter-card p-4 mt-4" x-cloak>
         <h3 class="text-lg font-semibold mb-4">Filter Reports</h3>
     <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- Year Filter -->
@@ -89,24 +188,25 @@
         </div>
     </form>
 </div>
+</div>
 
 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
     <!-- Column 1: Financial Summary -->
-    <div class="md:col-span-6 p-4 bg-white shadow rounded-lg">
+    <div class="md:col-span-6 chart-panel">
         <h3 class="text-xl font-semibold mb-2 text-gray-700">Financial Summary</h3>
         <canvas id="budgetPieChart" width="400" height="400"></canvas>
 
         <!-- PDF Export Button aligned to right -->
         <div class="mt-4 flex justify-end">
             <a href="#" id="financialPdfExportLink" target="_blank" 
-            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+            class="pdf-btn">
                 Export PDF
             </a>
         </div>
     </div>
 
 <!-- Column 2: Proposal Status -->
-<div class="md:col-span-6 p-4 bg-white shadow rounded-lg">
+<div class="md:col-span-6 chart-panel">
     <h3 class="text-xl font-semibold mb-2 text-gray-700">Proposal Status</h3>
 
     <canvas id="proposalPieChart" width="400" height="400"></canvas>
@@ -114,7 +214,7 @@
     <!-- Export PDF Button (below chart, aligned right, red) -->
     <div class="mt-4 text-right">
         <a href="#" id="proposalPdfExportLink" target="_blank"
-           class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition">
+           class="pdf-btn">
             Export PDF
         </a>
     </div>
@@ -124,9 +224,9 @@
 </div>
 
 <!-- Full-width Approved Amounts Chart -->
-<div class="md:col-span-12 p-4 bg-white shadow rounded-lg mt-6 relative">
+<div class="md:col-span-12 chart-panel mt-6 relative">
     <h3 class="text-xl font-semibold mb-2 text-gray-700">
-        Overview of Approved Project Budgets – Fiscal Year {{ report_year }}
+        Overview of Approved Project Budgets - Fiscal Year {{ report_year }}
     </h3>
 
     <canvas id="approvedAmountChart" width="1200" height="500"></canvas>
@@ -134,7 +234,7 @@
     <!-- Export PDF Button (below chart, aligned right) -->
     <div class="mt-4 flex justify-end">
         <a href="#" id="approvedProjectsPdfExportLink" target="_blank"
-           class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition">
+           class="pdf-btn">
             Export PDF
         </a>
     </div>
@@ -142,11 +242,12 @@
 
 
 <!-- Full-width Line Chart: Project Assignments -->
-<div class="md:col-span-12 p-4 bg-white shadow rounded-lg mt-6">
+<div class="md:col-span-12 chart-panel mt-6">
     <h3 class="text-xl font-semibold mb-2 text-gray-700">
-        Summary of Pending and Completed Project Assignments – Fiscal Year {{ report_year }}
+        Summary of Pending and Completed Project Assignments - Fiscal Year {{ report_year }}
     </h3>
     <canvas id="stepChart" width="1200" height="500"></canvas>
+</div>
 </div>
 
 <!-- Chart.js CDN -->

@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 from django.db.models import Sum, Q, Avg, Subquery, IntegerField
 from django.template.loader import get_template
-from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, StreamingHttpResponse
 from datetime import datetime, timedelta, time
 from django.db.models import Case, When, Value, CharField
 from django.db.models.functions import Concat
@@ -58,8 +58,6 @@ import uuid
 from reportlab.lib.pagesizes import landscape, letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib import colors
-from reportlab.lib.units import inch
 from geopy.geocoders import Nominatim # type: ignore
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
@@ -69,6 +67,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
 import os
+import time as pytime
 from reportlab.lib.utils import ImageReader
 from reportlab.platypus import Frame, PageTemplate
 from django.conf import settings
@@ -362,34 +361,75 @@ def clear_all_notifications_view(request):
 def get_notification_count_view(request):
     """API endpoint to get current notification count for polling"""
     try:
-        unread_count = Notification.objects.filter(
-            receiver=request.user,
-            status='unread'
-        ).count()
-        
-        # Get latest 10 notifications for dropdown refresh
-        notifications = Notification.objects.filter(
-            receiver=request.user
-        ).order_by('-timestamp')[:10]
-        
-        notifications_data = []
-        for notif in notifications:
-            notifications_data.append({
-                'id': notif.id,
-                'message': notif.message,
-                'category': notif.category,
-                'status': notif.status,
-                'timestamp': notif.timestamp.strftime('%b %d, %Y %H:%M'),
-                'link': notif.link or '',
-            })
-        
-        return JsonResponse({
-            "success": True,
-            "unread_count": unread_count,
-            "notifications": notifications_data
-        })
+        payload = _build_notification_payload(request.user)
+        payload["success"] = True
+        return JsonResponse(payload)
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)})
+
+
+def _build_notification_payload(user):
+    unread_count = Notification.objects.filter(
+        receiver=user,
+        status='unread'
+    ).count()
+
+    notifications = Notification.objects.filter(
+        receiver=user
+    ).order_by('-timestamp')[:10]
+
+    notifications_data = []
+    for notif in notifications:
+        notifications_data.append({
+            'id': notif.id,
+            'message': notif.message,
+            'category': notif.category,
+            'status': notif.status,
+            'timestamp': notif.timestamp.strftime('%b %d, %Y %H:%M'),
+            'link': notif.link or '',
+        })
+
+    return {
+        "unread_count": unread_count,
+        "notifications": notifications_data,
+    }
+
+
+@login_required
+def notifications_stream_view(request):
+    """Server-Sent Events endpoint for near real-time notification updates."""
+
+    def event_stream():
+        # Immediate first payload so the UI updates without waiting for a poll interval.
+        last_payload = None
+        initial_payload = _build_notification_payload(request.user)
+        last_payload = json.dumps(initial_payload)
+        yield f"event: notification\ndata: {last_payload}\n\n"
+
+        heartbeat_counter = 0
+        while True:
+            try:
+                current_payload = json.dumps(_build_notification_payload(request.user))
+                if current_payload != last_payload:
+                    last_payload = current_payload
+                    yield f"event: notification\ndata: {current_payload}\n\n"
+
+                heartbeat_counter += 1
+                if heartbeat_counter >= 15:
+                    heartbeat_counter = 0
+                    yield ": keepalive\n\n"
+
+                pytime.sleep(1)
+            except GeneratorExit:
+                break
+            except Exception:
+                # End this stream; client auto-reconnect handles recovery.
+                break
+
+    response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
+    return response
 
 
 # Administrator
@@ -653,6 +693,20 @@ def administrator_dashboard_view(request):
     }
 
     return render(request, 'administrator/dashboard.html', context)
+
+
+@login_required
+def administrator_quick_actions_view(request):
+    if request.user.role != 'admin' and not request.user.is_superuser:
+        messages.error(request, 'Access denied.')
+        return redirect('index_url')
+
+    context = {
+        'pending_extensions': ExtensionRequest.objects.filter(status='pending').count(),
+        'pending_proposals': Proposal.objects.filter(status='pending').count(),
+        'ongoing_projects': Project.objects.filter(status='ongoing').count(),
+    }
+    return render(request, 'administrator/quick_actions.html', context)
 
 
 @login_required
@@ -1022,6 +1076,7 @@ def administrator_budgets_view(request):
             'budget_id': budget.id,
             'fund_source': budget.fund_source,
             'fiscal_year': budget.fiscal_year,
+            'status': budget.status,
             'total_amount': float(budget.total_amount),
             'remaining_amount': float(budget.remaining_amount),
             'allocated_amount': float(budget.total_amount - budget.remaining_amount),
@@ -1445,11 +1500,26 @@ def administrator_proposals_update_view(request, pk):
     if request.method == 'POST':
         proposal.title = request.POST.get('title')
         proposal.description = request.POST.get('description')
-        proposal.proposed_amount = Decimal(request.POST.get('proposed_amount') or 0)
-        approved_amount = request.POST.get('approved_amount')
-        proposal.approved_amount = Decimal(approved_amount) if approved_amount else None
+
+        proposed_amount_raw = (request.POST.get('proposed_amount') or '0').replace(',', '').strip()
+        approved_amount_raw = (request.POST.get('approved_amount') or '').replace(',', '').strip()
+        try:
+            proposal.proposed_amount = Decimal(proposed_amount_raw or '0')
+            proposal.approved_amount = Decimal(approved_amount_raw) if approved_amount_raw else None
+        except Exception:
+            messages.error(request, 'Invalid amount format. Please enter a valid numeric value.')
+            return redirect('administrator_proposals_url')
+
         budget_id = request.POST.get('budget')
-        proposal.budget = Budget.objects.get(pk=budget_id) if budget_id else None
+        if budget_id:
+            try:
+                proposal.budget = Budget.objects.get(pk=budget_id)
+            except Budget.DoesNotExist:
+                messages.error(request, 'Selected budget was not found.')
+                return redirect('administrator_proposals_url')
+        else:
+            proposal.budget = None
+
         proposal.status = request.POST.get('status')
         
         # Handle multiple document uploads (add to existing)
@@ -1463,7 +1533,19 @@ def administrator_proposals_update_view(request, pk):
         
         # New fields
         proponent_id = request.POST.get('proponent')
-        proposal.proponent = User.objects.get(pk=proponent_id) if proponent_id else None
+        beneficiary_id = request.POST.get('beneficiary')
+        try:
+            proposal.proponent = User.objects.get(pk=proponent_id) if proponent_id else None
+        except User.DoesNotExist:
+            messages.error(request, 'Selected proponent was not found.')
+            return redirect('administrator_proposals_url')
+
+        try:
+            proposal.beneficiary = User.objects.get(pk=beneficiary_id) if beneficiary_id else None
+        except User.DoesNotExist:
+            messages.error(request, 'Selected beneficiary was not found.')
+            return redirect('administrator_proposals_url')
+
         proposal.beneficiaries = request.POST.get('beneficiaries', '')
         proposal.location = request.POST.get('location', '')
         proposal.municipality = request.POST.get('municipality', '')
@@ -2823,6 +2905,9 @@ def administrator_task_edit_view(request):
         task_id = request.POST.get('id')
         task = get_object_or_404(Task, id=task_id)
 
+        project_id = request.POST.get('project')
+        selected_project = Project.objects.filter(id=project_id).first() if project_id else task.project
+
         # Capture old assigned_to for notification check
         old_assigned_to = task.assigned_to
 
@@ -2846,9 +2931,9 @@ def administrator_task_edit_view(request):
         }
 
         # Update fields
-        task.title = f"Task for {task.project.project_title}"
+        task.title = f"Task for {selected_project.project_title}" if selected_project else task.title
         task.description = request.POST.get('description')
-        task.project_id = request.POST.get('project')
+        task.project_id = project_id
         task.assigned_to_id = request.POST.get('assigned_to') or None
         task.start_date = request.POST.get('start_date') or None
         task.due_date = request.POST.get('due_date')
@@ -5407,12 +5492,27 @@ def administrator_audit_logs_view(request):
     # Serialize audit log data for JavaScript
     logs_json_data = {}
     for log in logs:
+        old_data = log.old_data
+        new_data = log.new_data
+
+        # Backward compatibility: some historical rows stored JSON as strings.
+        if isinstance(old_data, str):
+            try:
+                old_data = json.loads(old_data)
+            except (TypeError, json.JSONDecodeError):
+                old_data = {'raw': old_data}
+        if isinstance(new_data, str):
+            try:
+                new_data = json.loads(new_data)
+            except (TypeError, json.JSONDecodeError):
+                new_data = {'raw': new_data}
+
         logs_json_data[str(log.id)] = {
             'action': log.get_action_display() if hasattr(log, 'get_action_display') else log.action.capitalize(),
             'model_name': log.model_name,
             'object_id': log.object_id,
-            'old_data': log.old_data if log.old_data else None,
-            'new_data': log.new_data if log.new_data else None,
+            'old_data': old_data if old_data else None,
+            'new_data': new_data if new_data else None,
             'timestamp': log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else None,
             'user': log.user.get_full_name() if log.user else 'System',
             'reason': log.reason if hasattr(log, 'reason') and log.reason else None,
@@ -6449,9 +6549,11 @@ def administrator_extension_requests_add_view(request):
 @login_required
 def staff_dashboard_view(request):
     # -----------------------------
-    # Tasks assigned to the current staff user only
+    # Tasks assigned to the current staff user, plus tasks under projects they lead
     # -----------------------------
-    tasks_qs = Task.objects.select_related('project', 'assigned_to').filter(assigned_to=request.user)
+    tasks_qs = Task.objects.select_related('project', 'assigned_to').filter(
+        Q(assigned_to=request.user) | Q(project__project_leader=request.user)
+    ).distinct()
 
     tasks = []
     for t in tasks_qs:
@@ -6518,6 +6620,25 @@ def staff_dashboard_view(request):
     }
 
     return render(request, 'staff/dashboard.html', context)
+
+
+@login_required
+def staff_quick_actions_view(request):
+    if request.user.role not in ['dost_staff', 'staff']:
+        messages.error(request, 'Access denied.')
+        return redirect('index_url')
+
+    task_scope = Task.objects.filter(
+        Q(assigned_to=request.user) | Q(project__project_leader=request.user)
+    ).distinct()
+
+    context = {
+        'my_pending_tasks': task_scope.filter(status='pending').count(),
+        'my_in_progress_tasks': task_scope.filter(status='in_progress').count(),
+        'my_overdue_tasks': task_scope.filter(status='delayed').count(),
+        'my_projects_count': Project.objects.filter(id__in=task_scope.values_list('project_id', flat=True)).distinct().count(),
+    }
+    return render(request, 'staff/quick_actions.html', context)
 
 # ----------------------------
 # staff User Management Views
@@ -6836,13 +6957,15 @@ def staff_projects_view(request):
 # Staff: Task Views
 # -------------------------
 def staff_task_list_view(request):
-    # Staff can only see tasks assigned to them
+    # Staff can see tasks assigned to them and tasks under projects they manage
     tasks = Task.objects.select_related(
         'project',
         'assigned_to',
         'project__proposal',
         'project__proposal__processed_by'
-    ).filter(assigned_to=request.user)
+    ).filter(
+        Q(assigned_to=request.user) | Q(project__project_leader=request.user)
+    ).distinct()
 
     context = {
         'tasks': tasks,
@@ -6949,9 +7072,12 @@ def staff_task_edit_view(request):
         task_id = request.POST.get('id')
         task = get_object_or_404(Task, id=task_id)
 
-        # Ensure staff can only edit tasks assigned to them
-        if task.assigned_to != request.user:
-            messages.error(request, "You can only edit tasks assigned to you.")
+        # Allow edits when task is assigned to the staff user or they lead the project.
+        can_edit_task = task.assigned_to == request.user or (
+            task.project and task.project.project_leader_id == request.user.id
+        )
+        if not can_edit_task:
+            messages.error(request, "You can only edit tasks assigned to you or your managed projects.")
             return redirect('staff_task_list_url')
 
         # Capture old data
@@ -8389,6 +8515,17 @@ def beneficiary_dashboard_view(request):
             'latitude': float(p.latitude) if p.latitude is not None else None,
             'longitude': float(p.longitude) if p.longitude is not None else None,
         })
+
+    proposals_list = []
+    for proposal in proposals_qs:
+        proposals_list.append({
+            'id': proposal.id,
+            'title': proposal.title or '',
+            'status': proposal.status or '',
+            'latitude': float(proposal.latitude) if proposal.latitude is not None else None,
+            'longitude': float(proposal.longitude) if proposal.longitude is not None else None,
+            'submission_date': proposal.submission_date.strftime('%Y-%m-%d') if proposal.submission_date else None,
+        })
     
     # Get my_projects for the template
     my_projects = projects_qs.order_by('-project_start')
@@ -8409,6 +8546,7 @@ def beneficiary_dashboard_view(request):
         'proposals': proposals_qs.order_by('-submission_date')[:5],
         'projects': projects_qs.order_by('-project_start')[:5],
         'projects_json': json.dumps(projects_list),
+        'proposals_json': json.dumps(proposals_list),
         'my_projects': my_projects,
         
         # DOST Compliance: TNA Status
@@ -10955,6 +11093,7 @@ def staff_messages_view(request):
 
     return render(request, 'staff/messages.html', context)
 
+@login_required
 def staff_conversation_view(request, partner_id):
     """Chat-style conversation view for staff"""
     user = request.user
@@ -11173,6 +11312,7 @@ def proponent_messages_view(request):
 
     return render(request, 'proponent/messages.html', context)
 
+@login_required
 def proponent_conversation_view(request, partner_id):
     """Chat-style conversation view for proponents"""
     user = request.user
@@ -11402,6 +11542,7 @@ def beneficiary_messages_view(request):
 
     return render(request, 'beneficiary/messages.html', context)
 
+@login_required
 def beneficiary_conversation_view(request, partner_id):
     """Chat-style conversation view for beneficiaries"""
     user = request.user
@@ -11626,7 +11767,7 @@ def administrator_calendar_view(request):
         messages.error(request, 'Access denied.')
         return redirect('index_url')
     
-    # Get all events
+    # Get all calendar events visible to this admin
     events = CalendarEvent.objects.filter(
         Q(created_by=user) | Q(is_public=True) | Q(participants=user)
     ).distinct()
@@ -11637,10 +11778,58 @@ def administrator_calendar_view(request):
     # Get tasks with due dates
     tasks = Task.objects.filter(due_date__isnull=False)
     
+    today = timezone.localdate()
+    next_7_days = today + timedelta(days=7)
+    next_30_days = today + timedelta(days=30)
+
+    visible_projects = Project.objects.filter(date_of_completion__isnull=False)
+    visible_tasks = Task.objects.filter(due_date__isnull=False)
+
+    upcoming_agenda = []
+
+    for event in events.filter(start_date__gte=today, start_date__lte=next_30_days).order_by('start_date')[:8]:
+        upcoming_agenda.append({
+            'title': event.title,
+            'date': event.start_date,
+            'source': 'event',
+            'type': event.event_type or 'event',
+            'color': event.color or '#3b82f6',
+            'url': '',
+        })
+
+    for project in visible_projects.filter(date_of_completion__gte=today, date_of_completion__lte=next_30_days).order_by('date_of_completion')[:8]:
+        upcoming_agenda.append({
+            'title': project.project_title or 'Untitled Project',
+            'date': project.date_of_completion,
+            'source': 'project',
+            'type': 'deadline',
+            'color': '#ef4444',
+            'url': f'/projects/{project.id}/',
+        })
+
+    for task in visible_tasks.filter(due_date__gte=today, due_date__lte=next_30_days).order_by('due_date')[:8]:
+        upcoming_agenda.append({
+            'title': task.title or 'Untitled Task',
+            'date': task.due_date,
+            'source': 'task',
+            'type': 'task',
+            'color': '#10b981' if task.status == 'completed' else '#3b82f6',
+            'url': '',
+        })
+
+    upcoming_agenda = sorted(upcoming_agenda, key=lambda item: item['date'])[:10]
+
     context = {
         'events': events,
         'projects': projects,
         'tasks': tasks,
+        'calendar_stats': {
+            'events_total': events.count(),
+            'upcoming_week': events.filter(start_date__gte=today, start_date__lte=next_7_days).count(),
+            'project_deadlines': visible_projects.count(),
+            'tasks_due': visible_tasks.count(),
+        },
+        'upcoming_agenda': upcoming_agenda,
     }
     return render(request, 'administrator/calendar.html', context)
 
@@ -11669,6 +11858,7 @@ def administrator_calendar_events_api(request):
             'extendedProps': {
                 'type': event.event_type,
                 'description': event.description or '',
+                'source': 'event',
             }
         })
     
@@ -11684,6 +11874,7 @@ def administrator_calendar_events_api(request):
             'extendedProps': {
                 'type': 'deadline',
                 'description': f'Project completion deadline for: {project.project_title}',
+                'source': 'project',
             },
             'url': f'/projects/{project.id}/',
         })
@@ -11700,6 +11891,7 @@ def administrator_calendar_events_api(request):
             'extendedProps': {
                 'type': 'task',
                 'description': task.description or f'Task: {task.title}',
+                'source': 'task',
             }
         })
     
@@ -12040,20 +12232,39 @@ def project_milestone_add(request, pk):
     project = get_object_or_404(Project, pk=pk)
     
     if request.method == 'POST':
-        title = request.POST.get('title')
+        title = (request.POST.get('title') or '').strip()
         description = request.POST.get('description', '')
-        planned_start = request.POST.get('planned_start')
-        planned_end = request.POST.get('planned_end')
-        
-        milestone = ProjectMilestone.objects.create(
-            project=project,
-            title=title,
-            description=description,
-            planned_start=planned_start,
-            planned_end=planned_end,
-            created_by=request.user,
-        )
-        messages.success(request, 'Milestone added successfully!')
+        planned_start_raw = (request.POST.get('planned_start') or '').strip()
+        planned_end_raw = (request.POST.get('planned_end') or '').strip()
+
+        if not title:
+            messages.error(request, 'Milestone title is required.')
+            return redirect('project_gantt_url', pk=pk)
+
+        try:
+            planned_start = datetime.strptime(planned_start_raw, '%Y-%m-%d').date()
+            planned_end = datetime.strptime(planned_end_raw, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, 'Invalid date format. Please use YYYY-MM-DD for milestone dates.')
+            return redirect('project_gantt_url', pk=pk)
+
+        if planned_end < planned_start:
+            messages.error(request, 'Planned end date cannot be earlier than planned start date.')
+            return redirect('project_gantt_url', pk=pk)
+
+        try:
+            ProjectMilestone.objects.create(
+                project=project,
+                title=title,
+                description=description,
+                planned_start=planned_start,
+                planned_end=planned_end,
+                created_by=request.user,
+            )
+            messages.success(request, 'Milestone added successfully!')
+        except ValidationError as e:
+            error_msg = '; '.join(e.messages) if hasattr(e, 'messages') else str(e)
+            messages.error(request, f'Unable to add milestone: {error_msg}')
     
     return redirect('project_gantt_url', pk=pk)
 
@@ -12064,18 +12275,46 @@ def project_milestone_update(request, milestone_id):
     milestone = get_object_or_404(ProjectMilestone, id=milestone_id)
     
     if request.method == 'POST':
-        milestone.title = request.POST.get('title', milestone.title)
+        milestone.title = (request.POST.get('title', milestone.title) or milestone.title).strip()
         milestone.description = request.POST.get('description', milestone.description)
         milestone.status = request.POST.get('status', milestone.status)
-        milestone.progress_percentage = int(request.POST.get('progress', milestone.progress_percentage))
-        
-        if request.POST.get('actual_start'):
-            milestone.actual_start = request.POST.get('actual_start')
-        if request.POST.get('actual_end'):
-            milestone.actual_end = request.POST.get('actual_end')
-        
-        milestone.save()
-        messages.success(request, 'Milestone updated successfully!')
+
+        progress_raw = request.POST.get('progress', milestone.progress_percentage)
+        try:
+            progress_value = int(progress_raw)
+        except (TypeError, ValueError):
+            messages.error(request, 'Progress must be a whole number between 0 and 100.')
+            return redirect('project_gantt_url', pk=milestone.project.id)
+
+        if progress_value < 0 or progress_value > 100:
+            messages.error(request, 'Progress must be between 0 and 100.')
+            return redirect('project_gantt_url', pk=milestone.project.id)
+
+        milestone.progress_percentage = progress_value
+
+        actual_start_raw = (request.POST.get('actual_start') or '').strip()
+        actual_end_raw = (request.POST.get('actual_end') or '').strip()
+
+        try:
+            actual_start = datetime.strptime(actual_start_raw, '%Y-%m-%d').date() if actual_start_raw else None
+            actual_end = datetime.strptime(actual_end_raw, '%Y-%m-%d').date() if actual_end_raw else None
+        except ValueError:
+            messages.error(request, 'Invalid date format. Please use YYYY-MM-DD for actual milestone dates.')
+            return redirect('project_gantt_url', pk=milestone.project.id)
+
+        if actual_start and actual_end and actual_end < actual_start:
+            messages.error(request, 'Actual end date cannot be earlier than actual start date.')
+            return redirect('project_gantt_url', pk=milestone.project.id)
+
+        milestone.actual_start = actual_start
+        milestone.actual_end = actual_end
+
+        try:
+            milestone.save()
+            messages.success(request, 'Milestone updated successfully!')
+        except ValidationError as e:
+            error_msg = '; '.join(e.messages) if hasattr(e, 'messages') else str(e)
+            messages.error(request, f'Unable to update milestone: {error_msg}')
     
     return redirect('project_gantt_url', pk=milestone.project.id)
 

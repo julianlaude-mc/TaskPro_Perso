@@ -5,6 +5,27 @@
 {% block nav-proposals %}active-nav{% endblock %}
 {% block page-title %}Proposals{% endblock %}
 
+{% block styles %}
+<style>
+    .module-hero {
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        background: linear-gradient(120deg, #0f2f5f 0%, #2156a5 55%, #2f7dd6 100%);
+        border-radius: 1rem;
+        color: #fff;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 16px 30px -24px rgba(15, 47, 95, 0.7);
+    }
+
+    .module-surface {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 0.95rem;
+        box-shadow: 0 10px 22px -24px rgba(15, 23, 42, 0.55);
+        padding: 0.9rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js" defer></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -24,6 +45,12 @@
         {% endfor %}
     {% endif %}
 
+    <section class="module-hero mb-4">
+        <p class="text-xs uppercase tracking-[0.2em] text-blue-100">Proposals Module</p>
+        <h2 class="mt-1 text-xl font-semibold">Prepare and track proposal lifecycles efficiently</h2>
+        <p class="mt-1 text-sm text-blue-100">Submit proposals, review statuses, and respond to review remarks from administrators.</p>
+    </section>
+
     <!-- Add Proposal Button -->
     <div class="flex justify-end mb-4">
         <button @click="openAdd = true"
@@ -33,7 +60,7 @@
     </div>
 
     <!-- Proposals Table - Compact with Expandable Modal -->
-    <div class="table-container">
+    <div class="module-surface table-container">
         <table class="table-compact" id="proposalsTableCompact">
             <thead>
                 <tr>

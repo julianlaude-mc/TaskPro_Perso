@@ -6,6 +6,27 @@
 {% block nav-tasks %}active-nav{% endblock %}
 {% block page-title %}My Assignments{% endblock %}
 
+{% block styles %}
+<style>
+    .module-hero {
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        background: linear-gradient(120deg, #0f2f5f 0%, #2156a5 55%, #2f7dd6 100%);
+        border-radius: 1rem;
+        color: #fff;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 16px 30px -24px rgba(15, 47, 95, 0.7);
+    }
+
+    .module-surface {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 0.95rem;
+        box-shadow: 0 10px 22px -24px rgba(15, 23, 42, 0.55);
+        padding: 0.9rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- LeafletJS for Map -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -81,6 +102,12 @@ function taskManager() {
         {% endfor %}
     {% endif %}
 
+    <section class="module-hero mb-4">
+        <p class="text-xs uppercase tracking-[0.2em] text-blue-100">Assignments Module</p>
+        <h2 class="mt-1 text-xl font-semibold">Execute project responsibilities with clarity</h2>
+        <p class="mt-1 text-sm text-blue-100">Track deadlines, update statuses, and review full project context from your assignment table.</p>
+    </section>
+
     <!-- Header -->
     <div class="mb-6">
         <div class="flex justify-between items-center">
@@ -93,7 +120,7 @@ function taskManager() {
 
     {% if tasks %}
     <!-- Assignments Table - Responsive -->
-    <div class="table-container">
+    <div class="module-surface table-container">
         <table class="table-compact" id="tasksTableCompact">
             <thead>
                 <tr>
@@ -382,6 +409,17 @@ function taskManager() {
     </div>
 </div>
 
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <div class="flex flex-col items-center justify-center text-center py-10">
+        <span class="material-icons text-5xl text-slate-300 mb-2">assignment_late</span>
+        <h3 class="text-lg font-semibold text-slate-700">No assignments available yet</h3>
+        <p class="text-sm text-slate-500 mt-1 max-w-xl">
+            You currently have no task rows under My Assignments. This view now includes tasks directly assigned to you
+            and tasks under projects where you are the project leader.
+        </p>
+    </div>
+</div>
 {% endif %}
 
 <style>

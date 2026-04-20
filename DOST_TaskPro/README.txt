@@ -5,6 +5,7 @@
 
 TABLE OF CONTENTS
 -----------------
+0. What's New (April 2026)
 1. System Overview
 2. Getting Started
 3. User Roles & Permissions
@@ -26,6 +27,39 @@ TABLE OF CONTENTS
 7. Installation & Setup
 8. Troubleshooting
 9. Contact & Support
+
+================================================================================
+0. WHAT'S NEW (APRIL 2026)
+================================================================================
+
+LATEST UI/UX AND RELIABILITY IMPROVEMENTS
+-----------------------------------------
+• Real-time notifications across Administrator, Staff, Proponent, and
+   Beneficiary modules using a live server stream with automatic polling fallback.
+
+• Enhanced quick action hubs for Administrator and Staff:
+   - Color-coded action cards per function
+   - Stronger hover/press states and visual click affordance
+   - Improved CTA readability for faster navigation
+
+• Dark mode consistency improvements across role modules:
+   - Persistent theme state while switching modules/pages
+   - Better contrast and visual hierarchy for cards, filters, and sidebar elements
+
+• Admin simple-mode rendering improvements:
+   - Reduced visual flash on GIS refresh/module navigation
+   - Better sidebar logo visibility and improved active-state aesthetics
+
+• Project milestone validation hardening:
+   - Robust server-side date parsing and validation
+   - Safer handling for invalid milestone dates/progress values
+   - UI date input constraints to minimize invalid submissions
+
+SETUP / ENVIRONMENT NOTES
+-------------------------
+• No additional Python package is required for the above updates.
+• No settings.py configuration change is required for local development.
+• Existing virtual environment setup remains valid.
 
 ================================================================================
 1. SYSTEM OVERVIEW

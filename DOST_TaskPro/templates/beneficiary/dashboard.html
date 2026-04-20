@@ -1,588 +1,113 @@
 {% extends "beneficiary/base.html" %}
 {% load static %}
-{% load humanize %}
 
 {% block title %}Beneficiary Dashboard{% endblock %}
 {% block nav_dashboard %}active-nav{% endblock %}
-{% block page_title %}My Dashboard{% endblock %}
+{% block page-title %}{{ user.get_full_name }}'s Dashboard{% endblock %}
 
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-<style>
-    .gis-assistant-log {
-        min-height: 92px;
-        max-height: 148px;
-        overflow-y: auto;
-        border-radius: 0.75rem;
-        border: 1px solid rgba(148, 163, 184, 0.28);
-        background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.9));
-        padding: 0.55rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.45rem;
-    }
-
-    .gis-assistant-chip {
-        font-size: 0.69rem;
-        border-radius: 9999px;
-        padding: 0.22rem 0.55rem;
-        border: 1px solid rgba(148, 163, 184, 0.32);
-        background: #ffffff;
-        color: #334155;
-        transition: all .18s ease;
-    }
-
-    .gis-assistant-chip:hover {
-        border-color: rgba(0, 114, 206, 0.45);
-        color: #0f172a;
-        background: #f8fbff;
-    }
-
-    .gis-msg {
-        border-radius: 0.6rem;
-        padding: 0.38rem 0.52rem;
-        font-size: 0.72rem;
-        line-height: 1.35;
-    }
-
-    .gis-msg-user {
-        align-self: flex-end;
-        background: rgba(0, 114, 206, 0.12);
-        border: 1px solid rgba(0, 114, 206, 0.24);
-        color: #0f172a;
-    }
-
-    .gis-msg-ai {
-        align-self: flex-start;
-        background: #ffffff;
-        border: 1px solid rgba(148, 163, 184, 0.3);
-        color: #334155;
-    }
-
-    .assistant-fab {
-        position: fixed;
-        right: 1.2rem;
-        bottom: 1.15rem;
-        z-index: 70;
-        width: 3.4rem;
-        height: 3.4rem;
-        border-radius: 9999px;
-        background: linear-gradient(145deg, #0072CE, #005ba1);
-        color: #fff;
-        box-shadow: 0 20px 32px -18px rgba(0, 91, 161, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform .2s ease;
-    }
-
-    .assistant-fab:hover { transform: translateY(-1px) scale(1.03); }
-
-    .assistant-panel {
-        position: fixed;
-        right: 1.2rem;
-        bottom: 1.2rem;
-        z-index: 71;
-        width: min(380px, calc(100vw - 1.5rem));
-        border-radius: 1rem;
-        border: 1px solid rgba(148, 163, 184, 0.26);
-        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-        box-shadow: 0 25px 45px -24px rgba(15, 23, 42, 0.45);
-        overflow: hidden;
-    }
-
-    .assistant-panel.hidden { display: none; }
-
-    .assistant-header {
-        padding: 0.7rem 0.8rem;
-        background: linear-gradient(145deg, #1e3a5f, #0072CE);
-        color: white;
-    }
-
-    .assistant-body {
-        padding: 0.65rem;
-    }
-
-    .dark .assistant-panel {
-        background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
-        border-color: rgba(71, 85, 105, 0.62);
-    }
-
-    .dark .gis-assistant-log {
-        background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(17, 24, 39, 0.92));
-        border-color: rgba(71, 85, 105, 0.6);
-    }
-
-    .dark .gis-assistant-chip {
-        background: rgba(15, 23, 42, 0.95);
-        border-color: rgba(71, 85, 105, 0.68);
-        color: #cbd5e1;
-    }
-
-    .dark .gis-assistant-chip:hover {
-        background: rgba(30, 41, 59, 0.95);
-        border-color: rgba(59, 130, 246, 0.65);
-        color: #e2e8f0;
-    }
-
-    .dark .gis-msg-user {
-        color: #dbeafe;
-        background: rgba(30, 58, 138, 0.35);
-        border-color: rgba(59, 130, 246, 0.45);
-    }
-
-    .dark .gis-msg-ai {
-        color: #cbd5e1;
-        background: rgba(15, 23, 42, 0.95);
-        border-color: rgba(71, 85, 105, 0.6);
-    }
-</style>
-
 <div class="space-y-6">
-    <!-- Welcome Message -->
-    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl shadow-lg">
-        <h2 class="text-xl font-bold">Welcome, {{ user.get_full_name }}!</h2>
-        <p class="mt-1 text-sm opacity-90">Here's an overview of your assigned projects.</p>
-    </div>
+    <section class="relative overflow-hidden rounded-2xl border border-teal-200 bg-gradient-to-r from-[#0b3a3a] via-[#0f6b6b] to-[#1a9f9f] p-6 text-white shadow-xl">
+        <div class="absolute -right-16 -top-10 h-48 w-48 rounded-full bg-white/10"></div>
+        <div class="absolute -bottom-8 left-1/4 h-24 w-24 rounded-full bg-teal-100/20"></div>
+        <div class="relative z-10">
+            <p class="text-xs uppercase tracking-[0.2em] text-teal-100">Beneficiary Workspace</p>
+            <h2 class="mt-2 text-2xl font-semibold">Simple and clear view for follow-ups and communication</h2>
+            <p class="mt-2 max-w-3xl text-sm text-teal-100">
+                This dashboard focuses on what matters for beneficiaries: documents, messages, announcements, and account settings.
+                Large map and analytics sections were removed for a cleaner experience.
+            </p>
+        </div>
+    </section>
 
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white shadow rounded-lg p-5 border-l-4 border-yellow-500">
-            <h3 class="text-sm font-medium text-gray-500">My Projects</h3>
-            <p class="mt-2 text-3xl font-bold text-yellow-600">{{ my_projects_count }}</p>
-        </div>
-        <div class="bg-white shadow rounded-lg p-5 border-l-4 border-green-500">
-            <h3 class="text-sm font-medium text-gray-500">Ongoing Projects</h3>
-            <p class="mt-2 text-3xl font-bold text-green-600">{{ ongoing_projects }}</p>
-        </div>
-        <div class="bg-white shadow rounded-lg p-5 border-l-4 border-red-500">
-            <h3 class="text-sm font-medium text-gray-500">Completed Projects</h3>
-            <p class="mt-2 text-3xl font-bold text-red-600">{{ completed_projects }}</p>
-        </div>
-    </div>
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <a href="{% url 'beneficiary_forms_url' %}" class="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="rounded-lg bg-teal-100 p-2 text-teal-700"><span class="material-icons">folder_open</span></div>
+                <h3 class="text-lg font-semibold text-slate-800">Forms</h3>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">Access required forms and review uploaded documents.</p>
+        </a>
 
-    <!-- Map Section -->
-    <div class="bg-white p-6 rounded-xl shadow-lg">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-700">My Project Locations</h3>
-            <div class="text-sm text-gray-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
-                <span class="text-blue-600">💡</span> Having trouble with mouse navigation? Use arrow keys to pan, Enter to zoom in, Spacebar to zoom out!
+        <a href="{% url 'beneficiary_messages_url' %}" class="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="rounded-lg bg-blue-100 p-2 text-blue-700"><span class="material-icons">mail</span></div>
+                <h3 class="text-lg font-semibold text-slate-800">Messages</h3>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">Read updates and communicate with program staff.</p>
+        </a>
+
+        <a href="{% url 'beneficiary_group_chats_url' %}" class="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="rounded-lg bg-violet-100 p-2 text-violet-700"><span class="material-icons">forum</span></div>
+                <h3 class="text-lg font-semibold text-slate-800">Group Chats</h3>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">Stay aligned with shared conversations and notices.</p>
+        </a>
+
+        <a href="{% url 'beneficiary_announcements_url' %}" class="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="rounded-lg bg-amber-100 p-2 text-amber-700"><span class="material-icons">campaign</span></div>
+                <h3 class="text-lg font-semibold text-slate-800">Announcements</h3>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">Track reminders, schedules, and compliance notices.</p>
+        </a>
+
+        <a href="{% url 'beneficiary_settings_url' %}" class="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="rounded-lg bg-rose-100 p-2 text-rose-700"><span class="material-icons">settings</span></div>
+                <h3 class="text-lg font-semibold text-slate-800">Settings</h3>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">Manage profile data and account preferences securely.</p>
+        </a>
+
+        <a href="{% url 'beneficiary_reports_url' %}" class="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="rounded-lg bg-cyan-100 p-2 text-cyan-700"><span class="material-icons">insights</span></div>
+                <h3 class="text-lg font-semibold text-slate-800">Reports</h3>
+            </div>
+            <p class="mt-3 text-sm text-slate-600">Open available role reports and supporting summaries.</p>
+        </a>
+    </section>
+
+    <section class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+            <div class="mb-3 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-slate-800">Recent Notifications</h3>
+                <a href="{% url 'beneficiary_announcements_url' %}" class="text-xs font-medium text-teal-700 hover:text-teal-800">Open announcements</a>
+            </div>
+            <div class="space-y-3">
+                {% if notifications_list %}
+                    {% for notif in notifications_list|slice:":6" %}
+                    <a href="{{ notif.link|default:'#' }}" class="block rounded-lg border border-slate-200 p-3 transition hover:border-teal-300 hover:bg-teal-50/40">
+                        <p class="text-sm text-slate-700">{{ notif.message }}</p>
+                        <p class="mt-1 text-xs text-slate-500">{{ notif.timestamp|date:"M d, Y h:i A" }}</p>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="rounded-lg border border-dashed border-slate-300 p-5 text-sm text-slate-500">No notifications yet.</div>
+                {% endif %}
             </div>
         </div>
-        <div id="taskMap" style="height: 400px; width: 100%;" class="rounded-lg border border-gray-300"></div>
-        <div class="mt-3 flex flex-wrap gap-4 text-sm">
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-gray-500"></span> Proposal</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500"></span> Ongoing</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span> Completed</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500"></span> Terminated</span>
-        </div>
-    </div>
 
-    <!-- My Projects -->
-    <div class="bg-white p-6 rounded-xl shadow-lg">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">My Projects</h3>
-        {% if my_projects.count > 0 %}
-        <div class="space-y-3 max-h-80 overflow-y-auto">
-            {% for project in my_projects %}
-            <div class="p-3 bg-gray-50 rounded-lg border-l-4
-                {% if project.status == 'completed' %}border-green-500
-                {% elif project.status == 'ongoing' %}border-blue-500
-                {% elif project.status == 'terminated' %}border-red-500
-                {% else %}border-gray-400{% endif %}">
-                <h4 class="font-medium text-gray-800">{{ project.project_title|truncatewords:10 }}</h4>
-                <span class="inline-block mt-1 px-2 py-0.5 text-xs rounded-full
-                    {% if project.status == 'completed' %}bg-green-100 text-green-700
-                    {% elif project.status == 'ongoing' %}bg-blue-100 text-blue-700
-                    {% elif project.status == 'terminated' %}bg-red-100 text-red-700
-                    {% else %}bg-gray-100 text-gray-700{% endif %}">
-                    {{ project.status|title }}
-                </span>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="flex flex-col items-center justify-center py-12 text-gray-500">
-            <span class="material-icons text-6xl mb-3 text-gray-300">work_outline</span>
-            <p class="text-lg font-medium">No projects yet</p>
-        </div>
-        {% endif %}
-    </div>
-</div>
-
-<button id="assistantFab" type="button" class="assistant-fab advanced-feature" title="Open Assistant" aria-label="Open Assistant">
-    <span class="material-icons">smart_toy</span>
-</button>
-
-<div id="assistantPanel" class="assistant-panel advanced-feature hidden" role="dialog" aria-label="AI Assistant" data-ai-url="{% url 'assistant_ai_chat_url' %}">
-    <div class="assistant-header flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-            <span class="material-icons text-[18px]">smart_toy</span>
-            <div>
-                <p class="text-sm font-semibold leading-tight">TaskPro AI Assistant</p>
-                <p class="text-[11px] text-blue-100">AI + local system summary</p>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-800">Quick Guide</h3>
+            <div class="mt-3 space-y-2 text-sm">
+                <div class="rounded-lg bg-teal-50 p-3 text-teal-800">1. Review documents and forms first.</div>
+                <div class="rounded-lg bg-blue-50 p-3 text-blue-800">2. Reply to direct messages when needed.</div>
+                <div class="rounded-lg bg-amber-50 p-3 text-amber-800">3. Watch announcements for deadlines.</div>
             </div>
         </div>
-        <div class="flex items-center gap-2">
-            <label class="flex items-center gap-1.5 text-[11px] text-white/90">
-                <input id="assistantModeToggle" type="checkbox" class="h-3.5 w-3.5" checked>
-                AI mode
-            </label>
-            <button id="assistantHide" type="button" class="h-7 w-7 rounded-md bg-white/18 hover:bg-white/25 flex items-center justify-center" title="Hide Assistant" aria-label="Hide Assistant">
-                <span class="material-icons text-[16px]">close</span>
-            </button>
-        </div>
-    </div>
-    <div class="assistant-body">
-        <p class="text-[11px] text-slate-500 mb-2">Ask about your projects and statuses.</p>
-        <div class="flex flex-wrap gap-1.5 mb-2.5" id="gisAssistantPresets">
-            <button type="button" class="gis-assistant-chip" data-question="Hello">Hello</button>
-            <button type="button" class="gis-assistant-chip" data-question="Show me totals">Totals</button>
-            <button type="button" class="gis-assistant-chip" data-question="How many ongoing projects?">Ongoing projects</button>
-            <button type="button" class="gis-assistant-chip" data-question="Show me project names">Project names</button>
-            <button type="button" class="gis-assistant-chip" data-question="What can this system do?">System capabilities</button>
-        </div>
-        <div id="gisAssistantLog" class="gis-assistant-log">
-            <div class="gis-msg gis-msg-ai">Hi! I can answer about your projects.</div>
-        </div>
-        <div class="mt-2 flex items-center gap-2">
-            <input id="gisAssistantInput" type="text" placeholder="Ask anything about your data..."
-                class="flex-1 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-[#0072CE]/30 focus:border-[#0072CE] transition-all">
-            <button id="gisAssistantAsk" type="button"
-                class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-[#0072CE] text-white hover:bg-[#005ba1] transition">
-                Ask
-            </button>
-        </div>
-        <div class="mt-1.5 flex items-center gap-2 text-[11px] text-slate-400">
-            <span class="material-icons text-xs">lock</span>
-            AI + local • Uses summary only
-        </div>
-    </div>
+    </section>
 </div>
+{% endblock %}
 
-<script>
-// Project Map
-const PROJECTS = JSON.parse('{{ projects_json|escapejs }}');
-const PROPOSALS = JSON.parse('{{ proposals_json|escapejs }}');
-const BILIRAN_CENTER = [11.55, 124.47];
-
-const map = L.map('taskMap').setView(BILIRAN_CENTER, 11);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
-
-// Center Biliran control (small pin inside map)
-// Biliran Province bounds (SW corner to NE corner)
-const BILIRAN_BOUNDS = L.latLngBounds(
-  [11.4700, 124.3400],  // Southwest corner
-  [11.7200, 124.6200]   // Northeast corner
-);
-
-const CenterControl = L.Control.extend({
-  options: { position: 'topleft' },
-  onAdd: function(map) {
-    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-    const button = L.DomUtil.create('a', '', container);
-    button.href = '#';
-    button.title = 'Center on Biliran Province';
-    button.innerHTML = '<span style="font-size:18px;">📍</span>';
-    button.style.cssText = 'display:flex;align-items:center;justify-content:center;width:34px;height:34px;background:#fff;cursor:pointer;';
-    L.DomEvent.disableClickPropagation(button);
-    L.DomEvent.on(button, 'click', function(e) {
-      L.DomEvent.preventDefault(e);
-      map.fitBounds(BILIRAN_BOUNDS, { padding: [20, 20] });
-    });
-    return container;
-  }
-});
-map.addControl(new CenterControl());
-
-const statusColors = {
-    proposal: '#6b7280',
-    ongoing: '#3b82f6',
-    completed: '#10b981',
-    terminated: '#ef4444'
-};
-
-function coloredIcon(color) {
-    return L.divIcon({
-        html: '<div style="width:20px;height:20px;border-radius:50%;background:' + color + ';border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,0.3);"></div>',
-        className: '',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
-    });
-}
-
-const bounds = [];
-PROJECTS.forEach(project => {
-    if (project.latitude && project.longitude) {
-        const color = statusColors[project.status] || '#6b7280';
-        const marker = L.marker([project.latitude, project.longitude], { icon: coloredIcon(color) });
-        marker.bindPopup('<strong>Project</strong><br>' + project.title + '<br>Status: ' + project.status);
-        marker.addTo(map);
-        bounds.push([project.latitude, project.longitude]);
-    }
-});
-
-if (bounds.length > 0) {
-    map.fitBounds(bounds, { padding: [30, 30] });
-}
-
-const assistantPanel = document.getElementById('assistantPanel');
-const assistantFab = document.getElementById('assistantFab');
-const assistantHide = document.getElementById('assistantHide');
-const assistantLog = document.getElementById('gisAssistantLog');
-const assistantInput = document.getElementById('gisAssistantInput');
-const assistantAsk = document.getElementById('gisAssistantAsk');
-const assistantPresets = document.querySelectorAll('#gisAssistantPresets [data-question]');
-const assistantModeToggle = document.getElementById('assistantModeToggle');
-
-let aiEnabled = localStorage.getItem('assistantAiEnabled') !== 'false';
-if (assistantModeToggle) {
-    assistantModeToggle.checked = aiEnabled;
-    assistantModeToggle.addEventListener('change', () => {
-        aiEnabled = assistantModeToggle.checked;
-        localStorage.setItem('assistantAiEnabled', aiEnabled ? 'true' : 'false');
-    });
-}
-
-const proposalStatusCount = { pending: 0, for_review: 0, approved: 0, rejected: 0, needs_revision: 0 };
-const projectStatusCount = { proposal: 0, ongoing: 0, completed: 0, terminated: 0 };
-
-PROPOSALS.forEach(prop => {
-    const status = (prop.status || 'pending').toLowerCase();
-    if (proposalStatusCount[status] !== undefined) proposalStatusCount[status] += 1;
-});
-
-PROJECTS.forEach(project => {
-    const status = (project.status || 'proposal').toLowerCase();
-    if (projectStatusCount[status] !== undefined) projectStatusCount[status] += 1;
-});
-
-function setAssistantVisibility(isOpen) {
-    if (!assistantPanel || !assistantFab) return;
-    assistantPanel.classList.toggle('hidden', !isOpen);
-    assistantFab.classList.toggle('hidden', isOpen);
-    localStorage.setItem('assistantOpen', isOpen ? 'true' : 'false');
-}
-
-if (assistantFab && assistantHide) {
-    const openByDefault = localStorage.getItem('assistantOpen') !== 'false';
-    setAssistantVisibility(openByDefault);
-    assistantFab.addEventListener('click', () => setAssistantVisibility(true));
-    assistantHide.addEventListener('click', () => setAssistantVisibility(false));
-}
-
-function appendAssistantMessage(role, message, html = false) {
-    if (!assistantLog) return null;
-    const msg = document.createElement('div');
-    msg.className = `gis-msg ${role === 'user' ? 'gis-msg-user' : 'gis-msg-ai'}`;
-    msg[html ? 'innerHTML' : 'textContent'] = message;
-    assistantLog.appendChild(msg);
-    assistantLog.scrollTop = assistantLog.scrollHeight;
-    return msg;
-}
-
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return '';
-}
-
-function buildAiContext() {
-    return {
-        totals: {
-            proposals: PROPOSALS.length,
-            projects: PROJECTS.length
-        },
-        proposal_status_counts: proposalStatusCount,
-        project_status_counts: projectStatusCount
-    };
-}
-
-async function requestAiAnswer(question) {
-    if (!assistantPanel || !assistantPanel.dataset.aiUrl) return null;
-    const csrfToken = getCookie('csrftoken');
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
-    try {
-        const response = await fetch(assistantPanel.dataset.aiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({ question, context: buildAiContext() }),
-            signal: controller.signal
-        });
-        const data = await response.json();
-        if (!data || !data.ok || !data.answer) {
-            return { answer: null, error: data && data.error ? data.error : 'AI unavailable' };
-        }
-        return { answer: data.answer, error: null };
-    } catch (e) {
-        return { answer: null, error: 'AI request failed' };
-    } finally {
-        clearTimeout(timeoutId);
-    }
-}
-
-function respondToLocalQuestion(questionRaw) {
-    const q = (questionRaw || '').toLowerCase();
-    if (/(^|\b)(hi|hello|hey|good morning|good afternoon|good evening)(\b|$)/i.test(q)) {
-        return 'Hi! Ask me about project counts, statuses, or names.';
-    }
-    if (q.includes('help') || q.includes('keywords') || q.includes('commands')) {
-        return 'Try: ongoing projects, project names, completed projects, or project status.';
-    }
-    if (q.includes('totals') || q.includes('summary') || q.includes('snapshot')) {
-        return `Snapshot: ${PROJECTS.length} projects and ${PROPOSALS.length} proposals.`;
-    }
-    if (q.includes('counts')) {
-        return `Snapshot: ${PROJECTS.length} projects and ${PROPOSALS.length} proposals.`;
-    }
-    if (q.includes('status') && !q.includes('project')) {
-        return `Projects: ${projectStatusCount.ongoing} ongoing, ${projectStatusCount.completed} completed, ${projectStatusCount.terminated} terminated.`;
-    }
-    if (q.includes('what can this system do') || q.includes('system capabilities')) {
-        return 'This system helps you track projects, proposals, and equipment status.';
-    }
-    if (q.includes('proposal') && q.includes('pending')) return `You have ${proposalStatusCount.pending} pending proposals.`;
-    if (q.includes('proposal') && q.includes('approved')) return `You have ${proposalStatusCount.approved} approved proposals.`;
-    if (q.includes('proposal') && q.includes('rejected')) return `You have ${proposalStatusCount.rejected} rejected proposals.`;
-    if (q.includes('project') && q.includes('ongoing')) return `You have ${projectStatusCount.ongoing} ongoing projects.`;
-    if (q.includes('project') && q.includes('completed')) return `You have ${projectStatusCount.completed} completed projects.`;
-    if (q.includes('project') && q.includes('terminated')) return `You have ${projectStatusCount.terminated} terminated projects.`;
-    if (q.includes('project names') || q.includes('project list')) {
-        const names = PROJECTS.map(p => p.title).filter(Boolean).slice(0, 8);
-        return names.length ? `Projects: ${names.join(', ')}` : 'No projects found.';
-    }
-    if (q.includes('proposal names') || q.includes('proposal list')) {
-        const names = PROPOSALS.map(p => p.title).filter(Boolean).slice(0, 8);
-        return names.length ? `Proposals: ${names.join(', ')}` : 'No proposals found.';
-    }
-    return `Snapshot: ${PROJECTS.length} projects and ${PROPOSALS.length} proposals. Ask about a project or proposal status.`;
-}
-
-async function handleAssistantQuestion(questionText) {
-    const question = (questionText || '').trim();
-    if (!question) return;
-    appendAssistantMessage('user', question);
-    const pending = appendAssistantMessage('ai', 'Thinking...');
-    let aiError = null;
-    try {
-        if (aiEnabled) {
-            const aiResult = await requestAiAnswer(question);
-            if (aiResult && aiResult.answer) {
-                pending.textContent = aiResult.answer;
-                return;
-            }
-            aiError = aiResult && aiResult.error ? aiResult.error : null;
-        }
-    } catch (e) {
-        // Fallback to local response
-    }
-    try {
-        if (aiError) console.warn('AI assistant unavailable:', aiError);
-        const notice = formatAiNotice(aiError);
-        pending.textContent = notice ? `${respondToLocalQuestion(question)} (${notice})` : respondToLocalQuestion(question);
-    } catch (e) {
-        pending.textContent = 'I hit an error while answering locally. Try a different question.';
-    }
-}
-
-function formatAiNotice(errorText) {
-    if (!errorText) return '';
-    const lower = String(errorText).toLowerCase();
-    if (lower.includes('resource_exhausted') || lower.includes('quota') || lower.includes('429')) {
-        return 'Gemini quota exceeded. Please try again later or update your limits.';
-    }
-    if (lower.includes('api key') || lower.includes('api_key')) {
-        return 'AI key missing or invalid.';
-    }
-    return `AI unavailable: ${errorText}`;
-}
-
-if (assistantAsk && assistantInput) {
-    assistantAsk.addEventListener('click', () => {
-        handleAssistantQuestion(assistantInput.value);
-        assistantInput.value = '';
-        assistantInput.focus();
-    });
-    assistantInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            assistantAsk.click();
-        }
-    });
-}
-
-if (assistantPresets && assistantPresets.length) {
-    assistantPresets.forEach(btn => {
-        btn.addEventListener('click', () => handleAssistantQuestion(btn.getAttribute('data-question')));
-    });
-}
-
-// Arrow key navigation for map
-const PAN_DISTANCE = 100; // pixels to pan per key press
-
-document.addEventListener('keydown', function(e) {
-    // Only handle arrow keys when map is focused or when no input/textarea is focused
-    const activeElement = document.activeElement;
-    const isInputFocused = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.contentEditable === 'true';
-    
-    if (!isInputFocused) {
-        switch(e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                map.panBy([0, -PAN_DISTANCE]);
-                break;
-            case 'ArrowDown':
-                e.preventDefault();
-                map.panBy([0, PAN_DISTANCE]);
-                break;
-            case 'ArrowLeft':
-                e.preventDefault();
-                map.panBy([-PAN_DISTANCE, 0]);
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                map.panBy([PAN_DISTANCE, 0]);
-                break;
-            case 'Enter':
-                e.preventDefault();
-                map.zoomIn();
-                break;
-            case ' ':
-                e.preventDefault();
-                map.zoomOut();
-                break;
-        }
-    }
-});
-
-// Focus map when clicked to enable keyboard navigation
-document.getElementById('taskMap').addEventListener('click', function() {
-    this.focus();
-});
-
-</script>
-<!-- Module help for Beneficiary Dashboard (copied into header help by base JS) -->
-<div id="module-help" style="display:none;">
-    <h3>Welcome — your projects</h3>
-    <p>See the projects you're part of and quick info about them.</p>
-    <ul>
-        <li>📌 <strong>Your projects</strong> — quick list of projects where you're a beneficiary.</li>
-        <li>🗺️ <strong>Map</strong> — see where projects are located.</li>
-        <li>📊 <strong>Counts</strong> — how many are ongoing or finished.</li>
-    </ul>
-    <p>Tip: Click a project to view more details or documents.</p>
-</div>
-
-{% block module_help %}{% endblock %}
-
+{% block module_help %}
+<h3>Beneficiary Dashboard</h3>
+<p>This dashboard is streamlined to communication and document-related tasks.</p>
+<ul>
+    <li>Use Forms for requirements and records.</li>
+    <li>Open Messages and Group Chats for coordination.</li>
+    <li>Check Announcements and Reports for updates.</li>
+</ul>
 {% endblock %}

@@ -6,6 +6,34 @@
 {% block nav-proposals %}active-nav{% endblock %}
 {% block page-title %}Proposals{% endblock %}
 
+{% block styles %}
+<style>
+    .module-hero {
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        background: linear-gradient(120deg, #0f3a66 0%, #135a9b 55%, #0a79bf 100%);
+        border-radius: 1rem;
+        color: #fff;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 16px 30px -24px rgba(15, 58, 102, 0.7);
+    }
+
+    .module-surface {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 0.95rem;
+        box-shadow: 0 10px 22px -24px rgba(15, 23, 42, 0.55);
+    }
+
+    .module-table thead {
+        background: #f1f5f9 !important;
+    }
+
+    .module-table tbody tr:hover {
+        background: #f8fbff;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Simple Mode Reversed: Show tables, hide charts in Simple Mode -->
 <script>document.body.classList.add('simple-mode-reversed');</script>
@@ -63,6 +91,12 @@
         {% endfor %}
     {% endif %}
 
+    <section class="module-hero mb-4">
+        <p class="text-xs uppercase tracking-[0.2em] text-blue-100">Proposals Module</p>
+        <h2 class="mt-1 text-xl font-semibold">Review, approve, and convert submissions to projects</h2>
+        <p class="mt-1 text-sm text-blue-100">Evaluate proposal quality, validate attachments, and process approvals in one workspace.</p>
+    </section>
+
     <!-- Action Buttons -->
     <div class="flex justify-between items-center mb-4">
         <div class="flex items-center gap-2">
@@ -84,7 +118,7 @@
     </div>
 
     <!-- Proposals Table - Minimized in Simple Mode -->
-    <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4 table-section">
+    <div class="overflow-x-auto module-surface p-4 table-section module-table">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-gray-700 flex items-center">
                 Project Proposals

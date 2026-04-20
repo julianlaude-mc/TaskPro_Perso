@@ -9,16 +9,248 @@
 {% block content %}
 <!-- Exclude reports from simple mode effects -->
 <script>document.body.classList.add('no-simple-mode');</script>
-<style>[x-cloak] { display: none !important; }</style>
+<style>
+    [x-cloak] { display: none !important; }
 
-<div class="flex justify-between items-center mb-6">
+    .reports-shell {
+        --report-bg: linear-gradient(165deg, #f7fafc 0%, #eef4fb 45%, #f6f9ff 100%);
+        --report-card: #ffffff;
+        --report-border: #d7e4f2;
+        --report-ink: #0f2a43;
+        --report-muted: #5f758d;
+        --report-accent: #2563eb;
+        background: var(--report-bg);
+        border: 1px solid #dbe7f5;
+        border-radius: 1.1rem;
+        padding: 1.25rem;
+    }
 
-    <h2 class="text-2xl font-bold">Overview Reports</h2>
-    <div class="flex flex-wrap gap-2">
+    .reports-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        border: 1px solid #c8ddf2;
+        background: linear-gradient(130deg, #0f3558 0%, #145389 45%, #1a6ba7 100%);
+        color: #f8fbff;
+    }
+
+    .reports-hero::before,
+    .reports-hero::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+        pointer-events: none;
+    }
+
+    .reports-hero::before {
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(174, 233, 255, 0.32) 0%, rgba(174, 233, 255, 0) 70%);
+        top: -90px;
+        right: -60px;
+    }
+
+    .reports-hero::after {
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(255, 213, 153, 0.28) 0%, rgba(255, 213, 153, 0) 72%);
+        bottom: -75px;
+        left: -35px;
+    }
+
+    .reports-title {
+        font-size: 1.65rem;
+        line-height: 1.2;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+    }
+
+    .reports-subtitle {
+        margin-top: 0.35rem;
+        color: rgba(241, 248, 255, 0.9);
+        font-size: 0.92rem;
+    }
+
+    .report-toolbar {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .report-action-btn {
+        border: 1px solid transparent;
+        border-radius: 0.72rem;
+        padding: 0.56rem 0.88rem;
+        font-weight: 700;
+        font-size: 0.86rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 10px 24px rgba(8, 25, 42, 0.18);
+    }
+
+    .report-action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(8, 25, 42, 0.24);
+    }
+
+    .report-action-btn-green { background: #0f9d58; color: #fff; }
+    .report-action-btn-gray { background: #425b75; color: #fff; }
+    .report-action-btn-red { background: #db4437; color: #fff; }
+    .report-action-btn-blue { background: #1d4ed8; color: #fff; }
+
+    #excelDropdownMenu {
+        border: 1px solid #d6e4f2;
+        border-radius: 0.8rem;
+        overflow: hidden;
+        box-shadow: 0 20px 35px rgba(16, 40, 67, 0.2);
+    }
+
+    .report-filter-card {
+        border: 1px solid var(--report-border);
+        border-radius: 0.95rem;
+        background: linear-gradient(180deg, #ffffff 0%, #f6faff 100%);
+        box-shadow: 0 10px 24px rgba(20, 57, 92, 0.08);
+    }
+
+    .report-filter-card input,
+    .report-filter-card select {
+        border-color: #cbdcf0;
+        border-radius: 0.62rem;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (min-width: 900px) {
+        .summary-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+    }
+
+    .summary-card {
+        position: relative;
+        border-radius: 0.92rem;
+        padding: 0.95rem;
+        border: 1px solid #ccdced;
+        background: linear-gradient(180deg, #f4f7fb 0%, #edf2f8 100%);
+        box-shadow: 0 10px 20px rgba(19, 45, 71, 0.08);
+        overflow: hidden;
+    }
+
+    .summary-card::after {
+        content: "";
+        position: absolute;
+        width: 78px;
+        height: 78px;
+        border-radius: 999px;
+        right: -24px;
+        top: -24px;
+        opacity: 0.36;
+        pointer-events: none;
+    }
+
+    .summary-card:nth-child(1)::after { background: #60a5fa; }
+    .summary-card:nth-child(2)::after { background: #34d399; }
+    .summary-card:nth-child(3)::after { background: #fbbf24; }
+    .summary-card:nth-child(4)::after { background: #f87171; }
+    .summary-card:nth-child(5)::after { background: #a78bfa; }
+
+    .summary-value {
+        color: var(--report-ink);
+        font-size: 1.95rem;
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+    }
+
+    .summary-label {
+        margin-top: 0.35rem;
+        color: var(--report-muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .dark .reports-shell {
+        background: linear-gradient(165deg, #0c1626 0%, #101d31 48%, #111f34 100%);
+        border-color: #334155;
+    }
+
+    .dark .report-filter-card,
+    .dark .chart-panel {
+        background: linear-gradient(180deg, #111f33 0%, #15253c 100%);
+        border-color: #3b4f68;
+    }
+
+    .dark .summary-card {
+        background: linear-gradient(180deg, #132138 0%, #17283f 100%);
+        border-color: #3c516a;
+    }
+
+    .dark .summary-value { color: #f2f8ff; }
+    .dark .summary-label { color: #c5d4e6; }
+    .dark .chart-title { color: #d9e8fb; }
+
+    .chart-section {
+        margin-bottom: 1rem;
+    }
+
+    .chart-panel {
+        border: 1px solid #d5e3f2;
+        border-radius: 0.95rem;
+        background: #fff;
+        box-shadow: 0 14px 28px rgba(18, 45, 74, 0.08);
+        padding: 0.9rem;
+    }
+
+    .chart-title {
+        font-size: 0.86rem;
+        font-weight: 800;
+        color: #28425d;
+        margin-bottom: 0.45rem;
+        letter-spacing: 0.01em;
+    }
+
+    .chart-canvas-wrap {
+        height: 245px;
+    }
+
+    .chart-canvas-wrap-compact {
+        height: 190px;
+    }
+
+    @media (max-width: 767px) {
+        .reports-shell { padding: 0.9rem; }
+        .reports-title { font-size: 1.3rem; }
+        .report-toolbar { justify-content: flex-start; margin-top: 0.8rem; }
+        .report-action-btn { width: 100%; justify-content: center; }
+    }
+</style>
+
+<div class="reports-shell">
+<div class="reports-hero">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <div class="relative z-10">
+            <h2 class="reports-title">Overview Reports</h2>
+            <p class="reports-subtitle">Visualize municipality-level trends, monitor project momentum, and export board-ready reports from one control surface.</p>
+        </div>
+        <div class="report-toolbar">
         <!-- Excel Export Dropdown (Pure JS) -->
         <div class="relative">
             <button id="excelDropdownBtn" 
-                    class="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition flex items-center gap-2">
+                    class="report-action-btn report-action-btn-green">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -73,7 +305,7 @@
         
         <!-- Print Button -->
         <button onclick="window.print()" 
-                class="px-4 py-2 bg-gray-600 text-white font-semibold rounded hover:bg-gray-700 transition flex items-center gap-2 no-print">
+                class="report-action-btn report-action-btn-gray no-print">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
@@ -82,13 +314,14 @@
         
         <!-- PDF Export -->
         <button type="button" id="openPdfPreviewBtn"
-           class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition flex items-center gap-2">
+           class="report-action-btn report-action-btn-red">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Export PDF
         </button>
     </div>
+</div>
 </div>
 
 
@@ -348,10 +581,10 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 </div>
 
 <!-- Alpine.js for collapsible filters -->
-<div x-data="{ showFilters: false }" class="mb-8">
+<div x-data="{ showFilters: false }" class="mb-5">
     <!-- Filter Toggle Button -->
     <button @click="showFilters = !showFilters" 
-            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
+            class="report-action-btn report-action-btn-blue">
         <svg x-show="!showFilters" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
         </svg>
@@ -362,7 +595,7 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
     </button>
 
     <!-- Filter Form -->
-    <div x-show="showFilters" x-transition class="bg-white p-4 rounded-lg shadow mt-4" x-cloak>
+    <div x-show="showFilters" x-transition class="report-filter-card p-4 mt-4" x-cloak>
         <h3 class="text-lg font-semibold mb-4">Filter Reports</h3>
     <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- Year Filter -->
@@ -427,51 +660,51 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 <!-- End of Filter Section -->
 
 <!-- Project & Proponent Summary Cards -->
-<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-    <div class="bg-white border border-gray-200 p-4 rounded-lg shadow">
-        <div class="text-2xl font-bold text-gray-800">{{ total_projects }}</div>
-        <div class="text-sm text-gray-600">Total Projects</div>
+<div class="summary-grid">
+    <div class="summary-card">
+        <div class="summary-value">{{ total_projects }}</div>
+        <div class="summary-label">Total Projects</div>
     </div>
-    <div class="bg-white border border-gray-200 p-4 rounded-lg shadow">
-        <div class="text-2xl font-bold text-gray-800">{{ projects_ongoing }}</div>
-        <div class="text-sm text-gray-600">Ongoing Projects</div>
+    <div class="summary-card">
+        <div class="summary-value">{{ projects_ongoing }}</div>
+        <div class="summary-label">Ongoing Projects</div>
     </div>
-    <div class="bg-white border border-gray-200 p-4 rounded-lg shadow">
-        <div class="text-2xl font-bold text-gray-800">{{ projects_completed }}</div>
-        <div class="text-sm text-gray-600">Completed Projects</div>
+    <div class="summary-card">
+        <div class="summary-value">{{ projects_completed }}</div>
+        <div class="summary-label">Completed Projects</div>
     </div>
-    <div class="bg-white border border-gray-200 p-4 rounded-lg shadow">
-        <div class="text-2xl font-bold text-gray-800">{{ total_proposals }}</div>
-        <div class="text-sm text-gray-600">Total Proposals</div>
+    <div class="summary-card">
+        <div class="summary-value">{{ total_proposals }}</div>
+        <div class="summary-label">Total Proposals</div>
     </div>
-    <div class="bg-white border border-gray-200 p-4 rounded-lg shadow">
-        <div class="text-lg font-bold text-gray-800">{{ top_municipality_name }}</div>
-        <div class="text-xs text-gray-600">Top Area ({{ top_municipality_count }} projects)</div>
+    <div class="summary-card">
+        <div class="text-lg font-bold text-gray-800 leading-tight">{{ top_municipality_name }}</div>
+        <div class="summary-label">Top Area ({{ top_municipality_count }} projects)</div>
     </div>
 </div>
 
 <!-- Row 1: 3 Doughnut Charts - Equal sizing (Visible in Simple Mode - easy to understand) -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 chart-section">
     <!-- Proposal Status -->
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700 text-center">Proposal Status</h3>
-        <div class="flex justify-center items-center" style="height: 180px;">
+    <div class="chart-panel">
+        <h3 class="chart-title text-center">Proposal Status</h3>
+        <div class="flex justify-center items-center chart-canvas-wrap-compact">
             <canvas id="proposalPieChart"></canvas>
         </div>
     </div>
 
     <!-- Project Status Distribution -->
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700 text-center">Project Status</h3>
-        <div class="flex justify-center items-center" style="height: 180px;">
+    <div class="chart-panel">
+        <h3 class="chart-title text-center">Project Status</h3>
+        <div class="flex justify-center items-center chart-canvas-wrap-compact">
             <canvas id="projectStatusChart"></canvas>
         </div>
     </div>
 
     <!-- User Role Distribution -->
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700 text-center">User Roles</h3>
-        <div class="flex justify-center items-center" style="height: 180px;">
+    <div class="chart-panel">
+        <h3 class="chart-title text-center">User Roles</h3>
+        <div class="flex justify-center items-center chart-canvas-wrap-compact">
             <canvas id="userRoleChart"></canvas>
         </div>
     </div>
@@ -479,16 +712,16 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 
 <!-- Row 2: Projects by Municipality + Monthly Projects -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 chart-section">
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700">Projects by Municipality</h3>
-        <div style="height: 250px;">
+    <div class="chart-panel">
+        <h3 class="chart-title">Projects by Municipality</h3>
+        <div class="chart-canvas-wrap">
             <canvas id="municipalityChart"></canvas>
         </div>
     </div>
 
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700">Monthly Project Distribution{% if report_year != 'All Years' %} – {{ report_year }}{% endif %}</h3>
-        <div style="height: 250px;">
+    <div class="chart-panel">
+        <h3 class="chart-title">Monthly Project Distribution{% if report_year != 'All Years' %} - {{ report_year }}{% endif %}</h3>
+        <div class="chart-canvas-wrap">
             <canvas id="monthlyProjectsChart"></canvas>
         </div>
     </div>
@@ -496,15 +729,15 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 
 <!-- Row 3: Proposals by Municipality + Top Proponents -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 chart-section">
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700">Proposals by Municipality</h3>
-        <div style="height: 250px;">
+    <div class="chart-panel">
+        <h3 class="chart-title">Proposals by Municipality</h3>
+        <div class="chart-canvas-wrap">
             <canvas id="proposalsMunicipalityChart"></canvas>
         </div>
     </div>
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700">Top Proponents by Proposals</h3>
-        <div style="height: 250px;">
+    <div class="chart-panel">
+        <h3 class="chart-title">Top Proponents by Proposals</h3>
+        <div class="chart-canvas-wrap">
             <canvas id="topProponentsChart"></canvas>
         </div>
     </div>
@@ -512,18 +745,19 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 
 <!-- Row 4: Projects by Program + Type -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 chart-section">
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700">Projects by Program</h3>
-        <div style="height: 250px;">
+    <div class="chart-panel">
+        <h3 class="chart-title">Projects by Program</h3>
+        <div class="chart-canvas-wrap">
             <canvas id="projectsByProgramChart"></canvas>
         </div>
     </div>
-    <div class="p-4 bg-white shadow rounded-lg">
-        <h3 class="text-sm font-semibold mb-2 text-gray-700">Projects by Type</h3>
-        <div style="height: 250px;">
+    <div class="chart-panel">
+        <h3 class="chart-title">Projects by Type</h3>
+        <div class="chart-canvas-wrap">
             <canvas id="projectsByTypeChart"></canvas>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Chart.js CDN -->

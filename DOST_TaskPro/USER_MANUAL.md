@@ -1,24 +1,25 @@
 # TaskPro - DOST Project Management System
 ## User Manual
 
-### Version 1.0
+### Version 1.1
 ### Department of Science and Technology - Biliran Province
-### January 2026
+### April 2026
 
 ---
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
-3. [User Roles and Permissions](#user-roles-and-permissions)
-4. [Administrator Guide](#administrator-guide)
-5. [DOST Staff Guide](#dost-staff-guide)
-6. [Proponent Guide](#proponent-guide)
-7. [Beneficiary Guide](#beneficiary-guide)
-8. [Common Features](#common-features)
-9. [Troubleshooting](#troubleshooting)
-10. [Contact Support](#contact-support)
+2. [What's New in v1.1 (April 2026)](#whats-new-in-v11-april-2026)
+3. [Getting Started](#getting-started)
+4. [User Roles and Permissions](#user-roles-and-permissions)
+5. [Administrator Guide](#administrator-guide)
+6. [DOST Staff Guide](#dost-staff-guide)
+7. [Proponent Guide](#proponent-guide)
+8. [Beneficiary Guide](#beneficiary-guide)
+9. [Common Features](#common-features)
+10. [Troubleshooting](#troubleshooting)
+11. [Contact Support](#contact-support)
 
 ---
 
@@ -35,6 +36,34 @@ TaskPro is a comprehensive web-based project management system designed specific
 - **Real-time notifications and communication**
 - **Comprehensive reporting and analytics**
 - **Document management and audit trails**
+
+---
+
+## What's New in v1.1 (April 2026)
+
+### 1. Real-Time Notifications
+- Notifications now update in near real-time across Administrator, Staff, Proponent, and Beneficiary modules.
+- The system now uses a live notification stream with automatic fallback polling for reliability.
+- Users should see unread badge and dropdown updates faster without waiting for long polling intervals.
+
+### 2. Enhanced Quick Action Hubs
+- Administrator and Staff Quick Actions were redesigned to look and behave like interactive action buttons.
+- Cards now use role-appropriate color accents, stronger hover states, and clearer click cues.
+- This improves visual hierarchy and speeds up frequent navigation workflows.
+
+### 3. Dark Mode Consistency Improvements
+- Theme persistence was standardized to reduce dark-mode resets when moving across modules.
+- Contrast and readability were improved for cards, sidebar surfaces, filters, and active elements.
+
+### 4. Milestone Input Reliability Improvements
+- Project milestone add/update flows now include stronger date and progress validation.
+- Invalid date values are handled safely with user-facing feedback instead of server errors.
+- Planned date inputs include better constraints to reduce invalid entries.
+
+### 5. Configuration and Environment Impact
+- No new package installation is required for these updates.
+- No additional `settings.py` changes are required for local development.
+- Existing virtual environment setup remains supported.
 
 ---
 

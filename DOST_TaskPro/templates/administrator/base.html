@@ -45,6 +45,14 @@
       var sm = localStorage.getItem('simpleMode');
       if (sm !== 'true' && sm !== 'false') {
         localStorage.setItem('simpleMode', 'false');
+        sm = 'false';
+      }
+
+      // Apply simple mode immediately to avoid content flash before Alpine boots.
+      if (sm === 'true') {
+        document.documentElement.classList.add('simple-mode');
+      } else {
+        document.documentElement.classList.remove('simple-mode');
       }
 
       // Apply sidebar collapsed state before first paint to avoid flicker on navigation.
@@ -615,15 +623,28 @@
       html.sidebar-collapsed #sidebar .sidebar-header {
         padding: 0.75rem;
         text-align: center;
+        min-height: 72px;
       }
 
-      #sidebar.hidden-sidebar .sidebar-header img,
-      html.sidebar-collapsed #sidebar .sidebar-header img {
+      #sidebar.hidden-sidebar .sidebar-header .sidebar-brand-link,
+      html.sidebar-collapsed #sidebar .sidebar-header .sidebar-brand-link {
+        justify-content: center;
+      }
+
+      #sidebar.hidden-sidebar .sidebar-header .sidebar-brand-logo,
+      html.sidebar-collapsed #sidebar .sidebar-header .sidebar-brand-logo {
         margin: 0 auto;
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        min-height: 42px;
+        max-width: 42px;
+        max-height: 42px;
+        display: block;
       }
 
-      #sidebar.hidden-sidebar .sidebar-header div,
-      html.sidebar-collapsed #sidebar .sidebar-header div {
+      #sidebar.hidden-sidebar .sidebar-header .sidebar-brand-text,
+      html.sidebar-collapsed #sidebar .sidebar-header .sidebar-brand-text {
         display: none;
       }
 
@@ -696,6 +717,64 @@
         margin-left: 0 !important;
         width: 100%;
       }
+    }
+
+    .sidebar-brand-link {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .sidebar-brand-logo {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      max-width: 44px;
+      max-height: 44px;
+      object-fit: cover;
+      display: block;
+      border-radius: 0.75rem;
+    }
+
+    html.simple-mode #sidebar .sidebar-brand-logo {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    html.dark #sidebar {
+      background: linear-gradient(180deg, #0b1324 0%, #12253f 38%, #0c1f38 100%) !important;
+      border-right: 1px solid rgba(148, 163, 184, 0.24);
+      box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.1), 16px 0 32px -26px rgba(2, 6, 23, 0.9);
+    }
+
+    html.dark #sidebar .sidebar-header {
+      background: linear-gradient(135deg, #154068, #0e5a92) !important;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.26);
+    }
+
+    html.dark #sidebar nav a {
+      color: #dbeafe !important;
+      border: 1px solid transparent;
+    }
+
+    html.dark #sidebar nav a:hover {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.22), rgba(30, 64, 175, 0.22)) !important;
+      border-color: rgba(96, 165, 250, 0.38);
+      color: #f8fafc !important;
+    }
+
+    html.dark #sidebar nav a.bg-white,
+    html.dark #sidebar nav a.active-nav {
+      background: linear-gradient(90deg, #1d4ed8, #1e40af) !important;
+      color: #ffffff !important;
+      border-color: rgba(191, 219, 254, 0.46) !important;
+      box-shadow: 0 14px 24px -18px rgba(37, 99, 235, 0.9);
+    }
+
+    html.dark #sidebar nav a.bg-white .material-icons,
+    html.dark #sidebar nav a.active-nav .material-icons {
+      color: #ffffff !important;
     }
     
     @media print {
@@ -851,11 +930,11 @@
         :class="{ 'hidden-sidebar': !sidebarOpen }">
       <!-- Header -->
       <div class="sidebar-header flex items-center px-5 py-4 bg-gradient-to-r from-[#0072CE] to-[#005ba1] shadow-md">
-        <a href="{% url 'administrator_dashboard_url' %}" class="flex items-center hover:opacity-90 transition-opacity duration-200">
+        <a href="{% url 'administrator_dashboard_url' %}" class="sidebar-brand-link hover:opacity-90 transition-opacity duration-200">
           <img src="{% static 'img/dost.png' %}" 
                alt="DOST Logo" 
-               class="h-11 w-11 rounded-xl border-2 border-white/30 shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer">
-          <div class="ml-3 flex flex-col">
+               class="sidebar-brand-logo border-2 border-white/30 shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer">
+          <div class="sidebar-brand-text ml-3 flex flex-col">
             <span class="text-xl font-extrabold text-white drop-shadow-md leading-tight">TaskPro</span>
             <span class="text-[10px] text-blue-200 font-medium uppercase tracking-wider">DOST Biliran</span>
           </div>
@@ -875,6 +954,17 @@
           {% endif %}">
             <span class="material-icons">dashboard</span>
             <span class="ml-3 font-medium">Dashboard</span>
+        </a>
+
+        <a href="{% url 'administrator_quick_actions_url' %}"
+          class="flex items-center px-3 py-2 rounded-lg transition duration-200
+          {% if request.resolver_match.url_name == 'administrator_quick_actions_url' %}
+            bg-white text-[#0072CE]
+          {% else %}
+            text-white hover:bg-white hover:text-[#0072CE]
+          {% endif %}">
+            <span class="material-icons">bolt</span>
+            <span class="ml-3 font-medium">Quick Actions</span>
         </a>
 
         <a href="{% url 'administrator_users_url' %}" 
@@ -2408,68 +2498,122 @@
 
   <!-- Notification Polling Script -->
   <script>
-    // Poll for new notifications every 30 seconds
+    let notificationEventSource = null;
+    let notificationPollInterval = null;
+    let notificationReconnectTimeout = null;
+
+    function applyNotificationData(data) {
+      if (!data || !data.success) {
+        return;
+      }
+
+      const badge = document.getElementById('notifBadge');
+      const notifBtn = document.getElementById('notifBtn');
+
+      if (data.unread_count > 0) {
+        if (badge) {
+          badge.textContent = data.unread_count;
+        } else if (notifBtn) {
+          const newBadge = document.createElement('span');
+          newBadge.id = 'notifBadge';
+          newBadge.className = 'absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full';
+          newBadge.textContent = data.unread_count;
+          notifBtn.appendChild(newBadge);
+        }
+      } else if (badge) {
+        badge.remove();
+      }
+
+      const notifDropdown = document.getElementById('notifDropdown');
+      const listContainer = notifDropdown ? (notifDropdown.querySelector('.notification-list') || notifDropdown.querySelector('ul')) : null;
+      if (listContainer && data.notifications && data.notifications.length > 0) {
+        let html = '';
+        data.notifications.forEach(notif => {
+          const statusClass = notif.status === 'unread' ? 'bg-blue-50' : '';
+          const unreadDot = notif.status === 'unread' ? '<span class="w-2 h-2 bg-blue-500 rounded-full"></span>' : '';
+          html += `
+            <div class="notification-item px-4 py-3 hover:bg-gray-50 cursor-pointer ${statusClass}" 
+                 data-notif-id="${notif.id}"
+                 onclick="handleNotificationClick(${notif.id}, '${notif.link}')">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <p class="text-sm text-gray-800">${notif.message}</p>
+                  <p class="text-xs text-gray-500 mt-1">${notif.timestamp}</p>
+                </div>
+                ${unreadDot}
+              </div>
+            </div>
+          `;
+        });
+        listContainer.innerHTML = html;
+      } else if (listContainer) {
+        listContainer.innerHTML = '<li class="p-4 text-center text-gray-500 text-sm">No notifications</li>';
+      }
+    }
+
     function pollNotifications() {
       fetch('/notifications/count/')
         .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Update notification badge
-            const badge = document.getElementById('notifBadge');
-            const notifBtn = document.getElementById('notifBtn');
-            
-            if (data.unread_count > 0) {
-              if (badge) {
-                badge.textContent = data.unread_count;
-              } else if (notifBtn) {
-                // Create badge if it doesn't exist
-                const newBadge = document.createElement('span');
-                newBadge.id = 'notifBadge';
-                newBadge.className = 'absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full';
-                newBadge.textContent = data.unread_count;
-                notifBtn.appendChild(newBadge);
-              }
-            } else if (badge) {
-              badge.remove();
-            }
-            
-            // Update notification dropdown content
-            const notifDropdown = document.getElementById('notifDropdown');
-            if (notifDropdown && data.notifications.length > 0) {
-              const listContainer = notifDropdown.querySelector('.notification-list');
-              if (listContainer) {
-                let html = '';
-                data.notifications.forEach(notif => {
-                  const statusClass = notif.status === 'unread' ? 'bg-blue-50' : '';
-                  const unreadDot = notif.status === 'unread' ? '<span class="w-2 h-2 bg-blue-500 rounded-full"></span>' : '';
-                  html += `
-                    <div class="notification-item px-4 py-3 hover:bg-gray-50 cursor-pointer ${statusClass}" 
-                         data-notif-id="${notif.id}"
-                         onclick="handleNotificationClick(${notif.id}, '${notif.link}')">
-                      <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                          <p class="text-sm text-gray-800">${notif.message}</p>
-                          <p class="text-xs text-gray-500 mt-1">${notif.timestamp}</p>
-                        </div>
-                        ${unreadDot}
-                      </div>
-                    </div>
-                  `;
-                });
-                listContainer.innerHTML = html;
-              }
-            }
-          }
-        })
+        .then(applyNotificationData)
         .catch(err => console.log('Notification poll error:', err));
     }
+
+    function startFallbackPolling() {
+      if (notificationPollInterval) {
+        return;
+      }
+      pollNotifications();
+      notificationPollInterval = setInterval(pollNotifications, 5000);
+    }
+
+    function stopFallbackPolling() {
+      if (!notificationPollInterval) {
+        return;
+      }
+      clearInterval(notificationPollInterval);
+      notificationPollInterval = null;
+    }
+
+    function connectNotificationStream() {
+      if (!window.EventSource) {
+        startFallbackPolling();
+        return;
+      }
+
+      if (notificationEventSource) {
+        notificationEventSource.close();
+      }
+
+      notificationEventSource = new EventSource('/notifications/stream/');
+
+      notificationEventSource.addEventListener('notification', function(event) {
+        try {
+          const streamData = JSON.parse(event.data);
+          applyNotificationData({ success: true, ...streamData });
+          stopFallbackPolling();
+        } catch (err) {
+          console.log('Notification stream parse error:', err);
+        }
+      });
+
+      notificationEventSource.onerror = function() {
+        if (notificationEventSource) {
+          notificationEventSource.close();
+          notificationEventSource = null;
+        }
+        startFallbackPolling();
+        if (!notificationReconnectTimeout) {
+          notificationReconnectTimeout = setTimeout(() => {
+            notificationReconnectTimeout = null;
+            connectNotificationStream();
+          }, 7000);
+        }
+      };
+    }
     
-    // Start polling after page loads
     document.addEventListener('DOMContentLoaded', function() {
-      // Initial poll after 5 seconds
-      setTimeout(pollNotifications, 5000);
-      // Then poll every 30 seconds
-      setInterval(pollNotifications, 30000);
+      pollNotifications();
+      connectNotificationStream();
     });
   </script>
 
