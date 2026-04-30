@@ -13,6 +13,394 @@
 <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
+<style>
+    .users-shell {
+        --users-blue: #2563eb;
+        --users-line: rgba(148, 163, 184, 0.22);
+        --users-text: #1e293b;
+        --users-muted: #64748b;
+        font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        letter-spacing: 0;
+        padding-bottom: 1.25rem;
+    }
+
+    .users-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.85rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .users-summary-card {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        min-height: 4.35rem;
+        padding: 0.82rem 1rem;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 0.8rem;
+        background: linear-gradient(145deg, rgba(255,255,255,0.96), rgba(248,250,252,0.9));
+        box-shadow: 0 14px 30px -26px rgba(15, 23, 42, 0.62);
+    }
+
+    .users-summary-card::after {
+        content: "";
+        position: absolute;
+        inset: auto -2.45rem -3.2rem auto;
+        width: 7.7rem;
+        height: 7.7rem;
+        border-radius: 999px;
+        background: var(--summary-glow, rgba(37, 99, 235, 0.08));
+        pointer-events: none;
+    }
+
+    .users-summary-icon {
+        display: inline-flex;
+        width: 2.35rem;
+        height: 2.35rem;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        border-radius: 0.7rem;
+        color: #fff;
+        background: var(--summary-accent, #2563eb);
+        box-shadow: 0 12px 22px -14px var(--summary-accent, #2563eb);
+    }
+
+    .users-summary-label {
+        position: relative;
+        z-index: 1;
+        font-size: 0.73rem;
+        font-weight: 600;
+        color: var(--users-muted);
+    }
+
+    .users-summary-value {
+        position: relative;
+        z-index: 1;
+        margin-top: 0.08rem;
+        font-size: 1.35rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #1d4ed8;
+    }
+
+    .users-summary-note {
+        position: relative;
+        z-index: 1;
+        margin-top: 0.24rem;
+        font-size: 0.7rem;
+        color: #64748b;
+    }
+
+    .users-action-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin: 0.2rem 0 0.65rem;
+    }
+
+    .users-action-bar button {
+        min-height: 2.35rem;
+        border-radius: 0.55rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .users-table-card {
+        overflow: hidden;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        border-radius: 0.85rem;
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 18px 42px -34px rgba(15, 23, 42, 0.65);
+    }
+
+    .users-table-scroll {
+        overflow-x: auto;
+        padding: 0.7rem 0.85rem 0.15rem;
+    }
+
+    .users-table {
+        width: 100% !important;
+        min-width: 940px;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        color: var(--users-text);
+    }
+
+    .users-table.dataTable {
+        border: 0 !important;
+        margin-top: 0.2rem !important;
+        margin-bottom: 0.15rem !important;
+    }
+
+    .users-table thead,
+    html:not(.dark) .users-table thead {
+        background: #f8fafc !important;
+    }
+
+    .users-table thead th,
+    html:not(.dark) .users-table.dataTable thead th {
+        padding: 0.58rem 0.72rem !important;
+        border-bottom: 1px solid var(--users-line) !important;
+        background: #f8fafc !important;
+        color: #475569 !important;
+        font-size: 0.69rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.025em !important;
+        text-transform: uppercase !important;
+        white-space: nowrap;
+    }
+
+    .users-table tbody td {
+        padding: 0.5rem 0.72rem !important;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.76) !important;
+        color: #334155;
+        font-size: 0.86rem;
+        line-height: 1.25;
+        vertical-align: middle;
+        background: #fff;
+    }
+
+    .users-table tbody tr:hover td {
+        background: #f8fbff !important;
+    }
+
+    .user-check {
+        width: 0.95rem;
+        height: 0.95rem;
+        border-radius: 0.25rem;
+        accent-color: var(--users-blue);
+    }
+
+    .user-profile-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.56rem;
+        min-width: 10.8rem;
+    }
+
+    .user-avatar {
+        display: inline-flex;
+        width: 1.78rem;
+        height: 1.78rem;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2563eb, #22c55e);
+        color: #fff;
+        font-size: 0.62rem;
+        font-weight: 700;
+    }
+
+    .user-username {
+        display: block;
+        max-width: 12rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #1e3a8a;
+    }
+
+    .user-email-muted {
+        display: block;
+        max-width: 12rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 0.1rem;
+        font-size: 0.72rem;
+        color: #94a3b8;
+    }
+
+    .user-role-pill,
+    .user-tna-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 1.34rem;
+        padding: 0.18rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.69rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .user-role-pill {
+        color: #1d4ed8;
+        background: #eef4ff;
+        border: 1px solid #dbeafe;
+    }
+
+    .user-role-pill.role-admin { color: #7c3aed; background: #f5f3ff; border-color: #ede9fe; }
+    .user-role-pill.role-staff { color: #2563eb; background: #eff6ff; border-color: #dbeafe; }
+    .user-role-pill.role-beneficiary { color: #047857; background: #ecfdf5; border-color: #d1fae5; }
+    .user-role-pill.role-proponent { color: #b45309; background: #fffbeb; border-color: #fde68a; }
+
+    .user-tna-pill {
+        color: #64748b;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
+
+    .user-actions {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.38rem;
+    }
+
+    .user-icon-btn {
+        display: inline-flex;
+        width: 1.72rem;
+        height: 1.72rem;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 0.5rem;
+        transition: transform 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .user-icon-btn:hover { transform: translateY(-1px); }
+    .user-icon-btn.edit { color: #2563eb; background: #eff6ff; }
+    .user-icon-btn.edit:hover { background: #dbeafe; box-shadow: 0 10px 18px -14px #2563eb; }
+    .user-icon-btn.delete { color: #ef4444; background: #fff1f2; }
+    .user-icon-btn.delete:hover { background: #ffe4e6; box-shadow: 0 10px 18px -14px #ef4444; }
+
+    .users-table-card .dataTables_wrapper { color: #64748b; }
+
+    .users-table-card .dataTables_wrapper::after {
+        display: block;
+        clear: both;
+        content: "";
+    }
+
+    .users-table-card .dataTables_length,
+    .users-table-card .dataTables_filter {
+        margin-bottom: 0.58rem;
+        font-size: 0.82rem;
+        color: #64748b !important;
+    }
+
+    .users-table-card .dataTables_length {
+        padding-top: 0.05rem;
+    }
+
+    .users-table-card .dataTables_length select,
+    .users-table-card .dataTables_filter input {
+        min-height: 2.15rem;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0.55rem !important;
+        background: #fff !important;
+        color: #334155 !important;
+        box-shadow: none !important;
+    }
+
+    .users-table-card .dataTables_filter input {
+        min-width: 13.5rem;
+        padding: 0.4rem 0.65rem !important;
+        margin-left: 0.35rem !important;
+    }
+
+    .users-table-card .dataTables_info {
+        padding: 0.65rem 0 0.75rem !important;
+        font-size: 0.76rem;
+        color: #64748b !important;
+    }
+
+    .users-table-card .dataTables_paginate { padding: 0.5rem 0 0.75rem !important; }
+
+    .users-table-card .dataTables_paginate .paginate_button {
+        min-width: 1.85rem !important;
+        height: 1.85rem;
+        padding: 0.28rem 0.52rem !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0.45rem !important;
+        background: #fff !important;
+        color: #475569 !important;
+        font-size: 0.74rem;
+    }
+
+    .users-table-card .dataTables_paginate .paginate_button.current,
+    .users-table-card .dataTables_paginate .paginate_button.current:hover {
+        border-color: transparent !important;
+        background: linear-gradient(135deg, #2563eb, #0ea5e9) !important;
+        color: #fff !important;
+        box-shadow: 0 10px 18px -14px #2563eb;
+    }
+
+    .users-table-card .dataTables_paginate .paginate_button:hover {
+        border-color: #bfdbfe !important;
+        background: #eff6ff !important;
+        color: #1d4ed8 !important;
+    }
+
+    html.dark .users-summary-card,
+    html.dark .users-table-card {
+        background: linear-gradient(180deg, #111827, #0f172a);
+        border-color: #263449;
+    }
+
+    html.dark .users-summary-label,
+    html.dark .users-summary-note,
+    html.dark .users-table-card .dataTables_wrapper,
+    html.dark .users-table-card .dataTables_info,
+    html.dark .users-table-card .dataTables_length,
+    html.dark .users-table-card .dataTables_filter {
+        color: #94a3b8 !important;
+    }
+
+    html.dark .users-summary-value,
+    html.dark .user-username { color: #93c5fd; }
+
+    html.dark .users-table thead,
+    html.dark .users-table.dataTable thead th {
+        background: #172033 !important;
+        color: #cbd5e1 !important;
+        border-color: #334155 !important;
+    }
+
+    html.dark .users-table tbody td {
+        background: #0f172a;
+        color: #cbd5e1;
+        border-color: #243044 !important;
+    }
+
+    html.dark .users-table tbody tr:hover td { background: #172033 !important; }
+
+    html.dark .users-table-card .dataTables_length select,
+    html.dark .users-table-card .dataTables_filter input,
+    html.dark .users-table-card .dataTables_paginate .paginate_button {
+        background: #111827 !important;
+        border-color: #334155 !important;
+        color: #cbd5e1 !important;
+    }
+
+    @media (max-width: 1100px) {
+        .users-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+        .users-summary-grid { grid-template-columns: 1fr; }
+        .users-action-bar { align-items: stretch; flex-direction: column; }
+        .users-action-bar > * { width: 100%; }
+        .users-table-card .dataTables_filter { float: none; text-align: left; }
+        .users-table-card .dataTables_filter input {
+            width: 100%;
+            min-width: 0;
+            margin-left: 0;
+            margin-top: 0.4rem;
+        }
+    }
+</style>
+
 <div class="container mt-2" x-data="{ 
     openAdd: false, 
     openEdit: false, 
@@ -36,7 +424,7 @@
         this.selectedIds = checkedBoxes.map(cb => String(cb.value));
         this.selectAll = checkedBoxes.length === allCheckboxes.length && allCheckboxes.length > 0;
     }
-}">
+}" class="users-shell">
 
     <!-- ✅ Flash Messages -->
     {% if messages %}
@@ -51,7 +439,42 @@
     {% endif %}
 
     <!-- ✅ Action Bar -->
-    <div class="flex justify-between items-center mb-4">
+    <div class="users-summary-grid" aria-label="User overview">
+        <div class="users-summary-card" style="--summary-accent:#2563eb;--summary-glow:rgba(37,99,235,0.09);">
+            <span class="users-summary-icon material-icons">groups</span>
+            <div>
+                <div class="users-summary-label">Total Users</div>
+                <div class="users-summary-value">{{ users|length }}</div>
+                <div class="users-summary-note">Active directory records</div>
+            </div>
+        </div>
+        <div class="users-summary-card" style="--summary-accent:#10b981;--summary-glow:rgba(16,185,129,0.1);">
+            <span class="users-summary-icon material-icons">admin_panel_settings</span>
+            <div>
+                <div class="users-summary-label">Administrators</div>
+                <div class="users-summary-value" data-role-count="admin">0</div>
+                <div class="users-summary-note">Full access users</div>
+            </div>
+        </div>
+        <div class="users-summary-card" style="--summary-accent:#8b5cf6;--summary-glow:rgba(139,92,246,0.11);">
+            <span class="users-summary-icon material-icons">support_agent</span>
+            <div>
+                <div class="users-summary-label">PSTO Staff</div>
+                <div class="users-summary-value" data-role-count="dost_staff">0</div>
+                <div class="users-summary-note">Staff members</div>
+            </div>
+        </div>
+        <div class="users-summary-card" style="--summary-accent:#f59e0b;--summary-glow:rgba(245,158,11,0.12);">
+            <span class="users-summary-icon material-icons">person_off</span>
+            <div>
+                <div class="users-summary-label">Beneficiaries</div>
+                <div class="users-summary-value" data-role-count="beneficiary">0</div>
+                <div class="users-summary-note">TNA-linked users</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="users-action-bar">
         <div>
             <button x-show="selectedIds.length > 0" @click="openMassDelete = true"
                 x-cloak
@@ -63,42 +486,56 @@
             </button>
         </div>
         <button @click="openAdd = true"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow">
-            + Add User
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow inline-flex items-center justify-center gap-2">
+            <span class="material-icons text-base">add</span>
+            Add User
         </button>
     </div>
 
     <!-- ✅ Users Table - Minimized in Simple Mode -->
-    <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4 table-section">
-        <table id="usersTable" class="min-w-full text-sm text-left text-gray-600">
-            <thead class="bg-gray-100 text-gray-700">
+    <div class="users-table-card table-section">
+        <div class="users-table-scroll">
+        <table id="usersTable" class="users-table min-w-full text-sm text-left text-gray-600">
+            <thead>
                 <tr>
-                    <th class="px-4 py-2">
-                        <input type="checkbox" :checked="selectAll" @change="toggleSelectAll($event.target.checked)" @click.stop @mousedown.stop class="user-select-all w-4 h-4 rounded border-gray-300">
+                    <th>
+                        <input type="checkbox" :checked="selectAll" @change="toggleSelectAll($event.target.checked)" @click.stop @mousedown.stop class="user-select-all user-check">
                     </th>
-                    <th class="px-4 py-2">#</th>
-                    <th class="px-4 py-2">Username</th>
-                    <th class="px-4 py-2">Full Name</th>
-                    <th class="px-4 py-2">Email</th>
-                    <th class="px-4 py-2">Role</th>
-                    <th class="px-4 py-2">TNA Status</th>
-                    <th class="px-4 py-2 text-center">Actions</th>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>TNA Status</th>
+                    <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
-                <tr>
-                    <td class="px-4 py-2">
-                        <input type="checkbox" value="{{ user.id }}" @change="updateSelectAll()" @click.stop @mousedown.stop class="user-checkbox w-4 h-4 rounded border-gray-300">
+                <tr data-role="{{ user.role }}">
+                    <td>
+                        <input type="checkbox" value="{{ user.id }}" @change="updateSelectAll()" @click.stop @mousedown.stop class="user-checkbox user-check">
                     </td>
-                    <td class="px-4 py-2">{{ forloop.counter }}</td>
-                    <td class="px-4 py-2">{{ user.username|default:user.first_name|default:user.email }}</td>
-                    <td class="px-4 py-2">{{ user.full_name }}</td>
-                    <td class="px-4 py-2">{{ user.email }}</td>
-                    <td class="px-4 py-2">{{ user.get_role_display }}</td>
-                    <td class="px-4 py-2">
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <div class="user-profile-cell">
+                            <span class="user-avatar">{{ user.username|default:user.first_name|default:user.email|slice:":2"|upper }}</span>
+                            <span>
+                                <span class="user-username">{{ user.username|default:user.first_name|default:user.email }}</span>
+                                <span class="user-email-muted">{{ user.email }}</span>
+                            </span>
+                        </div>
+                    </td>
+                    <td>{{ user.full_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <span class="user-role-pill {% if user.role == 'admin' %}role-admin{% elif user.role == 'dost_staff' %}role-staff{% elif user.role == 'beneficiary' %}role-beneficiary{% elif user.role == 'proponent' %}role-proponent{% endif %}">
+                            {{ user.get_role_display }}
+                        </span>
+                    </td>
+                    <td>
                         {% if user.role == 'beneficiary' %}
-                            <span class="px-2 py-1 text-xs rounded-full 
+                            <span class="user-tna-pill
                                 {% if user.tna_status == 'operational' %}bg-green-100 text-green-800
                                 {% elif user.tna_status == 'delivered' %}bg-blue-100 text-blue-800
                                 {% elif user.tna_status == 'completed' %}bg-purple-100 text-purple-800
@@ -110,17 +547,17 @@
                             <span class="text-gray-400 text-xs">N/A</span>
                         {% endif %}
                     </td>
-                    <td class="px-4 py-2 text-center">
-                        <div class="flex justify-center gap-2">
+                    <td class="text-center">
+                        <div class="user-actions">
                             <button type="button"
                                 onclick="window.openUserEditModal({id: {{ user.id }}, username: '{{ user.username|escapejs }}', first_name: '{{ user.first_name|escapejs }}', middle_name: '{{ user.middle_name|escapejs }}', last_name: '{{ user.last_name|escapejs }}', email: '{{ user.email }}', role: '{{ user.role }}', profile_picture: '{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% endif %}', tna_status: '{{ user.tna_status }}', tna_completion_date: '{{ user.tna_completion_date|date:"Y-m-d"|default:"" }}', tna_notes: '{{ user.tna_notes|escapejs|default:"" }}'})"
-                                class="px-3 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600">
-                                Edit
+                                class="user-icon-btn edit" title="Edit user" aria-label="Edit {{ user.email }}">
+                                <span class="material-icons text-sm">edit</span>
                             </button>
                             <button type="button"
                                 onclick="window.openUserDeleteModal({{ user.id }}, '{{ user.email|escapejs }}')"
-                                class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">
-                                Delete
+                                class="user-icon-btn delete" title="Delete user" aria-label="Delete {{ user.email }}">
+                                <span class="material-icons text-sm">delete</span>
                             </button>
                         </div>
                     </td>
@@ -128,6 +565,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
 
    <!-- ✅ Add User Modal -->
@@ -536,6 +974,17 @@
             ]
         });
         const table = document.getElementById('usersTable');
+        const roleCounts = { admin: 0, dost_staff: 0, beneficiary: 0 };
+        table.querySelectorAll('tbody tr[data-role]').forEach((row) => {
+            const role = row.getAttribute('data-role');
+            if (Object.prototype.hasOwnProperty.call(roleCounts, role)) {
+                roleCounts[role] += 1;
+            }
+        });
+        Object.entries(roleCounts).forEach(([role, count]) => {
+            const target = document.querySelector(`[data-role-count="${role}"]`);
+            if (target) target.textContent = count;
+        });
 
         function getBulkState() {
             const container = document.querySelector('.container[x-data]');

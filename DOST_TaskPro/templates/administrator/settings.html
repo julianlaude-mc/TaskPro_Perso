@@ -1,685 +1,915 @@
 {% extends 'administrator/base.html' %}
 {% load static %}
 {% block title %}Account Settings{% endblock %}
-
-{% block page_title %}Profile Settings{% endblock %}
+{% block page-title %}Settings{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.css">
 <style>
-    /* Settings Page Styles */
-    .settings-container {
-        max-width: 1000px;
-        margin: 0 auto;
+  .settings-module {
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    color: #14213d;
+  }
+
+  .settings-module button,
+  .settings-module input,
+  .settings-module select,
+  .settings-module textarea {
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  }
+
+  .settings-shell {
+    width: min(100%, 1500px);
+    margin: 0 auto;
+    padding: 1.35rem;
+  }
+
+  .settings-panel,
+  .settings-profile-hero,
+  .settings-nav,
+  .settings-help {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06);
+  }
+
+  .settings-nav,
+  .settings-help,
+  .settings-panel {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 18px;
+  }
+
+  .settings-profile-hero {
+    border-radius: 18px;
+    background: linear-gradient(120deg, #2457d6 0%, #1f6eea 48%, #0798df 100%);
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .settings-title {
+    color: #13234a;
+    font-weight: 650;
+    letter-spacing: 0;
+  }
+
+  .settings-muted {
+    color: #64748b;
+  }
+
+  .settings-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    text-align: left;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    border: 1px solid transparent;
+  }
+
+  .settings-nav-link:hover,
+  .settings-nav-link.active {
+    background: linear-gradient(120deg, #f7fbff 0%, #edf4ff 100%);
+    border-color: rgba(37, 99, 235, 0.28);
+    transform: translateY(-1px);
+  }
+
+  .settings-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    flex: 0 0 auto;
+  }
+
+  .settings-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.35rem 0.8rem;
+  }
+
+  .settings-card-body {
+    padding: 0 1.35rem 1.35rem;
+  }
+
+  .settings-input {
+    width: 100%;
+    border: 1px solid #d7e0ee;
+    border-radius: 10px;
+    background: #fff;
+    color: #13234a;
+    padding: 0.78rem 0.9rem;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .settings-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+    .settings-label {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: #42526e;
+      font-size: 0.82rem;
+      font-weight: 600;
     }
-    
-    .settings-header {
-        background: linear-gradient(135deg, #0072CE 0%, #005bb5 100%);
-        border-radius: 20px 20px 0 0;
-        padding: 2rem;
-        color: white;
-        position: relative;
-        overflow: hidden;
+
+  .settings-edit-btn,
+  .settings-outline-btn,
+  .settings-primary-btn,
+  .settings-warning-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 10px;
+      min-height: 42px;
+      padding: 0.65rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
-    .settings-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -20%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255,255,255,0.1);
-        border-radius: 50%;
+
+  .settings-edit-btn,
+  .settings-outline-btn {
+    border: 1px solid #d7e0ee;
+    background: #fff;
+    color: #13234a;
+  }
+
+  .settings-primary-btn {
+    background: linear-gradient(135deg, #2f6bff, #1d4ed8);
+    color: #fff;
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+  }
+
+  .settings-warning-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    box-shadow: 0 14px 28px rgba(217, 119, 6, 0.2);
+  }
+
+  .settings-edit-btn:hover,
+  .settings-outline-btn:hover,
+  .settings-primary-btn:hover,
+  .settings-warning-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .settings-avatar-wrap {
+    position: relative;
+    width: 94px;
+    height: 94px;
+    flex: 0 0 auto;
+  }
+
+  .settings-avatar {
+    width: 94px;
+    height: 94px;
+    border-radius: 999px;
+    border: 4px solid rgba(255, 255, 255, 0.85);
+    object-fit: cover;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .settings-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 94px;
+    height: 94px;
+    border-radius: 999px;
+      border: 4px solid rgba(255, 255, 255, 0.85);
+      color: #fff;
+      font-size: 1.8rem;
+      font-weight: 600;
     }
-    
-    .settings-header::after {
-        content: '';
-        position: absolute;
-        bottom: -30%;
-        left: -10%;
-        width: 200px;
-        height: 200px;
-        background: rgba(255,255,255,0.05);
-        border-radius: 50%;
+
+  .settings-camera {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #2563eb;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+  }
+
+  .signature-preview {
+    min-height: 88px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+  }
+
+  .signature-preview img {
+    max-width: 92%;
+    max-height: 72px;
+    object-fit: contain;
+  }
+
+  .settings-file-btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 46px;
+    width: 100%;
+    border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      color: #64748b;
+      background: #f8fafc;
+      font-weight: 600;
+      cursor: pointer;
     }
-    
-    .profile-avatar-wrapper {
-        position: relative;
-        display: inline-block;
+
+  .settings-file-btn input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .settings-alert {
+    display: flex;
+    align-items: center;
+      gap: 0.75rem;
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      font-weight: 600;
     }
-    
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        border: 4px solid white;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        object-fit: cover;
-        transition: transform 0.3s ease;
+
+  .settings-alert.success { background: #dcfce7; color: #166534; }
+  .settings-alert.error { background: #fee2e2; color: #991b1b; }
+  .settings-alert.warning { background: #fef3c7; color: #92400e; }
+
+  .setting-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid #edf2f7;
+    padding: 1rem 0;
+  }
+
+  .setting-toggle:first-child {
+    border-top: 0;
+  }
+
+  .setting-toggle input {
+    width: 42px;
+    height: 22px;
+    accent-color: #2563eb;
+  }
+
+  .settings-highlight {
+    animation: settingsPulse 1.2s ease;
+  }
+
+  @keyframes settingsPulse {
+    0%, 100% { box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06); }
+    45% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15), 0 16px 38px rgba(15, 23, 42, 0.08); }
+  }
+
+  .dark .settings-module {
+    color: #e5edf8;
+  }
+
+  .dark .settings-module.bg-slate-50\/80 {
+    background: #0f172a;
+  }
+
+  .dark .settings-panel,
+  .dark .settings-nav,
+  .dark .settings-help {
+    background: #111827;
+    border-color: rgba(71, 85, 105, 0.72);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  }
+
+  .dark .settings-profile-hero {
+    background: linear-gradient(120deg, #12357d 0%, #1556b7 52%, #03699d 100%);
+    border-color: rgba(96, 165, 250, 0.28);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+  }
+
+  .dark .settings-title {
+    color: #f8fafc;
+  }
+
+  .dark .settings-muted {
+    color: #a8b5c9;
+  }
+
+  .dark .settings-nav-link {
+    color: #dbe7f6;
+  }
+
+  .dark .settings-nav-link:hover,
+  .dark .settings-nav-link.active {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(96, 165, 250, 0.45);
+  }
+
+  .dark .settings-icon.bg-blue-50,
+  .dark .settings-icon.bg-emerald-50,
+  .dark .settings-icon.bg-purple-50,
+  .dark .settings-icon.bg-sky-50,
+  .dark .settings-icon.bg-indigo-50,
+  .dark .settings-icon.bg-orange-50,
+  .dark .settings-icon.bg-slate-100 {
+    background: #1e293b;
+  }
+
+  .dark .settings-input {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #f8fafc;
+  }
+
+  .dark .settings-input::placeholder {
+    color: #94a3b8;
+  }
+
+  .dark .settings-input:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.16);
+  }
+
+  .dark .settings-label {
+    color: #cbd5e1;
+  }
+
+  .dark .settings-edit-btn,
+  .dark .settings-outline-btn {
+    background: #111827;
+    border-color: #475569;
+    color: #f8fafc;
+  }
+
+  .dark .settings-edit-btn:hover,
+  .dark .settings-outline-btn:hover {
+    background: #1e293b;
+  }
+
+  .dark .signature-preview {
+    background: #0f172a;
+    border-color: #475569;
+  }
+
+  .dark .settings-file-btn {
+    background: #0f172a;
+    border-color: #475569;
+    color: #cbd5e1;
+  }
+
+  .dark .setting-toggle {
+    border-top-color: #243244;
+  }
+
+  .dark .settings-alert.success { background: #052e1a; color: #bbf7d0; }
+  .dark .settings-alert.error { background: #450a0a; color: #fecaca; }
+  .dark .settings-alert.warning { background: #422006; color: #fde68a; }
+
+  @media (max-width: 1024px) {
+    .settings-layout {
+      grid-template-columns: 1fr;
     }
-    
-    .profile-avatar:hover {
-        transform: scale(1.05);
+    .settings-side {
+      position: static;
     }
-    
-    .avatar-upload-btn {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .settings-shell {
+      padding: 0.85rem;
     }
-    
-    .avatar-upload-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+    .settings-profile-hero,
+    .settings-panel,
+    .settings-nav,
+    .settings-help {
+      border-radius: 14px;
     }
-    
-    .settings-body {
-        background: white;
-        border-radius: 0 0 20px 20px;
-        padding: 2rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    .settings-card-header {
+      align-items: flex-start;
+      padding: 1rem 1rem 0.7rem;
     }
-    
-    .section-card {
-        background: #f8fafc;
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #e2e8f0;
-        transition: all 0.3s ease;
+    .settings-card-body {
+      padding: 0 1rem 1rem;
     }
-    
-    .section-card:hover {
-        box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-        border-color: #cbd5e1;
+    .settings-avatar-wrap,
+    .settings-avatar,
+    .settings-avatar-fallback {
+      width: 78px;
+      height: 78px;
     }
-    
-    .section-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 1.25rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 2px solid #e2e8f0;
-    }
-    
-    .section-title .material-icons {
-        font-size: 24px;
-        padding: 8px;
-        border-radius: 10px;
-    }
-    
-    .section-title.personal .material-icons { background: #dbeafe; color: #2563eb; }
-    .section-title.contact .material-icons { background: #dcfce7; color: #16a34a; }
-    .section-title.security .material-icons { background: #fef3c7; color: #d97706; }
-    .section-title.signature .material-icons { background: #f3e8ff; color: #9333ea; }
-    
-    .form-group {
-        margin-bottom: 1rem;
-    }
-    
-    .form-label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 0.5rem;
-    }
-    
-    .form-input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-        background: white;
-    }
-    
-    .form-input:focus {
-        border-color: #0072CE;
-        box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.1);
-        outline: none;
-    }
-    
-    .form-input:hover {
-        border-color: #cbd5e1;
-    }
-    
-    .signature-preview {
-        width: 200px;
-        height: 100px;
-        border: 2px dashed #cbd5e1;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        transition: all 0.3s ease;
-    }
-    
-    .signature-preview:hover {
-        border-color: #9333ea;
-        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-    }
-    
-    .signature-preview img {
-        max-width: 90%;
-        max-height: 90%;
-        object-fit: contain;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #0072CE 0%, #005bb5 100%);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 114, 206, 0.3);
-    }
-    
-    .btn-secondary {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .btn-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
-    }
-    
-    .btn-success {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .btn-success:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
-    }
-    
-    /* Dark mode support */
-    .dark .settings-body {
-        background: #1e293b;
-    }
-    
-    .dark .section-card {
-        background: #0f172a;
-        border-color: #334155;
-    }
-    
-    .dark .section-title {
-        color: #f1f5f9;
-        border-bottom-color: #334155;
-    }
-    
-    .dark .form-label {
-        color: #cbd5e1;
-    }
-    
-    .dark .form-input {
-        background: #1e293b;
-        border-color: #334155;
-        color: #f1f5f9;
-    }
-    
-    .dark .form-input:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-    
-    .dark .signature-preview {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border-color: #475569;
-    }
-    
-    /* File input styling */
-    .file-input-wrapper {
-        position: relative;
-        overflow: hidden;
-        display: inline-block;
-    }
-    
-    .file-input-wrapper input[type=file] {
-        position: absolute;
-        left: 0;
-        top: 0;
-        opacity: 0;
-        cursor: pointer;
-        width: 100%;
-        height: 100%;
-    }
-    
-    .file-input-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0.5rem 1rem;
-        background: #f1f5f9;
-        border: 2px dashed #cbd5e1;
-        border-radius: 8px;
-        color: #64748b;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .file-input-btn:hover {
-        background: #e2e8f0;
-        border-color: #94a3b8;
-        color: #475569;
-    }
-    
-    /* Alert styles */
-    .alert {
-        padding: 1rem 1.25rem;
-        border-radius: 12px;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: slideIn 0.3s ease;
-    }
-    
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .alert-success {
-        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-        color: #166534;
-        border: 1px solid #86efac;
-    }
-    
-    .alert-error {
-        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-        color: #991b1b;
-        border: 1px solid #fca5a5;
-    }
-    
-    .alert-warning {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        color: #92400e;
-        border: 1px solid #fcd34d;
-    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="settings-container" x-data="{ openModal: false }">
-    
-    <!-- Header with Profile Picture -->
-    <div class="settings-header">
-        <div class="flex flex-col sm:flex-row items-center gap-6 relative z-10">
-            <div class="profile-avatar-wrapper">
-                {% if user.profile_picture %}
-                    <img src="{{ user.profile_picture.url }}" alt="Profile" class="profile-avatar" id="profilePreview" data-default-avatar="{% static 'img/default-avatar.png' %}">
-                {% else %}
-                    <img src="{% static 'img/default-avatar.png' %}" alt="Profile" class="profile-avatar" id="profilePreview" data-default-avatar="{% static 'img/default-avatar.png' %}">
-                {% endif %}
-                <label class="avatar-upload-btn" title="Change Photo">
-                    <span class="material-icons text-white text-lg">camera_alt</span>
+<div class="settings-module min-h-screen bg-slate-50/80" x-data="{ openModal: false }">
+  <div class="settings-shell">
+    {% if messages %}
+      <div class="mb-4 space-y-2">
+        {% for message in messages %}
+          <div class="settings-alert {% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}success{% endif %}">
+            <span class="material-icons">{% if message.tags == 'success' %}check_circle{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}</span>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" id="settingsForm">
+      {% csrf_token %}
+      <input type="hidden" name="remove_profile_picture" id="removeProfilePicture" value="false">
+      <input type="hidden" name="cropped_profile_picture" id="croppedProfilePicture">
+
+      <div class="settings-layout grid grid-cols-[300px_minmax(0,1fr)] gap-5">
+        <aside class="settings-side space-y-4 lg:sticky lg:top-24 self-start">
+          <nav class="settings-nav p-5 space-y-2" aria-label="Settings sections">
+            <button type="button" class="settings-nav-link active" data-target="profileSection">
+              <span class="settings-icon bg-blue-50 text-blue-600"><span class="material-icons">person</span></span>
+              <span><span class="block settings-title text-sm">Profile</span><span class="block text-xs settings-muted mt-1">View and edit your profile</span></span>
+            </button>
+            <button type="button" class="settings-nav-link" data-target="contactSection">
+              <span class="settings-icon bg-slate-100 text-slate-600"><span class="material-icons">lock</span></span>
+              <span><span class="block settings-title text-sm">Account</span><span class="block text-xs settings-muted mt-1">Manage your account</span></span>
+            </button>
+            <button type="button" class="settings-nav-link" data-target="notificationSection">
+              <span class="settings-icon bg-slate-100 text-slate-600"><span class="material-icons">notifications</span></span>
+              <span><span class="block settings-title text-sm">Notifications</span><span class="block text-xs settings-muted mt-1">Configure notification preferences</span></span>
+            </button>
+            <button type="button" class="settings-nav-link" data-target="preferenceSection">
+              <span class="settings-icon bg-slate-100 text-slate-600"><span class="material-icons">tune</span></span>
+              <span><span class="block settings-title text-sm">Preferences</span><span class="block text-xs settings-muted mt-1">Customize your experience</span></span>
+            </button>
+            <button type="button" class="settings-nav-link" data-target="securitySection">
+              <span class="settings-icon bg-slate-100 text-slate-600"><span class="material-icons">shield</span></span>
+              <span><span class="block settings-title text-sm">Security</span><span class="block text-xs settings-muted mt-1">Security and access settings</span></span>
+            </button>
+            <a href="{% url 'administrator_audit_logs_url' %}" class="settings-nav-link">
+              <span class="settings-icon bg-slate-100 text-slate-600"><span class="material-icons">history</span></span>
+              <span><span class="block settings-title text-sm">Activity</span><span class="block text-xs settings-muted mt-1">View your account activity</span></span>
+            </a>
+          </nav>
+
+          <div class="settings-help p-5">
+            <div class="flex items-start gap-3">
+              <span class="settings-icon bg-purple-50 text-purple-600"><span class="material-icons text-base">help</span></span>
+              <div>
+                <p class="settings-title text-sm">Need help?</p>
+                <p class="mt-1 text-xs settings-muted">Open guided support for this settings page.</p>
+              </div>
+            </div>
+            <button type="button" id="settingsHelpBtn" class="settings-outline-btn mt-4 w-full">
+              Go to Help Center
+              <span class="material-icons text-sm">open_in_new</span>
+            </button>
+          </div>
+        </aside>
+
+        <main class="space-y-4 min-w-0">
+          <section id="profileOverview" class="settings-profile-hero p-6 md:p-7">
+            <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div class="settings-avatar-wrap">
+                  {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile" class="settings-avatar" id="profilePreview" data-default-avatar="{% static 'img/default-avatar.png' %}">
+                  {% else %}
+                    <div class="settings-avatar-fallback" id="profileFallback">{{ user.first_name|default:user.username|first|upper }}{{ user.last_name|first|upper }}</div>
+                    <img src="{% static 'img/default-avatar.png' %}" alt="Profile" class="settings-avatar hidden" id="profilePreview" data-default-avatar="{% static 'img/default-avatar.png' %}">
+                  {% endif %}
+                  <label class="settings-camera" title="Change photo">
+                    <span class="material-icons text-[18px]">photo_camera</span>
                     <input type="file" name="profile_picture" form="settingsForm" accept="image/*" class="hidden" id="avatarInput">
-                </label>
-                {% if user.profile_picture %}
-                <button type="button" id="removeProfilePictureBtn" class="mt-2 text-xs text-white/90 hover:text-white">Remove photo</button>
-                {% endif %}
+                  </label>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h1 class="text-2xl md:text-3xl font-extrabold">{{ user.get_full_name|default:user.username }}</h1>
+                    <span class="rounded-full bg-white/18 px-3 py-1 text-xs font-extrabold">{{ user.role|title }}</span>
+                  </div>
+                  <p class="mt-3 flex items-center gap-2 text-sm text-white/90"><span class="material-icons text-base">mail</span>{{ user.email }}</p>
+                  <p class="mt-2 flex items-center gap-2 text-sm text-white/90"><span class="material-icons text-base">calendar_month</span>Member since {{ user.date_joined|date:"F d, Y" }}</p>
+                  {% if user.profile_picture %}
+                    <button type="button" id="removeProfilePictureBtn" class="mt-3 text-xs font-bold text-white/90 hover:text-white">Remove photo</button>
+                  {% endif %}
+                </div>
+              </div>
+              <button type="button" id="publicProfileBtn" class="settings-outline-btn border-white/25 bg-white/10 text-white hover:bg-white/15">
+                Preview Profile
+                <span class="material-icons text-sm">open_in_new</span>
+              </button>
             </div>
-            <div class="text-center sm:text-left">
-                <h1 class="text-2xl font-bold">{{ user.get_full_name|default:user.username }}</h1>
-                <p class="text-blue-100 flex items-center gap-2 justify-center sm:justify-start mt-1">
-                    <span class="material-icons text-sm">badge</span>
-                    {{ user.role|title }} Account
-                </p>
-                <p class="text-blue-100 text-sm flex items-center gap-2 justify-center sm:justify-start mt-1">
-                    <span class="material-icons text-sm">email</span>
-                    {{ user.email }}
-                </p>
+          </section>
+
+          <section id="profileSection" class="settings-panel">
+            <div class="settings-card-header">
+              <div class="flex items-center gap-3">
+                <span class="settings-icon bg-blue-50 text-blue-600"><span class="material-icons">person</span></span>
+                <h2 class="settings-title text-lg">Personal Information</h2>
+              </div>
+              <button type="button" class="settings-edit-btn" data-edit="profileSection"><span class="material-icons text-sm">edit</span>Edit</button>
             </div>
-        </div>
-    </div>
-    
-    <!-- Settings Body -->
-    <div class="settings-body">
-        
-        <!-- Flash Messages -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}success{% endif %}">
-                    <span class="material-icons">
-                        {% if message.tags == 'success' %}check_circle{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}
-                    </span>
-                    <span>{{ message }}</span>
+            <div class="settings-card-body">
+              <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div><label class="settings-label">First Name</label><input type="text" name="first_name" value="{{ user.first_name }}" class="settings-input" placeholder="First name"></div>
+                <div><label class="settings-label">Middle Name</label><input type="text" name="middle_name" value="{{ user.middle_name }}" class="settings-input" placeholder="Middle name"></div>
+                <div><label class="settings-label">Last Name</label><input type="text" name="last_name" value="{{ user.last_name }}" class="settings-input" placeholder="Last name"></div>
+                <div><label class="settings-label">Suffix</label><input type="text" name="suffix" value="{{ user.suffix }}" class="settings-input" placeholder="None"></div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label class="settings-label">Sex</label>
+                  <select name="sex" class="settings-input">
+                    <option value="">Select Sex</option>
+                    <option value="male" {% if user.sex == "male" %}selected{% endif %}>Male</option>
+                    <option value="female" {% if user.sex == "female" %}selected{% endif %}>Female</option>
+                  </select>
                 </div>
-            {% endfor %}
-        {% endif %}
-        
-        <form method="POST" enctype="multipart/form-data" id="settingsForm">
-            {% csrf_token %}
-            <input type="hidden" name="remove_profile_picture" id="removeProfilePicture" value="false">
-            <input type="hidden" name="cropped_profile_picture" id="croppedProfilePicture">
-            
-            <!-- Personal Information Section -->
-            <div class="section-card">
-                <h3 class="section-title personal">
-                    <span class="material-icons">person</span>
-                    Personal Information
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="form-group">
-                        <label class="form-label">First Name</label>
-                        <input type="text" name="first_name" value="{{ user.first_name }}" class="form-input" placeholder="Enter first name">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Middle Name</label>
-                        <input type="text" name="middle_name" value="{{ user.middle_name }}" class="form-input" placeholder="Enter middle name">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" name="last_name" value="{{ user.last_name }}" class="form-input" placeholder="Enter last name">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Suffix</label>
-                        <input type="text" name="suffix" value="{{ user.suffix }}" class="form-input" placeholder="Jr., Sr., III">
-                    </div>
+                <div>
+                  <label class="settings-label">Civil Status</label>
+                  <select name="civil_status" class="settings-input">
+                    <option value="">Select Status</option>
+                    <option value="single" {% if user.civil_status == "single" %}selected{% endif %}>Single</option>
+                    <option value="married" {% if user.civil_status == "married" %}selected{% endif %}>Married</option>
+                    <option value="widowed" {% if user.civil_status == "widowed" %}selected{% endif %}>Widowed</option>
+                    <option value="separated" {% if user.civil_status == "separated" %}selected{% endif %}>Separated</option>
+                  </select>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    <div class="form-group">
-                        <label class="form-label">Sex</label>
-                        <select name="sex" class="form-input">
-                            <option value="">Select Sex</option>
-                            <option value="male" {% if user.sex == "male" %}selected{% endif %}>Male</option>
-                            <option value="female" {% if user.sex == "female" %}selected{% endif %}>Female</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Civil Status</label>
-                        <select name="civil_status" class="form-input">
-                            <option value="">Select Status</option>
-                            <option value="single" {% if user.civil_status == "single" %}selected{% endif %}>Single</option>
-                            <option value="married" {% if user.civil_status == "married" %}selected{% endif %}>Married</option>
-                            <option value="widowed" {% if user.civil_status == "widowed" %}selected{% endif %}>Widowed</option>
-                            <option value="separated" {% if user.civil_status == "separated" %}selected{% endif %}>Separated</option>
-                        </select>
-                    </div>
-                </div>
+              </div>
             </div>
-            
-            <!-- Contact Information Section -->
-            <div class="section-card">
-                <h3 class="section-title contact">
-                    <span class="material-icons">contact_phone</span>
-                    Contact Information
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" name="email" value="{{ user.email }}" class="form-input" placeholder="email@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Contact Number</label>
-                        <input type="text" name="contact_number" value="{{ user.contact_number }}" class="form-input" placeholder="09XX XXX XXXX">
-                    </div>
-                </div>
-                <div class="form-group mt-2">
-                    <label class="form-label">Complete Address</label>
-                    <textarea name="address" class="form-input" rows="2" placeholder="Enter your complete address">{{ user.address }}</textarea>
-                </div>
+          </section>
+
+          <section id="contactSection" class="settings-panel">
+            <div class="settings-card-header">
+              <div class="flex items-center gap-3">
+                <span class="settings-icon bg-emerald-50 text-emerald-600"><span class="material-icons">contact_phone</span></span>
+                <h2 class="settings-title text-lg">Contact Information</h2>
+              </div>
+              <button type="button" class="settings-edit-btn" data-edit="contactSection"><span class="material-icons text-sm">edit</span>Edit</button>
             </div>
-            
-            <!-- Digital Signature Section -->
-            <div class="section-card">
-                <h3 class="section-title signature">
-                    <span class="material-icons">draw</span>
-                    Digital Signature
-                </h3>
-                <p class="text-sm text-gray-500 mb-4">Your digital signature will be included in PDF reports you export.</p>
-                
-                <div class="flex flex-col sm:flex-row items-start gap-6">
-                    <!-- Current Signature Preview -->
-                    <div>
-                        <label class="form-label mb-2">Current Signature</label>
-                        <div class="signature-preview" id="currentSignaturePreview">
-                            {% if user_signature and user_signature.signature_image %}
-                                <img src="{{ user_signature.signature_image.url }}" alt="Your Signature">
-                            {% elif user_signature and user_signature.signature_data %}
-                                <img src="{{ user_signature.signature_data }}" alt="Your Signature">
-                            {% else %}
-                                <span class="text-gray-400 text-sm flex items-center gap-2">
-                                    <span class="material-icons">gesture</span>
-                                    No signature
-                                </span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <!-- Upload/Draw Signature -->
-                    <div class="flex-grow">
-                        <label class="form-label mb-2">Upload New Signature</label>
-                        <div class="file-input-wrapper mb-3">
-                            <div class="file-input-btn">
-                                <span class="material-icons text-sm">upload_file</span>
-                                Choose Image File
-                            </div>
-                            <input type="file" name="signature_image" accept="image/*" onchange="previewSignature(this)">
-                        </div>
-                        <p class="text-xs text-gray-500 mb-3">PNG or JPG with transparent background recommended</p>
-                        
-                        <!-- Preview of new upload -->
-                        <div id="newSignaturePreview" class="hidden mb-3">
-                            <p class="text-sm text-gray-600 mb-1">Preview:</p>
-                            <img id="signaturePreviewImg" src="" alt="Preview" class="max-w-48 max-h-24 border rounded-lg">
-                        </div>
-                        
-                        <button type="button" onclick="openSignatureModal('settings', '{{ user.id }}')" class="btn-success">
-                            <span class="material-icons text-sm">edit</span>
-                            Draw Signature
-                        </button>
-                    </div>
-                </div>
+            <div class="settings-card-body">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label class="settings-label">Email Address</label><input type="email" name="email" value="{{ user.email }}" class="settings-input" placeholder="email@example.com"></div>
+                <div><label class="settings-label">Contact Number</label><input type="text" name="contact_number" value="{{ user.contact_number }}" class="settings-input" placeholder="None"></div>
+                <div><label class="settings-label">Complete Address</label><input type="text" name="address" value="{{ user.address }}" class="settings-input" placeholder="None"></div>
+              </div>
             </div>
-            
-            <!-- Security Section -->
-            <div class="section-card">
-                <h3 class="section-title security">
-                    <span class="material-icons">security</span>
-                    Security Settings
-                </h3>
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div>
-                        <p class="text-gray-700 font-medium">Password</p>
-                        <p class="text-sm text-gray-500">Change your account password for better security</p>
+          </section>
+
+          <section id="signatureSection" class="settings-panel">
+            <div class="settings-card-header">
+              <div class="flex items-center gap-3">
+                <span class="settings-icon bg-purple-50 text-purple-600"><span class="material-icons">draw</span></span>
+                <div>
+                  <h2 class="settings-title text-lg">Digital Signature</h2>
+                  <p class="text-sm settings-muted">Your digital signature will be included in PDF reports you export.</p>
+                </div>
+              </div>
+              <button type="button" class="settings-edit-btn" data-edit="signatureSection"><span class="material-icons text-sm">edit</span>Edit</button>
+            </div>
+            <div class="settings-card-body">
+              <div class="grid grid-cols-1 gap-5 lg:grid-cols-[240px_minmax(0,1fr)]">
+                <div>
+                  <label class="settings-label">Current Signature</label>
+                  <div class="signature-preview" id="currentSignaturePreview">
+                    {% if user_signature and user_signature.signature_image %}
+                      <img src="{{ user_signature.signature_image.url }}" alt="Your Signature">
+                    {% elif user_signature and user_signature.signature_data %}
+                      <img src="{{ user_signature.signature_data }}" alt="Your Signature">
+                    {% else %}
+                      <span class="text-sm text-slate-400 flex items-center gap-2"><span class="material-icons">gesture</span>No signature</span>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
+                  <div>
+                    <label class="settings-label">Upload New Signature</label>
+                    <label class="settings-file-btn">
+                      <span class="material-icons text-sm">upload_file</span>
+                      <span id="signatureFileLabel">Choose Image File</span>
+                      <input type="file" name="signature_image" accept="image/*" onchange="previewSignature(this)">
+                    </label>
+                    <p class="mt-2 text-xs settings-muted">PNG or JPG with transparent background recommended</p>
+                    <div id="newSignaturePreview" class="hidden mt-3">
+                      <p class="mb-1 text-sm settings-muted">Preview:</p>
+                      <img id="signaturePreviewImg" src="" alt="Preview" class="max-h-24 max-w-48 rounded-lg border">
                     </div>
-                    <button type="button" @click="openModal = true" class="btn-secondary">
-                        <span class="material-icons text-sm">lock</span>
-                        Change Password
+                  </div>
+                  <div class="hidden h-24 w-px bg-slate-200 lg:block"></div>
+                  <div>
+                    <button type="button" onclick="openSignatureModal('settings', '{{ user.id }}')" class="settings-outline-btn w-full text-blue-600">
+                      <span class="material-icons text-sm">edit</span>
+                      Draw Signature
                     </button>
+                  </div>
                 </div>
+              </div>
             </div>
-            
-            <!-- Save Button -->
-            <div class="flex justify-end mt-6">
-                <button type="submit" class="btn-primary">
-                    <span class="material-icons text-sm">save</span>
-                    Save Changes
-                </button>
+          </section>
+
+          <section id="notificationSection" class="settings-panel">
+            <div class="settings-card-header">
+              <div class="flex items-center gap-3">
+                <span class="settings-icon bg-sky-50 text-sky-600"><span class="material-icons">notifications</span></span>
+                <h2 class="settings-title text-lg">Notification Preferences</h2>
+              </div>
             </div>
-        </form>
-    </div>
-    
+            <div class="settings-card-body">
+              <label class="setting-toggle"><span><span class="block settings-title text-sm">Email notifications</span><span class="block text-xs settings-muted mt-1">Receive updates about proposals, projects, and messages.</span></span><input type="checkbox" class="settings-local-toggle" data-key="settings_email_notifications" checked></label>
+              <label class="setting-toggle"><span><span class="block settings-title text-sm">System alerts</span><span class="block text-xs settings-muted mt-1">Show important in-app notifications.</span></span><input type="checkbox" class="settings-local-toggle" data-key="settings_system_alerts" checked></label>
+            </div>
+          </section>
+
+          <section id="preferenceSection" class="settings-panel">
+            <div class="settings-card-header">
+              <div class="flex items-center gap-3">
+                <span class="settings-icon bg-indigo-50 text-indigo-600"><span class="material-icons">tune</span></span>
+                <h2 class="settings-title text-lg">Preferences</h2>
+              </div>
+            </div>
+            <div class="settings-card-body">
+              <label class="setting-toggle"><span><span class="block settings-title text-sm">Simple mode</span><span class="block text-xs settings-muted mt-1">Use simplified labels and assisted navigation.</span></span><input type="checkbox" id="simpleModeToggleSetting"></label>
+              <label class="setting-toggle"><span><span class="block settings-title text-sm">Compact cards</span><span class="block text-xs settings-muted mt-1">Keep settings panels tighter on this browser.</span></span><input type="checkbox" class="settings-local-toggle" data-key="settings_compact_cards"></label>
+            </div>
+          </section>
+
+          <section id="securitySection" class="settings-panel">
+            <div class="settings-card-header">
+              <div class="flex items-center gap-3">
+                <span class="settings-icon bg-orange-50 text-orange-600"><span class="material-icons">shield</span></span>
+                <div>
+                  <h2 class="settings-title text-lg">Security Settings</h2>
+                  <p class="text-sm settings-muted">Change your account password for better security.</p>
+                </div>
+              </div>
+              <button type="button" @click="openModal = true" class="settings-warning-btn">
+                <span class="material-icons text-sm">lock</span>
+                Change Password
+              </button>
+            </div>
+          </section>
+
+          <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button type="button" id="resetViewBtn" class="settings-outline-btn">Reset View</button>
+            <button type="submit" class="settings-primary-btn">
+              <span class="material-icons text-sm">save</span>
+              Save Changes
+            </button>
+          </div>
+        </main>
+      </div>
+    </form>
+
     <div id="avatarCropModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg p-4">
-            <h3 class="text-lg font-semibold mb-3">Adjust Profile Picture</h3>
-            <div class="max-h-[60vh] overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-                <img id="avatarCropImage" alt="Crop" class="max-w-full">
-            </div>
-            <div class="flex justify-end gap-2 mt-4">
-                <button type="button" id="avatarCropCancel" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg">Cancel</button>
-                <button type="button" id="avatarCropApply" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Apply</button>
-            </div>
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg p-4">
+        <h3 class="text-lg font-semibold mb-3">Adjust Profile Picture</h3>
+        <div class="max-h-[60vh] overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+          <img id="avatarCropImage" alt="Crop" class="max-w-full">
         </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" id="avatarCropCancel" class="settings-outline-btn">Cancel</button>
+          <button type="button" id="avatarCropApply" class="settings-primary-btn">Apply</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Change Password Modal -->
-    <div x-show="openModal" x-transition x-cloak
-         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-        <div @click.away="openModal = false"
-             class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                        <span class="material-icons text-white">lock</span>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white">Change Password</h3>
-                        <p class="text-yellow-100 text-sm">Update your account security</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Body -->
-            <form method="POST" action="{% url 'administrator_change_password_url' %}" class="p-6 space-y-4">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label class="form-label">Current Password</label>
-                    <input type="password" name="old_password" class="form-input" required placeholder="Enter current password">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">New Password</label>
-                    <input type="password" name="new_password1" class="form-input" required placeholder="Enter new password">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Confirm New Password</label>
-                    <input type="password" name="new_password2" class="form-input" required placeholder="Confirm new password">
-                </div>
-                
-                <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" @click="openModal = false"
-                            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn-success">
-                        <span class="material-icons text-sm">check</span>
-                        Update Password
-                    </button>
-                </div>
-            </form>
+    <div id="profilePreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4">
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="settings-title text-lg">Profile Preview</h3>
+            <p class="mt-1 text-sm settings-muted">This is how your basic profile details appear inside the system.</p>
+          </div>
+          <button type="button" id="profilePreviewClose" class="settings-outline-btn px-3">
+            <span class="material-icons text-sm">close</span>
+          </button>
         </div>
+        <div class="mt-5 rounded-xl border border-slate-200 p-4 dark:border-slate-700">
+          <p class="settings-title text-base">{{ user.get_full_name|default:user.username }}</p>
+          <p class="mt-1 text-sm settings-muted">{{ user.role|title }}</p>
+          <p class="mt-3 flex items-center gap-2 text-sm settings-muted"><span class="material-icons text-base">mail</span>{{ user.email }}</p>
+          <p class="mt-2 flex items-center gap-2 text-sm settings-muted"><span class="material-icons text-base">phone</span>{{ user.contact_number|default:"No contact number" }}</p>
+        </div>
+        <div class="mt-5 flex justify-end">
+          <button type="button" id="profilePreviewDone" class="settings-primary-btn">Done</button>
+        </div>
+      </div>
     </div>
+
+    <div x-show="openModal" x-transition x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div @click.away="openModal = false" class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <span class="material-icons text-white">lock</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">Change Password</h3>
+              <p class="text-yellow-100 text-sm">Update your account security</p>
+            </div>
+          </div>
+        </div>
+        <form method="POST" action="{% url 'administrator_change_password_url' %}" class="p-6 space-y-4">
+          {% csrf_token %}
+          <div><label class="settings-label">Current Password</label><input type="password" name="old_password" class="settings-input" required placeholder="Enter current password"></div>
+          <div><label class="settings-label">New Password</label><input type="password" name="new_password1" class="settings-input" required placeholder="Enter new password"></div>
+          <div><label class="settings-label">Confirm New Password</label><input type="password" name="new_password2" class="settings-input" required placeholder="Confirm new password"></div>
+          <div class="flex justify-end gap-3 pt-4 border-t">
+            <button type="button" @click="openModal = false" class="settings-outline-btn">Cancel</button>
+            <button type="submit" class="settings-primary-btn"><span class="material-icons text-sm">check</span>Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/cropperjs@1.6.2/dist/cropper.min.js"></script>
 <script>
 function previewSignature(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('signaturePreviewImg').src = e.target.result;
-            document.getElementById('newSignaturePreview').classList.remove('hidden');
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('signaturePreviewImg').src = e.target.result;
+      document.getElementById('newSignaturePreview').classList.remove('hidden');
+      const label = document.getElementById('signatureFileLabel');
+      if (label) label.textContent = input.files[0].name;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
 }
+
+function focusSettingsSection(id) {
+  const section = document.getElementById(id);
+  if (!section) return;
+  document.querySelectorAll('.settings-nav-link').forEach(link => {
+    link.classList.toggle('active', link.dataset.target === id);
+  });
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  section.classList.remove('settings-highlight');
+  void section.offsetWidth;
+  section.classList.add('settings-highlight');
+}
+
+document.querySelectorAll('.settings-nav-link[data-target]').forEach(button => {
+  button.addEventListener('click', () => focusSettingsSection(button.dataset.target));
+});
+
+document.querySelectorAll('[data-edit]').forEach(button => {
+  button.addEventListener('click', () => {
+    const section = document.getElementById(button.dataset.edit);
+    focusSettingsSection(button.dataset.edit);
+    const field = section ? section.querySelector('input, select, textarea') : null;
+    if (field) field.focus();
+  });
+});
+
+const publicProfileBtn = document.getElementById('publicProfileBtn');
+if (publicProfileBtn) {
+  publicProfileBtn.addEventListener('click', () => {
+    const modal = document.getElementById('profilePreviewModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+  });
+}
+
+function closeProfilePreviewModal() {
+  const modal = document.getElementById('profilePreviewModal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+document.getElementById('profilePreviewClose')?.addEventListener('click', closeProfilePreviewModal);
+document.getElementById('profilePreviewDone')?.addEventListener('click', closeProfilePreviewModal);
+document.getElementById('profilePreviewModal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeProfilePreviewModal();
+});
+
+const helpBtn = document.getElementById('settingsHelpBtn');
+if (helpBtn) {
+  helpBtn.addEventListener('click', () => {
+    focusSettingsSection('profileSection');
+    alert('Settings help: use the left menu to jump between sections, edit profile fields directly, then press Save Changes.');
+  });
+}
+
+const resetViewBtn = document.getElementById('resetViewBtn');
+if (resetViewBtn) {
+  resetViewBtn.addEventListener('click', () => {
+    focusSettingsSection('profileOverview');
+    document.querySelectorAll('.settings-local-toggle').forEach(toggle => {
+      localStorage.removeItem(toggle.dataset.key);
+      toggle.checked = toggle.defaultChecked;
+    });
+  });
+}
+
+document.querySelectorAll('.settings-local-toggle').forEach(toggle => {
+  const saved = localStorage.getItem(toggle.dataset.key);
+  if (saved !== null) toggle.checked = saved === 'true';
+  toggle.addEventListener('change', () => localStorage.setItem(toggle.dataset.key, toggle.checked));
+});
+
+const simpleModeToggle = document.getElementById('simpleModeToggleSetting');
+if (simpleModeToggle) {
+  simpleModeToggle.checked = localStorage.getItem('simpleMode') === 'true';
+  simpleModeToggle.addEventListener('change', () => {
+    localStorage.setItem('simpleMode', simpleModeToggle.checked);
+    document.documentElement.classList.toggle('simple-mode', simpleModeToggle.checked);
+  });
+}
+
 const avatarInput = document.getElementById('avatarInput');
 const cropModal = document.getElementById('avatarCropModal');
 const cropImage = document.getElementById('avatarCropImage');
 const cropApply = document.getElementById('avatarCropApply');
 const cropCancel = document.getElementById('avatarCropCancel');
 const previewImg = document.getElementById('profilePreview');
+const profileFallback = document.getElementById('profileFallback');
 const removeBtn = document.getElementById('removeProfilePictureBtn');
 const removeInput = document.getElementById('removeProfilePicture');
 const croppedInput = document.getElementById('croppedProfilePicture');
 let cropper = null;
 
 function closeCropper() {
-    cropModal.classList.add('hidden');
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
+  cropModal.classList.add('hidden');
+  cropModal.classList.remove('flex');
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
 }
 
 if (avatarInput) {
-    avatarInput.addEventListener('change', function() {
-        const file = this.files && this.files[0];
-        if (!file) return;
-        const url = URL.createObjectURL(file);
-        cropImage.src = url;
-        cropModal.classList.remove('hidden');
-        if (cropper) cropper.destroy();
-        cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1, autoCropArea: 1 });
-    });
+  avatarInput.addEventListener('change', function() {
+    const file = this.files && this.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    cropImage.src = url;
+    cropModal.classList.remove('hidden');
+    cropModal.classList.add('flex');
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1, autoCropArea: 1 });
+  });
 }
 
 if (cropApply) {
-    cropApply.addEventListener('click', function() {
-        if (!cropper) return;
-        const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-        croppedInput.value = dataUrl;
-        if (previewImg) previewImg.src = dataUrl;
-        if (removeInput) removeInput.value = 'false';
-        closeCropper();
-    });
+  cropApply.addEventListener('click', function() {
+    if (!cropper) return;
+    const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    croppedInput.value = dataUrl;
+    if (previewImg) {
+      previewImg.src = dataUrl;
+      previewImg.classList.remove('hidden');
+    }
+    if (profileFallback) profileFallback.classList.add('hidden');
+    if (removeInput) removeInput.value = 'false';
+    closeCropper();
+  });
 }
 
 if (cropCancel) {
-    cropCancel.addEventListener('click', closeCropper);
+  cropCancel.addEventListener('click', closeCropper);
 }
 
 if (removeBtn) {
-    removeBtn.addEventListener('click', function() {
-        if (removeInput) removeInput.value = 'true';
-        if (croppedInput) croppedInput.value = '';
-        if (previewImg && previewImg.dataset.defaultAvatar) {
-            previewImg.src = previewImg.dataset.defaultAvatar;
-        }
-    });
+  removeBtn.addEventListener('click', function() {
+    if (removeInput) removeInput.value = 'true';
+    if (croppedInput) croppedInput.value = '';
+    if (previewImg && previewImg.dataset.defaultAvatar) {
+      previewImg.src = previewImg.dataset.defaultAvatar;
+      previewImg.classList.remove('hidden');
+    }
+    if (profileFallback) profileFallback.classList.add('hidden');
+  });
 }
 </script>
 {% endblock %}

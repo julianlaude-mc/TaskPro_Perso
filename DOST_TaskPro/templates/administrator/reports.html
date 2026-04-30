@@ -238,6 +238,334 @@
         .report-toolbar { justify-content: flex-start; margin-top: 0.8rem; }
         .report-action-btn { width: 100%; justify-content: center; }
     }
+
+    /* Executive dashboard visual refresh */
+    .reports-shell {
+        --report-bg: linear-gradient(180deg, #eef4fb 0%, #f7fbff 100%);
+        --report-card: #ffffff;
+        --report-border: #dce7f4;
+        --report-ink: #10243d;
+        --report-muted: #63758a;
+        --report-accent: #2563eb;
+        font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+        border: 0;
+        border-radius: 0;
+        padding: 0 0 1rem;
+        background: var(--report-bg);
+    }
+
+    .reports-hero {
+        border: 0;
+        border-radius: 0.65rem;
+        margin: 0 0 0.85rem;
+        padding: 1rem 1.4rem;
+        background: linear-gradient(120deg, #073472 0%, #062e68 44%, #0b48a6 100%);
+        box-shadow: 0 18px 36px -30px rgba(15, 23, 42, 0.8);
+    }
+
+    .reports-hero::before,
+    .reports-hero::after {
+        opacity: 0.45;
+    }
+
+    .reports-title {
+        font-size: 1.18rem;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+
+    .reports-subtitle {
+        max-width: 31rem;
+        margin-top: 0.35rem;
+        font-size: 0.78rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.92);
+    }
+
+    .report-toolbar {
+        align-items: center;
+        gap: 0.72rem;
+    }
+
+    .report-action-btn {
+        min-height: 2.28rem;
+        border-radius: 0.5rem;
+        padding: 0.48rem 0.78rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        box-shadow: none;
+    }
+
+    .report-action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px -18px rgba(15, 23, 42, 0.75);
+    }
+
+    .report-action-btn svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .report-action-btn-green {
+        background: #16a34a;
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .report-action-btn-gray {
+        background: rgba(15, 36, 70, 0.28);
+        border-color: rgba(255, 255, 255, 0.45);
+        color: #fff;
+    }
+
+    .report-action-btn-red,
+    .report-action-btn-blue {
+        background: #2563eb;
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .reports-filter-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin: 0 0 0.75rem;
+    }
+
+    .reports-filter-row .report-action-btn {
+        min-height: 2rem;
+        padding: 0.38rem 0.62rem;
+        border: 1px solid #dbeafe;
+        background: #ffffff;
+        color: #1d4ed8;
+        box-shadow: 0 10px 20px -18px rgba(37, 99, 235, 0.8);
+    }
+
+    .filter-count-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.15rem;
+        height: 1.15rem;
+        border-radius: 999px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 0.68rem;
+        line-height: 1;
+    }
+
+    .report-date-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 2rem;
+        padding: 0.42rem 0.75rem;
+        border: 1px solid #dbe5f2;
+        border-radius: 0.55rem;
+        background: #fff;
+        color: #42546a;
+        font-size: 0.78rem;
+        font-weight: 600;
+        box-shadow: 0 10px 22px -20px rgba(15, 23, 42, 0.7);
+    }
+
+    .report-filter-card {
+        border-radius: 0.72rem;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 14px 28px -26px rgba(15, 23, 42, 0.65);
+    }
+
+    .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.72rem;
+        margin-bottom: 0.8rem;
+    }
+
+    @media (min-width: 1100px) {
+        .summary-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+    }
+
+    .summary-card {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-height: 4.7rem;
+        border-color: #e1e9f4;
+        border-radius: 0.72rem;
+        padding: 0.78rem;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 16px 32px -28px rgba(15, 23, 42, 0.72);
+    }
+
+    .summary-card::after {
+        width: 6.8rem;
+        height: 6.8rem;
+        right: -2.2rem;
+        top: auto;
+        bottom: -3.3rem;
+        opacity: 0.18;
+    }
+
+    .summary-icon {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        width: 2.22rem;
+        height: 2.22rem;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.55rem;
+        color: #fff;
+        background: var(--summary-color, #2563eb);
+        box-shadow: 0 12px 22px -16px var(--summary-color, #2563eb);
+    }
+
+    .summary-label {
+        margin-top: 0;
+        color: #64748b;
+        font-size: 0.67rem;
+        font-weight: 600;
+        letter-spacing: 0;
+        text-transform: none;
+    }
+
+    .summary-value {
+        margin-top: 0.14rem;
+        color: #1d4ed8;
+        font-size: 1.32rem;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+
+    .summary-caption {
+        margin-top: 0.22rem;
+        color: #7b8ca3;
+        font-size: 0.66rem;
+        line-height: 1.2;
+    }
+
+    .summary-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.16rem;
+        margin-left: 0.35rem;
+        padding: 0.1rem 0.32rem;
+        border-radius: 999px;
+        background: #eef6ff;
+        color: #2563eb;
+        font-size: 0.58rem;
+        font-weight: 700;
+        vertical-align: middle;
+    }
+
+    .summary-card-top-area .summary-value {
+        font-size: 1.05rem;
+        color: #10243d;
+    }
+
+    .chart-section {
+        margin-bottom: 0.72rem;
+    }
+
+    .reports-chart-grid {
+        display: grid;
+        gap: 0.72rem;
+        margin-bottom: 0.72rem;
+    }
+
+    .reports-chart-grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .reports-chart-grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .chart-panel {
+        border-color: #dfe8f3;
+        border-radius: 0.72rem;
+        padding: 0.78rem 0.85rem 0.55rem;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 16px 34px -30px rgba(15, 23, 42, 0.75);
+    }
+
+    .chart-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .chart-title {
+        margin: 0;
+        color: #1e3a5f;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+
+    .chart-details-link {
+        color: #2563eb;
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .chart-period-select {
+        min-height: 1.6rem;
+        border: 1px solid #dfe8f3;
+        border-radius: 0.45rem;
+        background: #fff;
+        color: #64748b;
+        padding: 0.2rem 0.45rem;
+        font-size: 0.64rem;
+        font-weight: 600;
+    }
+
+    .chart-canvas-wrap {
+        height: 172px;
+    }
+
+    .chart-canvas-wrap-compact {
+        height: 168px;
+    }
+
+    .chart-panel canvas {
+        max-width: 100%;
+    }
+
+    @media (max-width: 1100px) {
+        .reports-chart-grid.three,
+        .reports-chart-grid.two {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .reports-shell {
+            padding: 0 0 0.75rem;
+        }
+
+        .reports-hero {
+            padding: 1rem;
+        }
+
+        .reports-filter-row {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .report-date-pill {
+            justify-content: center;
+            width: 100%;
+        }
+    }
 </style>
 
 <div class="reports-shell">
@@ -583,6 +911,7 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 
 <!-- Alpine.js for collapsible filters -->
 <div x-data="{ showFilters: false }" class="mb-5">
+    <div class="reports-filter-row">
     <!-- Filter Toggle Button -->
     <button @click="showFilters = !showFilters" 
             class="report-action-btn report-action-btn-blue">
@@ -593,7 +922,20 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
         <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
+        <span class="filter-count-pill">2</span>
     </button>
+    <div class="report-date-pill">
+        <span class="material-icons text-sm">calendar_today</span>
+        {% if start_date or end_date %}
+            <span>{{ start_date|default:"Start" }} - {{ end_date|default:"End" }}</span>
+        {% elif selected_year %}
+            <span>{{ selected_year }}</span>
+        {% else %}
+            <span>All reporting periods</span>
+        {% endif %}
+        <span class="material-icons text-sm">expand_more</span>
+    </div>
+    </div>
 
     <!-- Filter Form -->
     <div x-show="showFilters" x-transition class="report-filter-card p-4 mt-4" x-cloak>
@@ -662,33 +1004,56 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 
 <!-- Project & Proponent Summary Cards -->
 <div class="summary-grid">
-    <div class="summary-card">
-        <div class="summary-value">{{ total_projects }}</div>
-        <div class="summary-label">Total Projects</div>
+    <div class="summary-card" style="--summary-color:#3b82f6;">
+        <span class="summary-icon material-icons">folder</span>
+        <div>
+            <div class="summary-label">Total Projects</div>
+            <div class="summary-value">{{ total_projects }}</div>
+            <div class="summary-caption">All projects</div>
+        </div>
     </div>
-    <div class="summary-card">
-        <div class="summary-value">{{ projects_ongoing }}</div>
-        <div class="summary-label">Ongoing Projects</div>
+    <div class="summary-card" style="--summary-color:#22c55e;">
+        <span class="summary-icon material-icons">rocket_launch</span>
+        <div>
+            <div class="summary-label">Ongoing Projects</div>
+            <div class="summary-value">{{ projects_ongoing }}</div>
+            <div class="summary-caption">In progress</div>
+        </div>
     </div>
-    <div class="summary-card">
-        <div class="summary-value">{{ projects_completed }}</div>
-        <div class="summary-label">Completed Projects</div>
+    <div class="summary-card" style="--summary-color:#8b5cf6;">
+        <span class="summary-icon material-icons">check_circle</span>
+        <div>
+            <div class="summary-label">Completed Projects</div>
+            <div class="summary-value">{{ projects_completed }}</div>
+            <div class="summary-caption">Successfully done</div>
+        </div>
     </div>
-    <div class="summary-card">
-        <div class="summary-value">{{ total_proposals }}</div>
-        <div class="summary-label">Total Proposals</div>
+    <div class="summary-card" style="--summary-color:#f59e0b;">
+        <span class="summary-icon material-icons">description</span>
+        <div>
+            <div class="summary-label">Total Proposals</div>
+            <div class="summary-value">{{ total_proposals }}</div>
+            <div class="summary-caption">All proposals</div>
+        </div>
     </div>
-    <div class="summary-card">
-        <div class="text-lg font-bold text-gray-800 leading-tight">{{ top_municipality_name }}</div>
-        <div class="summary-label">Top Area ({{ top_municipality_count }} projects)</div>
+    <div class="summary-card summary-card-top-area" style="--summary-color:#0ea5e9;">
+        <span class="summary-icon material-icons">location_on</span>
+        <div>
+            <div class="summary-label">Top Area</div>
+            <div class="summary-value">{{ top_municipality_name }}</div>
+            <div class="summary-caption">{{ top_municipality_count }} projects</div>
+        </div>
     </div>
 </div>
 
 <!-- Row 1: 3 Doughnut Charts - Equal sizing (Visible in Simple Mode - easy to understand) -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 chart-section">
+<div class="reports-chart-grid three chart-section">
     <!-- Proposal Status -->
     <div class="chart-panel">
-        <h3 class="chart-title text-center">Proposal Status</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Proposal Status</h3>
+            <a class="chart-details-link" href="{% url 'administrator_proposals_url' %}">View details</a>
+        </div>
         <div class="flex justify-center items-center chart-canvas-wrap-compact">
             <canvas id="proposalPieChart"></canvas>
         </div>
@@ -696,7 +1061,10 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 
     <!-- Project Status Distribution -->
     <div class="chart-panel">
-        <h3 class="chart-title text-center">Project Status</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Project Status</h3>
+            <a class="chart-details-link" href="{% url 'administrator_projects_url' %}">View details</a>
+        </div>
         <div class="flex justify-center items-center chart-canvas-wrap-compact">
             <canvas id="projectStatusChart"></canvas>
         </div>
@@ -704,7 +1072,10 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 
     <!-- User Role Distribution -->
     <div class="chart-panel">
-        <h3 class="chart-title text-center">User Roles</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">User Roles</h3>
+            <a class="chart-details-link" href="{% url 'administrator_users_url' %}">View details</a>
+        </div>
         <div class="flex justify-center items-center chart-canvas-wrap-compact">
             <canvas id="userRoleChart"></canvas>
         </div>
@@ -712,16 +1083,26 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 </div>
 
 <!-- Row 2: Projects by Municipality + Monthly Projects -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 chart-section">
+<div class="reports-chart-grid two chart-section">
     <div class="chart-panel">
-        <h3 class="chart-title">Projects by Municipality</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Projects by Municipality</h3>
+            <select class="chart-period-select" aria-label="Chart period">
+                <option>This Year</option>
+            </select>
+        </div>
         <div class="chart-canvas-wrap">
             <canvas id="municipalityChart"></canvas>
         </div>
     </div>
 
     <div class="chart-panel">
-        <h3 class="chart-title">Monthly Project Distribution{% if report_year != 'All Years' %} - {{ report_year }}{% endif %}</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Monthly Project Distribution{% if report_year != 'All Years' %} - {{ report_year }}{% endif %}</h3>
+            <select class="chart-period-select" aria-label="Chart period">
+                <option>This Year</option>
+            </select>
+        </div>
         <div class="chart-canvas-wrap">
             <canvas id="monthlyProjectsChart"></canvas>
         </div>
@@ -729,15 +1110,25 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 </div>
 
 <!-- Row 3: Proposals by Municipality + Top Proponents -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 chart-section">
+<div class="reports-chart-grid two chart-section">
     <div class="chart-panel">
-        <h3 class="chart-title">Proposals by Municipality</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Proposals by Municipality</h3>
+            <select class="chart-period-select" aria-label="Chart period">
+                <option>This Year</option>
+            </select>
+        </div>
         <div class="chart-canvas-wrap">
             <canvas id="proposalsMunicipalityChart"></canvas>
         </div>
     </div>
     <div class="chart-panel">
-        <h3 class="chart-title">Top Proponents by Proposals</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Top Proponents by Proposals</h3>
+            <select class="chart-period-select" aria-label="Chart period">
+                <option>This Year</option>
+            </select>
+        </div>
         <div class="chart-canvas-wrap">
             <canvas id="topProponentsChart"></canvas>
         </div>
@@ -745,15 +1136,25 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 </div>
 
 <!-- Row 4: Projects by Program + Type -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 chart-section">
+<div class="reports-chart-grid two chart-section">
     <div class="chart-panel">
-        <h3 class="chart-title">Projects by Program</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Projects by Program</h3>
+            <select class="chart-period-select" aria-label="Chart period">
+                <option>This Year</option>
+            </select>
+        </div>
         <div class="chart-canvas-wrap">
             <canvas id="projectsByProgramChart"></canvas>
         </div>
     </div>
     <div class="chart-panel">
-        <h3 class="chart-title">Projects by Type</h3>
+        <div class="chart-panel-header">
+            <h3 class="chart-title">Projects by Type</h3>
+            <select class="chart-period-select" aria-label="Chart period">
+                <option>This Year</option>
+            </select>
+        </div>
         <div class="chart-canvas-wrap">
             <canvas id="projectsByTypeChart"></canvas>
         </div>
@@ -765,9 +1166,14 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 <script>
-    // Wait for DOM and Chart.js to be ready
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM ready, Chart.js available:', typeof Chart !== 'undefined');
+        if (typeof Chart !== 'undefined') {
+            Chart.defaults.font.family = "'Segoe UI', Arial, Helvetica, sans-serif";
+            Chart.defaults.font.size = 10;
+            Chart.defaults.color = '#475569';
+            Chart.defaults.plugins.legend.labels.usePointStyle = true;
+            Chart.defaults.plugins.legend.labels.boxWidth = 8;
+        }
         
         // -----------------------------
         // Proposal Status Pie Chart

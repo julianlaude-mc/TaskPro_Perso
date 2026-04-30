@@ -10,6 +10,46 @@
    GLOBAL AESTHETIC ENHANCEMENTS
    ======================================== */
 
+:root {
+  --app-font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  --app-font-weight-normal: 400;
+  --app-font-weight-medium: 500;
+  --app-font-weight-semibold: 600;
+  --app-font-weight-bold: 650;
+}
+
+html,
+body {
+  font-family: var(--app-font-family);
+  font-weight: var(--app-font-weight-normal);
+  letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea,
+.btn {
+  font-family: var(--app-font-family);
+}
+
+.font-semibold {
+  font-weight: var(--app-font-weight-semibold) !important;
+}
+
+.font-bold,
+.font-extrabold,
+.font-black {
+  font-weight: var(--app-font-weight-bold) !important;
+}
+
+.material-icons,
+.material-symbols-outlined,
+.material-symbols-rounded,
+.material-symbols-sharp {
+  font-family: "Material Icons" !important;
+}
+
 /* Smooth transitions everywhere */
 *, *::before, *::after {
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -283,6 +323,184 @@ input:focus, select:focus, textarea:focus {
    Tables visible by default, only hidden when simple-mode is active
    ======================================== */
 
+:root {
+  --simple-bg: #f4f7fb;
+  --simple-card: #ffffff;
+  --simple-card-soft: #f8fafc;
+  --simple-border: #d8e2ee;
+  --simple-text: #172033;
+  --simple-muted: #475569;
+  --simple-accent: #2563eb;
+  --simple-accent-soft: #e8f1ff;
+  --simple-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.dark {
+  --simple-bg: #0f172a;
+  --simple-card: #111827;
+  --simple-card-soft: #162033;
+  --simple-border: #2f4057;
+  --simple-text: #f8fafc;
+  --simple-muted: #cbd5e1;
+  --simple-accent: #60a5fa;
+  --simple-accent-soft: #142948;
+  --simple-shadow: 0 16px 32px rgba(0, 0, 0, 0.28);
+}
+
+html.simple-mode body {
+  background: var(--simple-bg) !important;
+  color: var(--simple-text) !important;
+  line-height: 1.5 !important;
+}
+
+html.simple-mode main {
+  background: transparent !important;
+}
+
+html.simple-mode h1,
+html.simple-mode h2,
+html.simple-mode h3,
+html.simple-mode h4,
+html.simple-mode h5,
+html.simple-mode h6 {
+  color: var(--simple-text) !important;
+  letter-spacing: 0 !important;
+}
+
+html.simple-mode p,
+html.simple-mode label,
+html.simple-mode span,
+html.simple-mode div {
+  letter-spacing: 0 !important;
+}
+
+html.simple-mode .bg-white,
+html.simple-mode .admin-surface,
+html.simple-mode .settings-panel,
+html.simple-mode .comm-panel,
+html.simple-mode .calendar-panel,
+html.simple-mode .chart-card,
+html.simple-mode .user-table-card,
+html.simple-mode .reports-card,
+html.simple-mode .metric-card,
+html.simple-mode .section-card,
+html.simple-mode .card {
+  background: var(--simple-card) !important;
+  border-color: var(--simple-border) !important;
+  box-shadow: var(--simple-shadow) !important;
+}
+
+html.simple-mode .admin-surface,
+html.simple-mode .settings-panel,
+html.simple-mode .comm-panel,
+html.simple-mode .calendar-panel,
+html.simple-mode .chart-card,
+html.simple-mode .user-table-card,
+html.simple-mode .reports-card,
+html.simple-mode .metric-card,
+html.simple-mode .section-card,
+html.simple-mode .card {
+  border-radius: 16px !important;
+}
+
+html.simple-mode .dark .bg-white {
+  background: var(--simple-card) !important;
+}
+
+.simple-mode-floating-toggle {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 9998;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 46px;
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  border-radius: 999px;
+  background: var(--simple-card);
+  color: var(--simple-accent);
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.simple-mode-floating-toggle[aria-pressed="true"] {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+.simple-mode-page-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0.8rem 1rem 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  border-radius: 16px;
+  background: var(--simple-accent-soft);
+  color: var(--simple-text);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+}
+
+.simple-mode-page-notice[hidden] {
+  display: none !important;
+}
+
+.simple-mode-page-notice .material-icons {
+  color: var(--simple-accent);
+  font-size: 24px;
+}
+
+.simple-mode-page-notice strong {
+  display: block;
+  color: var(--simple-text);
+  font-size: 0.98rem;
+}
+
+.simple-mode-page-notice span {
+  color: var(--simple-muted);
+  font-size: 0.92rem;
+}
+
+.simple-mode-page-notice button {
+  margin-left: auto;
+  border-radius: 999px;
+  background: var(--simple-card);
+  color: var(--simple-accent);
+  border: 1px solid var(--simple-accent);
+  padding: 0.55rem 0.9rem;
+  font-weight: 800;
+}
+
+html.simple-mode [data-simple-label] {
+  position: static;
+}
+
+html.simple-mode [data-simple-label]::before {
+  content: none !important;
+}
+
+html.simple-mode .simple-mode-optional,
+html.simple-mode .advanced-feature,
+html.simple-mode .analytics-section,
+html.simple-mode .debug-column,
+html.simple-mode .column-technical,
+html.simple-mode .column-advanced,
+html.simple-mode .export-dropdown,
+html.simple-mode .bulk-actions,
+html.simple-mode .decorative,
+html.simple-mode .pattern-bg {
+  display: none !important;
+}
+
+html.simple-mode .material-icons {
+  line-height: 1 !important;
+}
+
 /* Tables are ALWAYS visible by default */
 .table-section {
   display: block !important;
@@ -324,40 +542,116 @@ body.simple-mode .table-section:not([data-sm-minimized="revealed"]) {
 
 /* Larger text in simple mode */
 .simple-mode { 
-  font-size: 16px !important; 
+  font-size: 15.5px !important; 
 }
 .simple-mode .text-xs { 
-  font-size: 0.9rem !important; 
+  font-size: 0.82rem !important; 
 }
 .simple-mode .text-sm { 
-  font-size: 1rem !important; 
+  font-size: 0.95rem !important; 
+}
+
+.simple-mode .text-base {
+  font-size: 1rem !important;
+}
+
+.simple-mode .text-lg {
+  font-size: 1.12rem !important;
 }
 
 /* Bigger buttons in simple mode */
-.simple-mode button,
-.simple-mode .btn,
-.simple-mode input[type="submit"] {
-  padding: 12px 20px !important;
-  font-size: 1rem !important;
-  min-height: 44px !important;
+.simple-mode button:not(.theme-toggle):not(.sidebar-toggle-btn):not(.simple-mode-floating-toggle):not([aria-label]),
+.simple-mode .btn:not(.theme-toggle):not(.sidebar-toggle-btn):not(.simple-mode-floating-toggle),
+.simple-mode input[type="submit"],
+.simple-mode a[role="button"] {
+  padding: 0.72rem 1rem !important;
+  font-size: 0.95rem !important;
+  min-height: 42px !important;
+  border-radius: 10px !important;
+}
+
+html.simple-mode button[aria-label],
+html.simple-mode .theme-toggle,
+html.simple-mode .sidebar-toggle-btn {
+  min-width: 40px !important;
+  min-height: 40px !important;
 }
 
 /* Cleaner tables in simple mode */
 .simple-mode table td, 
 .simple-mode table th { 
-  padding: 1rem 1.25rem !important; 
-  font-size: 0.95rem !important;
+  padding: 0.85rem 1rem !important; 
+  font-size: 0.9rem !important;
 }
 
 /* Better forms in simple mode */
 .simple-mode input[type="text"],
 .simple-mode input[type="email"],
 .simple-mode input[type="password"],
+.simple-mode input[type="number"],
+.simple-mode input[type="date"],
+.simple-mode input[type="search"],
 .simple-mode select,
 .simple-mode textarea {
-  padding: 14px 16px !important;
-  font-size: 1rem !important;
-  min-height: 48px !important;
+  padding: 0.78rem 0.9rem !important;
+  font-size: 0.95rem !important;
+  min-height: 44px !important;
+  border: 1px solid var(--simple-border) !important;
+  border-radius: 10px !important;
+  color: var(--simple-text) !important;
+  background: var(--simple-card) !important;
+}
+
+html.simple-mode input:focus,
+html.simple-mode select:focus,
+html.simple-mode textarea:focus {
+  border-color: var(--simple-accent) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+}
+
+html.simple-mode .shadow-lg,
+html.simple-mode .shadow-xl,
+html.simple-mode .shadow-2xl {
+  box-shadow: var(--simple-shadow) !important;
+}
+
+html.simple-mode .bg-gradient-to-r,
+html.simple-mode .bg-gradient-to-br {
+  box-shadow: none;
+}
+
+html.simple-mode .hover-card:hover,
+html.simple-mode .comm-action:hover,
+html.simple-mode .calendar-action-btn:hover,
+html.simple-mode .settings-nav-link:hover {
+  transform: translateY(-1px) !important;
+}
+
+html.simple-mode .text-gray-400,
+html.simple-mode .text-gray-500,
+html.simple-mode .text-gray-600,
+html.simple-mode .text-slate-400,
+html.simple-mode .text-slate-500,
+html.simple-mode .text-slate-600 {
+  color: var(--simple-muted) !important;
+}
+
+@media (max-width: 640px) {
+  .simple-mode-floating-toggle {
+    left: 1rem;
+    right: 1rem;
+    justify-content: center;
+  }
+
+  .simple-mode-page-notice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .simple-mode-page-notice button {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 /* ========================================

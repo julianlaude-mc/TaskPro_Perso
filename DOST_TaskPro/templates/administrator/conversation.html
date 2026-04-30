@@ -95,7 +95,7 @@
                             </div>
                             <div class="bg-{% if message.sender == user %}blue-600 text-white{% else %}gray-100 text-gray-900{% endif %} rounded-lg px-4 py-2 shadow-sm relative group">
                                 <!-- Delete button -->
-                                <button onclick="deleteMessage({{ message.id }})" 
+                        <button type="button" onclick="deleteMessage({{ message.id }})"
                                         class="absolute -top-2 {% if message.sender == user %}-left-6{% else %}-right-6{% endif %} opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-400 hover:text-red-500"
                                         title="Delete for me">
                                     <span class="material-icons text-sm">close</span>

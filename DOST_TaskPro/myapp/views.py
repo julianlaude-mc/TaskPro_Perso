@@ -4903,8 +4903,7 @@ def export_full_report_pdf(request):
                     sig_bytes = base64.b64decode(sig_data)
                     sig_io = io.BytesIO(sig_bytes)
                     signature_img = Image(sig_io, width=150, height=50)
-            except Exception as e:
-                print(f"Error loading signature: {e}")
+            except Exception:
                 signature_img = None
             
             if signature_img:
@@ -4958,7 +4957,6 @@ def administrator_reports_view(request):
     from decimal import Decimal
     from django.db.models import Sum, Count, Q
     import json
-    print("=== DEBUG: administrator_reports_view called ===")  # DEBUG
 
     # Get filter parameters
     selected_year = request.GET.get('year')
@@ -9702,9 +9700,39 @@ def administrator_messages_view(request):
     """Messages inbox view - shows conversations with people"""
     user = request.user
     conversations = _build_user_conversations(user)
+    active_box = request.GET.get('box', 'inbox')
+    search_query = request.GET.get('search', '').strip()
+
+    if active_box == 'sent':
+        conversations = [
+            conversation for conversation in conversations
+            if conversation['latest_message'].sender_id == user.id
+        ]
+    elif active_box == 'inbox':
+        conversations = [
+            conversation for conversation in conversations
+            if conversation['latest_message'].recipient_id == user.id
+        ]
+    else:
+        active_box = 'all'
+
+    if search_query:
+        query = search_query.lower()
+        conversations = [
+            conversation for conversation in conversations
+            if query in (conversation['partner'].get_full_name() or '').lower()
+            or query in (conversation['partner'].email or '').lower()
+            or query in (conversation['latest_message'].subject or '').lower()
+            or query in (conversation['latest_message'].content or '').lower()
+        ]
 
     context = {
         'conversations': conversations,
+        'active_box': active_box,
+        'search_query': search_query,
+        'all_count': len(_build_user_conversations(user)),
+        'inbox_count': Message.objects.filter(recipient=user).count(),
+        'sent_count': Message.objects.filter(sender=user).count(),
     }
 
     return render(request, 'administrator/messages.html', context)
@@ -10719,10 +10747,14 @@ def administrator_announcements_view(request):
         messages.error(request, 'Access denied. Only administrators can manage announcements.')
         return redirect('administrator_dashboard_url')
 
+    priority_filter = request.GET.get('priority', '').strip().lower()
     announcements = Announcement.objects.all().order_by('-created_at')
+    if priority_filter in {'low', 'normal', 'high', 'urgent'}:
+        announcements = announcements.filter(priority=priority_filter)
 
     context = {
         'announcements': announcements,
+        'priority_filter': priority_filter,
     }
 
     return render(request, 'administrator/announcements.html', context)
@@ -10952,9 +10984,8 @@ def collect_system_metrics():
         queue_status = 'healthy' if queue_length < 10 else 'warning' if queue_length < 50 else 'critical'
         metrics.append(('queue_length', queue_length, 'count', queue_status))
 
-    except Exception as e:
+    except Exception:
         # If system monitoring fails, return mock data
-        print(f"System monitoring error: {e}")
         metrics = [
             ('cpu_usage', 45.0, 'percent', 'healthy'),
             ('memory_usage', 60.0, 'percent', 'healthy'),
@@ -11842,32 +11873,41 @@ def administrator_calendar_view(request):
 
     for event in events.filter(start_date__gte=today, start_date__lte=next_30_days).order_by('start_date')[:8]:
         upcoming_agenda.append({
+            'id': event.id,
             'title': event.title,
             'date': event.start_date,
+            'end_date': event.end_date or event.start_date,
             'source': 'event',
             'type': event.event_type or 'event',
+            'description': event.description or '',
             'color': event.color or '#3b82f6',
             'url': '',
         })
 
     for project in visible_projects.filter(date_of_completion__gte=today, date_of_completion__lte=next_30_days).order_by('date_of_completion')[:8]:
         upcoming_agenda.append({
+            'id': project.id,
             'title': project.project_title or 'Untitled Project',
             'date': project.date_of_completion,
+            'end_date': project.date_of_completion,
             'source': 'project',
             'type': 'deadline',
+            'description': f'Project completion deadline for: {project.project_title}',
             'color': '#ef4444',
             'url': f'/projects/{project.id}/',
         })
 
     for task in visible_tasks.filter(due_date__gte=today, due_date__lte=next_30_days).order_by('due_date')[:8]:
         upcoming_agenda.append({
+            'id': task.id,
             'title': task.title or 'Untitled Task',
             'date': task.due_date,
+            'end_date': task.due_date,
             'source': 'task',
             'type': 'task',
+            'description': task.description or f'Task: {task.title}',
             'color': '#10b981' if task.status == 'completed' else '#3b82f6',
-            'url': '',
+            'url': reverse('administrator_task_list_url'),
         })
 
     upcoming_agenda = sorted(upcoming_agenda, key=lambda item: item['date'])[:10]
@@ -12425,7 +12465,6 @@ def global_search_api(request):
                 Q(project_code__icontains=query) |
                 Q(project_description__icontains=query)
             )[:5]
-            print(f"[SEARCH] Role: {role}, Query: {query}, Found {len(projects)} projects")
             
             for project in projects:
                 results.append({
@@ -12632,13 +12671,9 @@ def global_search_api(request):
                     'url': '/beneficiary/proposals/'
                 })
         
-        print(f"[SEARCH] Returning {len(results)} results for role {role}")
         return JsonResponse({'results': results[:15]})
         
     except Exception as e:
-        import traceback
-        print(f"[SEARCH ERROR] {str(e)}")
-        print(traceback.format_exc())
         return JsonResponse({'results': [], 'error': str(e)})
 
 

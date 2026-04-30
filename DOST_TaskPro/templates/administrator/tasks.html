@@ -91,10 +91,6 @@ function taskManager() {
         viewMapInstance: null,
         deleteFormActionBase: '/administrator/tasks/delete/',
 
-        init() {
-            console.log('taskManager initialized');
-        },
-
         initTable() {
             if (typeof $ !== 'undefined' && $.fn.DataTable) {
                 $('#tasksTable').DataTable();
@@ -111,8 +107,6 @@ function taskManager() {
         },
 
         openViewMapModal(title, lat, lng, projectTitle) {
-            console.log('openViewMapModal called with:', { title, lat, lng, projectTitle });
-            
             const latitude = (lat && lat !== '' && lat !== 'None') ? parseFloat(lat) : null;
             const longitude = (lng && lng !== '' && lng !== 'None') ? parseFloat(lng) : null;
             
@@ -142,7 +136,6 @@ function taskManager() {
         },
 
         openDeleteModal(id, title) {
-            console.log('openDeleteModal called with:', { id, title });
             this.deleteTask = { id: id, title: title };
             this.openDelete = true;
             
@@ -151,7 +144,6 @@ function taskManager() {
                 const form = document.getElementById('deleteTaskForm');
                 if (form) {
                     form.action = self.deleteFormActionBase + id + '/';
-                    console.log('Delete form action set to:', form.action);
                 }
             }, 50);
         },
@@ -173,8 +165,6 @@ function taskManager() {
             const hasValidCoords = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng);
             const finalLat = hasValidCoords ? lat : defaultLat;
             const finalLng = hasValidCoords ? lng : defaultLng;
-            
-            console.log('Initializing map at:', finalLat, finalLng, 'Valid coords:', hasValidCoords);
             
             try {
                 this.viewMapInstance = L.map('viewMap').setView([finalLat, finalLng], 13);
@@ -208,7 +198,7 @@ function taskManager() {
 
 <div class="container mt-2"
      x-data="taskManager()"
-    x-init="init(); initTable()"
+    x-init="initTable()"
     x-on:open-admin-task-edit.window="openEditModal($event.detail.task)">
 
     <!-- Flash Messages -->

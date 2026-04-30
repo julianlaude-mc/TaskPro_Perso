@@ -2,8 +2,9 @@
 <!DOCTYPE html>
 <html lang="en" x-data="{ 
     darkMode: localStorage.getItem('darkMode') === 'true',
+    simpleMode: localStorage.getItem('simpleMode') === 'true',
     sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false'
-}" :class="{ 'dark': darkMode }">
+}" :class="{ 'dark': darkMode, 'simple-mode': simpleMode }">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +23,7 @@
   <link rel="stylesheet" href="{% static 'css/responsive-optimization.css' %}?v=20260413a">
 
   <!-- Project custom styles (moved from inline to static/css/custom.css) -->
-  <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20260413a">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20260430-formalfont">
 
   <!-- Favicon -->
   <link rel="shortcut icon" href="{% static 'img/dost.png' %}" type="image/png">
@@ -337,6 +338,12 @@
             <span class="material-icons">dark_mode</span>
           </button>
 
+          <button type="button" data-simple-mode-toggle
+                  class="hidden sm:inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100">
+            <span class="material-icons text-lg">auto_awesome</span>
+            <span class="hidden md:inline" data-simple-mode-label>Simple Mode</span>
+          </button>
+
           <!-- Help button removed (temporarily hidden per user request) -->
 
           <!-- Notification Bell -->
@@ -431,10 +438,7 @@
             const notifId = this.dataset.id;
 
             fetch(`/notifications/read/${notifId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Marked as read:", data.success);
-                });
+                .catch(() => {});
         });
     });
 
@@ -754,7 +758,7 @@
       fetch('/notifications/count/')
         .then(response => response.json())
         .then(applyNotificationData)
-        .catch(err => console.log('Notification poll error:', err));
+        .catch(() => {});
     }
 
     function startFallbackPolling() {
@@ -791,7 +795,6 @@
           applyNotificationData({ success: true, ...streamData });
           stopFallbackPolling();
         } catch (err) {
-          console.log('Notification stream parse error:', err);
         }
       });
 
@@ -945,6 +948,8 @@
       });
     });
   </script>
+
+    <script src="{% static 'js/simplemode.js' %}?v=20260430-simple2"></script>
 
   {% block scripts %}{% endblock %}
 </body>

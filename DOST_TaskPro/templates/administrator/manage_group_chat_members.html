@@ -130,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', function(e) {
             const userSelect = document.getElementById('user_id');
-            console.log('Form submitted, user_id value:', userSelect.value);
             if (!userSelect.value || userSelect.value === '') {
                 e.preventDefault();
                 alert('Please select a user to add to the group chat.');

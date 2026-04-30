@@ -13,11 +13,206 @@
 {% block styles %}
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
 <style>
+    .calendar-module {
+        font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+        font-weight: 400;
+        color: #14213d;
+    }
+
+    .calendar-module button,
+    .calendar-module input,
+    .calendar-module select,
+    .calendar-module textarea {
+        font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    }
+
+    .calendar-shell {
+        width: min(100%, 1536px);
+        margin: 0 auto;
+        padding: 1.35rem;
+    }
+
+    .calendar-hero,
+    .calendar-panel,
+    .calendar-stat,
+    .calendar-action-btn,
+    .calendar-agenda-item {
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        box-shadow: 0 16px 38px rgba(15, 23, 42, 0.06);
+    }
+
+    .calendar-hero {
+        border-radius: 18px;
+        background: linear-gradient(120deg, #f7fbff 0%, #edf4ff 52%, #eef2ff 100%);
+        padding: 1.35rem;
+    }
+
+    .calendar-panel {
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.96);
+        overflow: hidden;
+    }
+
+    .calendar-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.15rem 1.25rem 0.85rem;
+    }
+
+    .calendar-panel-body {
+        padding: 0 1.25rem 1.25rem;
+    }
+
+    .calendar-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        flex: 0 0 auto;
+    }
+
+    .calendar-title {
+        color: #13234a;
+        font-weight: 650;
+        letter-spacing: 0;
+    }
+
+    .calendar-muted {
+        color: #64748b;
+    }
+
+    .calendar-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        width: 100%;
+        min-height: 42px;
+        border-radius: 10px;
+        background: #fff;
+        color: #152449;
+        font-size: 0.86rem;
+        font-weight: 600;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .calendar-action-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(37, 99, 235, 0.35);
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.1);
+    }
+
+    .calendar-action-primary {
+        background: linear-gradient(135deg, #2f6bff 0%, #1d4ed8 100%);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 16px 30px rgba(37, 99, 235, 0.22);
+    }
+
+    .calendar-filter-input {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #d7e0ee;
+        background: #fff;
+        padding: 0.7rem 0.85rem;
+        font-size: 0.86rem;
+        color: #152449;
+        outline: none;
+    }
+
+    .calendar-filter-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .calendar-check-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem 0.7rem;
+    }
+
+    .calendar-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-width: 0;
+        color: #334155;
+        font-size: 0.83rem;
+        font-weight: 500;
+    }
+
+    .calendar-check input {
+        width: 15px;
+        height: 15px;
+        accent-color: #2563eb;
+    }
+
+    .calendar-agenda-item {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 0.8rem;
+        align-items: center;
+        border-radius: 14px;
+        padding: 0.85rem;
+        background: #fff;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .calendar-agenda-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .calendar-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.35rem;
+        color: #64748b;
+        font-size: 0.72rem;
+        text-align: center;
+    }
+
+    .calendar-mini-day {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 26px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .calendar-mini-day.active {
+        background: #2563eb;
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+    }
+
+    .calendar-fab {
+        position: fixed;
+        right: 1.7rem;
+        bottom: 1.7rem;
+        z-index: 35;
+        width: 58px;
+        height: 58px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #2f6bff, #1d4ed8);
+        color: #fff;
+        box-shadow: 0 18px 34px rgba(37, 99, 235, 0.35);
+    }
+
     .fc-event {
         cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-weight: 500;
+        padding: 5px 8px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.77rem;
         transition: all 0.2s ease;
         border: none !important;
     }
@@ -26,33 +221,64 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .fc-toolbar-title {
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-size: 1.55rem !important;
+        font-weight: 650 !important;
+        color: #13234a !important;
+        letter-spacing: 0 !important;
     }
     .fc-button {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 8px 16px !important;
+        background: #fff !important;
+        border: 1px solid #d7e0ee !important;
+        border-radius: 10px !important;
+        color: #13234a !important;
+        padding: 0.65rem 0.9rem !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04) !important;
     }
     .fc-button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 12px rgba(59,130,246,0.4) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 12px 22px rgba(37,99,235,0.12) !important;
     }
     .fc-button-active {
-        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+        background: linear-gradient(135deg, #2f6bff 0%, #1d4ed8 100%) !important;
+        color: #fff !important;
+        border-color: transparent !important;
     }
     .fc-day-today {
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+        background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%) !important;
     }
     .fc-daygrid-day:hover {
         background: #f8fafc;
+    }
+    .fc .fc-scrollgrid,
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+        border-color: #dce5f2 !important;
+    }
+    .fc .fc-col-header-cell-cushion {
+        color: #13234a;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.8rem 0;
+    }
+    .fc .fc-daygrid-day-number {
+        color: #13234a;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 0.8rem;
+    }
+    .fc .fc-day-other .fc-daygrid-day-number {
+        color: #aeb8c8;
+        font-size: 1.35rem;
+        font-weight: 400;
+    }
+    .fc .fc-daygrid-day-frame {
+        min-height: 112px;
+    }
+    .fc .fc-toolbar.fc-header-toolbar {
+        gap: 0.85rem;
+        margin-bottom: 1.15rem;
     }
     .event-legend {
         display: flex;
@@ -162,6 +388,75 @@
     .dark .event-detail-row {
         border-color: #334155;
     }
+
+    @media (max-width: 1280px) {
+        .calendar-main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .calendar-shell {
+            padding: 0.85rem;
+        }
+        .calendar-hero,
+        .calendar-panel {
+            border-radius: 14px;
+        }
+        .calendar-hero {
+            padding: 1rem;
+        }
+        .calendar-panel-header {
+            align-items: flex-start;
+            padding: 1rem 1rem 0.75rem;
+        }
+        .calendar-panel-body {
+            padding: 0 1rem 1rem;
+        }
+        .calendar-stat {
+            min-width: 165px;
+        }
+        .calendar-stat-row {
+            overflow-x: auto;
+            padding-bottom: 0.15rem;
+        }
+        .calendar-check-grid {
+            grid-template-columns: 1fr;
+        }
+        .calendar-agenda-item {
+            grid-template-columns: auto minmax(0, 1fr);
+        }
+        .calendar-agenda-item .agenda-meta {
+            grid-column: 2;
+            justify-self: start;
+        }
+        .fc .fc-toolbar.fc-header-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+        .fc .fc-toolbar-chunk {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+        .fc-toolbar-title {
+            font-size: 1.3rem !important;
+        }
+        .fc .fc-daygrid-day-frame {
+            min-height: 86px;
+        }
+        .fc-event {
+            font-size: 0.68rem;
+            padding: 3px 5px;
+        }
+        .calendar-fab {
+            right: 1rem;
+            bottom: 1rem;
+            width: 52px;
+            height: 52px;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -169,108 +464,128 @@
 <!-- Breadcrumb (visible in Simple Mode) -->
 <nav class="breadcrumb">
     <a href="{% url 'administrator_dashboard_url' %}">Dashboard</a>
-    <span class="separator">›</span>
+    <span class="separator">&gt;</span>
     <span class="current">Calendar</span>
 </nav>
 
-<section class="mb-6 overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-r from-[#0f3a66] via-[#135a9b] to-[#0a79bf] p-5 text-white shadow-xl">
+<div class="calendar-module min-h-screen bg-slate-50/80">
+    <div class="calendar-shell space-y-5">
+<section class="calendar-hero">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-            <p class="text-xs uppercase tracking-[0.2em] text-blue-100">Administrator Calendar Module</p>
-            <h2 class="mt-2 text-2xl font-semibold">Plan operations with a single scheduling surface</h2>
-            <p class="mt-2 max-w-3xl text-sm text-blue-100">
-                Track calendar events, project deadlines, and task due dates with quick filters and a live agenda panel.
+            <p class="text-xs uppercase tracking-[0.16em] text-blue-600 font-extrabold">Administrator Calendar Module</p>
+            <h2 class="calendar-title mt-2 text-2xl font-extrabold">Stay on top of your schedule</h2>
+            <p class="mt-2 max-w-3xl text-sm calendar-muted">
+                Track events, deadlines, and important dates all in one place.
             </p>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
-            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
-                <p class="text-blue-100">Events</p>
-                <p class="text-xl font-bold">{{ calendar_stats.events_total }}</p>
+        <div class="calendar-stat-row grid grid-cols-2 gap-3 text-sm md:grid-cols-5">
+            <div class="calendar-stat rounded-2xl bg-white/85 px-4 py-3 flex items-center gap-3">
+                <span class="calendar-icon bg-rose-50 text-rose-600"><span class="material-icons text-[20px]">event_busy</span></span>
+                <span><span class="block text-xl font-extrabold text-slate-900">{{ calendar_stats.project_deadlines }}</span><span class="text-xs font-medium text-slate-500">Deadlines</span></span>
             </div>
-            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
-                <p class="text-blue-100">This Week</p>
-                <p class="text-xl font-bold">{{ calendar_stats.upcoming_week }}</p>
+            <div class="calendar-stat rounded-2xl bg-white/85 px-4 py-3 flex items-center gap-3">
+                <span class="calendar-icon bg-blue-50 text-blue-600"><span class="material-icons text-[20px]">assignment</span></span>
+                <span><span class="block text-xl font-extrabold text-slate-900">{{ calendar_stats.tasks_due }}</span><span class="text-xs font-medium text-slate-500">Tasks Due</span></span>
             </div>
-            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
-                <p class="text-blue-100">Deadlines</p>
-                <p class="text-xl font-bold">{{ calendar_stats.project_deadlines }}</p>
+            <div class="calendar-stat rounded-2xl bg-white/85 px-4 py-3 flex items-center gap-3">
+                <span class="calendar-icon bg-emerald-50 text-emerald-600"><span class="material-icons text-[20px]">task_alt</span></span>
+                <span><span class="block text-xl font-extrabold text-slate-900">{{ calendar_stats.events_total }}</span><span class="text-xs font-medium text-slate-500">Events</span></span>
             </div>
-            <div class="rounded-xl bg-white/15 px-3 py-2 backdrop-blur">
-                <p class="text-blue-100">Tasks Due</p>
-                <p class="text-xl font-bold">{{ calendar_stats.tasks_due }}</p>
+            <div class="calendar-stat rounded-2xl bg-white/85 px-4 py-3 flex items-center gap-3">
+                <span class="calendar-icon bg-purple-50 text-purple-600"><span class="material-icons text-[20px]">groups</span></span>
+                <span><span class="block text-xl font-extrabold text-slate-900">{{ calendar_stats.upcoming_week }}</span><span class="text-xs font-medium text-slate-500">This Week</span></span>
+            </div>
+            <div class="calendar-stat rounded-2xl bg-white/85 px-4 py-3 flex items-center gap-3">
+                <span class="calendar-icon bg-orange-50 text-orange-600"><span class="material-icons text-[20px]">notifications</span></span>
+                <span><span class="block text-xl font-extrabold text-slate-900">{{ upcoming_agenda|length }}</span><span class="text-xs font-medium text-slate-500">Agenda Items</span></span>
             </div>
         </div>
     </div>
 </section>
 
-<div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
-    <aside class="space-y-4 xl:col-span-4">
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 class="mb-3 text-sm font-semibold text-slate-700">Quick Actions</h3>
+<div class="calendar-main-grid grid grid-cols-1 gap-5 xl:grid-cols-[320px_minmax(0,1fr)_320px]">
+    <aside class="space-y-4">
+        <div class="calendar-panel">
+            <div class="calendar-panel-header">
+                <h3 class="calendar-title text-base">Quick Actions</h3>
+            </div>
+            <div class="calendar-panel-body">
             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1">
-                <button onclick="openAddEventModal()" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition">
+                <button type="button" onclick="openAddEventModal()" class="calendar-action-btn calendar-action-primary">
                     <span class="material-icons text-base">add</span>
                     Add Event
                 </button>
-                <button id="goTodayBtn" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                <button type="button" id="goTodayBtn" class="calendar-action-btn">
                     <span class="material-icons text-base">today</span>
                     Jump to Today
                 </button>
-                <button id="goWeekBtn" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                <button type="button" id="goWeekBtn" class="calendar-action-btn">
                     <span class="material-icons text-base">view_week</span>
                     This Week
                 </button>
-                <button id="goMonthBtn" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                <button type="button" id="goMonthBtn" class="calendar-action-btn">
                     <span class="material-icons text-base">calendar_view_month</span>
                     This Month
                 </button>
             </div>
+            </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div class="mb-3 flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-slate-700">Filter Events</h3>
-                <button id="resetFiltersBtn" class="text-xs font-medium text-blue-700 hover:text-blue-800">Reset</button>
+        <div class="calendar-panel">
+            <div class="calendar-panel-header">
+                <h3 class="calendar-title text-base">Filters</h3>
+                <button type="button" id="resetFiltersBtn" class="text-xs font-extrabold text-blue-600 hover:text-blue-700">Reset</button>
             </div>
-            <div class="space-y-3">
+            <div class="calendar-panel-body space-y-4">
                 <div>
-                    <label for="calendarSearch" class="mb-1 block text-xs font-medium text-slate-500">Search title or description</label>
-                    <input id="calendarSearch" type="text" placeholder="Type keyword..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                    <input id="calendarSearch" type="text" placeholder="Search events..." class="calendar-filter-input">
                 </div>
 
                 <div>
-                    <p class="mb-1 text-xs font-medium text-slate-500">Source</p>
-                    <div class="flex flex-wrap gap-2">
-                        <label class="legend-item m-0"><input type="checkbox" class="source-filter" value="event" checked> <span>Events</span></label>
-                        <label class="legend-item m-0"><input type="checkbox" class="source-filter" value="project" checked> <span>Deadlines</span></label>
-                        <label class="legend-item m-0"><input type="checkbox" class="source-filter" value="task" checked> <span>Tasks</span></label>
+                    <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Sources</p>
+                    <div class="calendar-check-grid">
+                        <label class="calendar-check"><input type="checkbox" class="source-filter" value="event" checked> <span>Events</span></label>
+                        <label class="calendar-check"><input type="checkbox" class="source-filter" value="project" checked> <span>Deadlines</span></label>
+                        <label class="calendar-check"><input type="checkbox" class="source-filter" value="task" checked> <span>Tasks</span></label>
                     </div>
                 </div>
 
                 <div>
-                    <p class="mb-1 text-xs font-medium text-slate-500">Type</p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="task" checked>Task</label>
-                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="deadline" checked>Deadline</label>
-                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="meeting" checked>Meeting</label>
-                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="reminder" checked>Reminder</label>
-                        <label class="text-xs text-slate-600"><input type="checkbox" class="type-filter mr-1" value="milestone" checked>Milestone</label>
+                    <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Types</p>
+                    <div class="calendar-check-grid">
+                        <label class="calendar-check"><input type="checkbox" class="type-filter" value="task" checked>Task</label>
+                        <label class="calendar-check"><input type="checkbox" class="type-filter" value="deadline" checked>Deadline</label>
+                        <label class="calendar-check"><input type="checkbox" class="type-filter" value="meeting" checked>Meeting</label>
+                        <label class="calendar-check"><input type="checkbox" class="type-filter" value="reminder" checked>Reminder</label>
+                        <label class="calendar-check"><input type="checkbox" class="type-filter" value="milestone" checked>Milestone</label>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 class="mb-3 text-sm font-semibold text-slate-700">Upcoming Agenda (30 days)</h3>
-            <div class="max-h-72 space-y-2 overflow-y-auto pr-1">
+        <div class="calendar-panel">
+            <div class="calendar-panel-header">
+                <h3 class="calendar-title text-base">Upcoming Agenda</h3>
+            </div>
+            <div class="calendar-panel-body max-h-80 space-y-2 overflow-y-auto">
                 {% if upcoming_agenda %}
                     {% for item in upcoming_agenda %}
-                    <a href="{{ item.url|default:'#' }}" class="block rounded-lg border border-slate-200 p-2.5 hover:bg-slate-50 transition">
+                    <a href="{{ item.url|default:'#calendar' }}" class="calendar-agenda-item {% if item.source == 'event' %}agenda-event-link{% endif %}"
+                       {% if item.source == 'event' %}
+                       data-event-id="{{ item.id }}"
+                       data-event-title="{{ item.title|escape }}"
+                       data-event-start="{{ item.date|date:'Y-m-d' }}"
+                       data-event-end="{{ item.end_date|date:'Y-m-d' }}"
+                       data-event-color="{{ item.color }}"
+                       data-event-type="{{ item.type }}"
+                       data-event-description="{{ item.description|escape }}"
+                       {% endif %}>
                         <div class="flex items-center gap-2">
-                            <span class="h-2.5 w-2.5 rounded-full" style="background-color: {{ item.color }}"></span>
-                            <p class="truncate text-sm font-medium text-slate-700">{{ item.title }}</p>
+                            <span class="h-3 w-3 rounded-full" style="background-color: {{ item.color }}"></span>
+                            <p class="truncate text-sm font-extrabold text-slate-800">{{ item.title }}</p>
                         </div>
-                        <p class="mt-1 text-xs text-slate-500">{{ item.date|date:"M d, Y" }} • {{ item.source|capfirst }}</p>
+                        <p class="mt-1 text-xs text-slate-500">{{ item.date|date:"M d, Y" }} - {{ item.source|capfirst }}</p>
                     </a>
                     {% endfor %}
                 {% else %}
@@ -280,8 +595,15 @@
         </div>
     </aside>
 
-    <section class="xl:col-span-8">
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:p-5">
+    <section class="min-w-0">
+        <div class="calendar-panel">
+            <div class="calendar-panel-header">
+                <div>
+                    <h3 class="calendar-title text-lg">Calendar Board</h3>
+                    <p class="mt-1 text-xs calendar-muted">Switch between month, week, and list views from the calendar controls.</p>
+                </div>
+            </div>
+            <div class="calendar-panel-body">
             <div class="event-legend bg-gray-50 p-3 rounded-lg mb-4">
                 <div class="legend-item">
                     <span class="legend-dot" style="background-color: #ef4444"></span>
@@ -306,16 +628,80 @@
             </div>
 
             <div id="calendar"></div>
+            </div>
         </div>
     </section>
+
+    <aside class="space-y-4">
+        <section class="calendar-panel">
+            <div class="calendar-panel-header">
+                <button id="sidePrevBtn" class="rounded-xl p-2 text-slate-700 hover:bg-slate-100" type="button" aria-label="Previous period">
+                    <span class="material-icons">chevron_left</span>
+                </button>
+                <h3 id="sideDateTitle" class="calendar-title text-sm text-center">Today</h3>
+                <button id="sideNextBtn" class="rounded-xl p-2 text-slate-700 hover:bg-slate-100" type="button" aria-label="Next period">
+                    <span class="material-icons">chevron_right</span>
+                </button>
+            </div>
+            <div class="calendar-panel-body">
+                <div class="calendar-mini-grid mb-3 font-extrabold uppercase">
+                    <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                </div>
+                <div id="miniCalendarGrid" class="calendar-mini-grid"></div>
+            </div>
+        </section>
+
+        <section class="calendar-panel">
+            <div class="calendar-panel-header">
+                <div>
+                    <h3 id="selectedDayLabel" class="calendar-title text-base">Upcoming</h3>
+                    <p class="mt-1 text-xs calendar-muted">Nearest visible schedule items</p>
+                </div>
+            </div>
+            <div class="calendar-panel-body space-y-3">
+                {% if upcoming_agenda %}
+                    {% for item in upcoming_agenda|slice:":5" %}
+                                <a href="{{ item.url|default:'#calendar' }}" class="block rounded-2xl border-l-4 bg-slate-50/80 p-3 hover:bg-white transition {% if item.source == 'event' %}agenda-event-link{% endif %}" style="border-left-color: {{ item.color }}"
+                                   {% if item.source == 'event' %}
+                                   data-event-id="{{ item.id }}"
+                                   data-event-title="{{ item.title|escape }}"
+                                   data-event-start="{{ item.date|date:'Y-m-d' }}"
+                                   data-event-end="{{ item.end_date|date:'Y-m-d' }}"
+                                   data-event-color="{{ item.color }}"
+                                   data-event-type="{{ item.type }}"
+                                   data-event-description="{{ item.description|escape }}"
+                                   {% endif %}>
+                            <div class="flex items-start justify-between gap-2">
+                                <p class="min-w-0 truncate text-sm font-extrabold text-slate-800">{{ item.title }}</p>
+                                <span class="text-xs font-bold text-slate-500">{{ item.date|date:"M d" }}</span>
+                            </div>
+                            <p class="mt-2 flex items-center gap-1 text-xs text-slate-500">
+                                <span class="material-icons text-sm">schedule</span>
+                                {{ item.source|capfirst }}
+                            </p>
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No agenda items to show.</div>
+                {% endif %}
+                <a href="#calendar" class="inline-flex pt-2 text-xs font-extrabold text-blue-600">View full day -></a>
+            </div>
+        </section>
+    </aside>
 </div>
+</div>
+</div>
+
+<button type="button" onclick="openAddEventModal()" class="calendar-fab" aria-label="Add calendar event">
+    <span class="material-icons">event_available</span>
+</button>
 
 <!-- Add Event Modal -->
 <div id="addEventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-800">Add New Event</h3>
-            <button onclick="closeAddEventModal()" class="text-gray-400 hover:text-gray-600">
+            <button type="button" onclick="closeAddEventModal()" class="text-gray-400 hover:text-gray-600">
                 <span class="material-icons">close</span>
             </button>
         </div>
@@ -363,11 +749,11 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
                         <select name="color" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="#3b82f6">🔵 Blue</option>
-                            <option value="#10b981">🟢 Green</option>
-                            <option value="#f59e0b">🟡 Yellow</option>
-                            <option value="#ef4444">🔴 Red</option>
-                            <option value="#8b5cf6">🟣 Purple</option>
+                            <option value="#3b82f6">Blue</option>
+                            <option value="#10b981">Green</option>
+                            <option value="#f59e0b">Yellow</option>
+                            <option value="#ef4444">Red</option>
+                            <option value="#8b5cf6">Purple</option>
         
                         </select>
                     </div>
@@ -418,7 +804,7 @@
                             </span>
                         </div>
                     </div>
-                    <button onclick="closeEventDetailsModal()" class="w-10 h-10 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 flex items-center justify-center transition">
+            <button type="button" onclick="closeEventDetailsModal()" class="w-10 h-10 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 flex items-center justify-center transition">
                         <span class="material-icons">close</span>
                     </button>
                 </div>
@@ -475,7 +861,7 @@
         <!-- Modal Footer with Actions -->
         <div id="eventModalFooter" class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <div id="eventActionsLeft">
-                <button id="deleteEventBtn" onclick="confirmDeleteEvent()" class="delete-btn text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold">
+                <button type="button" id="deleteEventBtn" onclick="confirmDeleteEvent()" class="delete-btn text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold">
                     <span class="material-icons text-lg">delete</span>
                     Delete Event
                 </button>
@@ -485,7 +871,7 @@
                     <span class="material-icons text-lg">open_in_new</span>
                     Open Record
                 </a>
-                <button onclick="closeEventDetailsModal()" class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition font-semibold">
+                <button type="button" onclick="closeEventDetailsModal()" class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition font-semibold">
                     Close
                 </button>
             </div>
@@ -621,7 +1007,50 @@
                 calendarInstance.today();
             });
         }
+
+        renderMiniCalendar(new Date());
+        bindAgendaLinks();
     });
+
+    function renderMiniCalendar(baseDate) {
+        const grid = document.getElementById('miniCalendarGrid');
+        const title = document.getElementById('sideDateTitle');
+        const selectedLabel = document.getElementById('selectedDayLabel');
+        if (!grid || !title) return;
+
+        const viewDate = new Date(baseDate.getFullYear(), baseDate.getMonth(), 1);
+        const today = new Date();
+        const monthName = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        title.textContent = monthName;
+        if (selectedLabel) {
+            selectedLabel.textContent = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        const firstDay = viewDate.getDay();
+        const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
+        const cells = [];
+        for (let i = 0; i < firstDay; i++) {
+            cells.push('<span class="calendar-mini-day"></span>');
+        }
+        for (let day = 1; day <= daysInMonth; day++) {
+            const active = day === today.getDate() && viewDate.getMonth() === today.getMonth() && viewDate.getFullYear() === today.getFullYear();
+            cells.push(`<span class="calendar-mini-day${active ? ' active' : ''}">${day}</span>`);
+        }
+        grid.innerHTML = cells.join('');
+
+        const prev = document.getElementById('sidePrevBtn');
+        const next = document.getElementById('sideNextBtn');
+        if (prev) {
+            prev.onclick = function() {
+                renderMiniCalendar(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+            };
+        }
+        if (next) {
+            next.onclick = function() {
+                renderMiniCalendar(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+            };
+        }
+    }
 
     function normalizeEventSource(item) {
         const explicitSource = item?.extendedProps?.source;
@@ -710,6 +1139,42 @@
             });
         }
     }
+
+    function bindAgendaLinks() {
+        document.querySelectorAll('.agenda-event-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const eventId = String(this.dataset.eventId || '');
+                const cachedEvent = allEventsCache.find(item => String(item.id) === eventId);
+                if (cachedEvent) {
+                    openEventDetailsModal({
+                        id: cachedEvent.id,
+                        title: cachedEvent.title,
+                        startStr: cachedEvent.start,
+                        endStr: cachedEvent.end || cachedEvent.start,
+                        backgroundColor: cachedEvent.color,
+                        extendedProps: cachedEvent.extendedProps || {},
+                        url: cachedEvent.url || ''
+                    });
+                    return;
+                }
+
+                openEventDetailsModal({
+                    id: eventId,
+                    title: this.dataset.eventTitle || 'Calendar Event',
+                    startStr: this.dataset.eventStart,
+                    endStr: this.dataset.eventEnd || this.dataset.eventStart,
+                    backgroundColor: this.dataset.eventColor || '#3b82f6',
+                    extendedProps: {
+                        type: this.dataset.eventType || 'event',
+                        description: this.dataset.eventDescription || '',
+                        source: 'event'
+                    },
+                    url: ''
+                });
+            });
+        });
+    }
     
     // Event Type Icons and Colors
     const eventTypeConfig = {
@@ -760,7 +1225,7 @@
         // Set icon and title
         const typeConfig = eventTypeConfig[eventType] || eventTypeConfig.default;
         document.getElementById('eventModalIcon').textContent = typeConfig.icon;
-        document.getElementById('eventModalTitle').textContent = eventTitle.replace(/^[📁✓🔔⭐] /, '');
+        document.getElementById('eventModalTitle').textContent = eventTitle.replace(/^[^A-Za-z0-9]+\s*/, '');
         document.getElementById('eventTypeText').textContent = typeConfig.label;
         
         // Set date

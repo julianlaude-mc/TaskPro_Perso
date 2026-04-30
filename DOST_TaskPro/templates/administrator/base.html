@@ -27,7 +27,7 @@
   </script>
 
   <!-- Project custom styles (moved from inline to static/css/custom.css) -->
-  <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20260413a">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20260430-formalfont">
 
   <!-- Alpine.js for interactivity -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
@@ -607,6 +607,30 @@
        ======================================== */
     #sidebar {
       transition: all 0.3s ease;
+      max-height: 100vh;
+    }
+
+    #sidebar nav {
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+    }
+
+    #sidebar nav::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #sidebar nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #sidebar nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+    }
+
+    #sidebar nav::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.42);
     }
 
     @media (min-width: 1024px) {
@@ -650,6 +674,10 @@
 
       #sidebar.hidden-sidebar nav,
       html.sidebar-collapsed #sidebar nav {
+        flex: 1 1 auto;
+        max-height: calc(100vh - 72px);
+        overflow-y: auto;
+        overflow-x: hidden;
         padding: 1rem 0.5rem;
       }
 
@@ -1177,12 +1205,13 @@
           </button>
 
           <!-- Simple Mode Toggle -->
-          <button @click="simpleMode = !simpleMode; localStorage.setItem('simpleMode', simpleMode)" 
+          <button data-simple-mode-toggle
+                  @click="simpleMode = !simpleMode; localStorage.setItem('simpleMode', simpleMode)" 
                   class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 text-sm font-medium"
               :class="simpleMode ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-600' : (darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-600')"
                   :title="simpleMode ? 'Exit Simple Mode' : 'Enable Simple Mode'">
               <span class="material-icons text-lg" x-text="simpleMode ? 'visibility' : 'auto_awesome'"></span>
-              <span class="hidden md:inline" x-text="simpleMode ? 'Simple' : 'Simple'"></span>
+              <span class="hidden md:inline" data-simple-mode-label x-text="simpleMode ? 'Simple Mode On' : 'Simple Mode'"></span>
           </button>
 
           <!-- Dark Mode Toggle -->
@@ -2127,8 +2156,6 @@
         extension = url.split('.').pop().toLowerCase().split('?')[0]; // Remove query params
       }
       
-      console.log('Preview - URL:', url, 'Filename:', filename, 'Extension:', extension);
-      
       // Clear previous content
       content.innerHTML = '<div class="text-center"><span class="material-icons animate-spin text-4xl text-blue-500">hourglass_empty</span><p class="mt-2 text-gray-500">Loading...</p></div>';
       
@@ -2344,7 +2371,6 @@
       const searchResults = document.getElementById('globalSearchResults');
       
       if (!searchInput || !searchResults) {
-        console.log('Global search elements not found');
         return;
       }
       
@@ -2555,7 +2581,7 @@
       fetch('/notifications/count/')
         .then(response => response.json())
         .then(applyNotificationData)
-        .catch(err => console.log('Notification poll error:', err));
+        .catch(() => {});
     }
 
     function startFallbackPolling() {
@@ -2592,7 +2618,6 @@
           applyNotificationData({ success: true, ...streamData });
           stopFallbackPolling();
         } catch (err) {
-          console.log('Notification stream parse error:', err);
         }
       });
 
@@ -2992,6 +3017,8 @@
       initTableResizeControls();
     });
   </script>
+
+    <script src="{% static 'js/simplemode.js' %}?v=20260430-simple2"></script>
 
   {% block scripts %}{% endblock %}
 </body>
