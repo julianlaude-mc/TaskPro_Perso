@@ -57,16 +57,29 @@ GOOGLE_GENAI_MODEL = (os.environ.get('GOOGLE_GENAI_MODEL') or 'gemini-2.0-flash'
 # SECURITY
 # =============================================================================
 
-SECRET_KEY = 'django-insecure-72-(ie&i&iwppsfsor=s*e0-a-28kvq6fd7g@vlni(-oaj9nho'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-72-(ie&i&iwppsfsor=s*e0-a-28kvq6fd7g@vlni(-oaj9nho'
+)
 
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in {'1', 'true', 'yes', 'on'}
 
 if not GOOGLE_API_KEY and not DEBUG:
     raise ImproperlyConfigured(
         'GOOGLE_API_KEY is required. Set it in .env or the host environment.'
     )
 
-ALLOWED_HOSTS = ['taskpro.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'TaskProThesis.pythonanywhere.com',
+    'taskpro.pythonanywhere.com',
+    'localhost',
+    '127.0.0.1',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://TaskProThesis.pythonanywhere.com',
+    'https://taskpro.pythonanywhere.com',
+]
 
 # =============================================================================
 # AUTH
@@ -280,6 +293,9 @@ COMPRESS_ENABLED = HAS_COMPRESSOR
 COMPRESS_OFFLINE = False
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
