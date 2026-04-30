@@ -40,7 +40,14 @@
     applySimpleMode(!isSimpleModeActive());
   }
 
+  function removeLegacyFloatingToggle() {
+    document.querySelectorAll('.simple-mode-floating-toggle').forEach(function(el) {
+      el.remove();
+    });
+  }
+
   function updateControls(active) {
+    removeLegacyFloatingToggle();
     document.querySelectorAll('[data-simple-mode-toggle]').forEach(function(control) {
       control.setAttribute('aria-pressed', active ? 'true' : 'false');
       control.setAttribute('title', active ? 'Turn off Simple Mode' : 'Turn on Simple Mode');
@@ -54,17 +61,6 @@
     if (notice) {
       notice.hidden = !active;
     }
-  }
-
-  function createFloatingToggle() {
-    if (document.querySelector('.simple-mode-floating-toggle')) return;
-    var button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'simple-mode-floating-toggle';
-    button.setAttribute('data-simple-mode-toggle', '');
-    button.innerHTML = '<span class="material-icons">auto_awesome</span><span data-simple-mode-label>Simple Mode</span>';
-    button.addEventListener('click', toggleSimpleMode);
-    document.body.appendChild(button);
   }
 
   function createSimpleNotice() {
@@ -93,7 +89,7 @@
     actions.forEach(function(pair) {
       document.querySelectorAll(pair[0]).forEach(function(el) {
         if (el.dataset.simpleHintApplied === 'true') return;
-        if (el.closest('#sidebar, header, .simple-mode-page-notice, .simple-mode-floating-toggle')) return;
+        if (el.closest('#sidebar, header, .simple-mode-page-notice')) return;
         el.dataset.simpleHintApplied = 'true';
         el.setAttribute('data-simple-label', pair[1]);
       });
@@ -170,8 +166,8 @@
       html.simple-mode .shadow-2xl {
         box-shadow: var(--sm-shadow) !important;
       }
-      html.simple-mode button:not(.theme-toggle):not(.sidebar-toggle-btn):not(.simple-mode-floating-toggle):not([aria-label]),
-      html.simple-mode .btn:not(.theme-toggle):not(.sidebar-toggle-btn):not(.simple-mode-floating-toggle),
+      html.simple-mode button:not(.theme-toggle):not(.sidebar-toggle-btn):not([aria-label]),
+      html.simple-mode .btn:not(.theme-toggle):not(.sidebar-toggle-btn),
       html.simple-mode input[type="submit"],
       html.simple-mode a[role="button"] {
         min-height: 42px !important;
@@ -215,19 +211,6 @@
         box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08) !important;
       }
       html.simple-mode .simple-mode-page-notice span { color: var(--sm-muted) !important; }
-      html.simple-mode .simple-mode-floating-toggle {
-        min-height: 46px !important;
-        border: 1px solid rgba(37, 99, 235, 0.35) !important;
-        background: color-mix(in srgb, var(--sm-card) 92%, transparent) !important;
-        color: var(--sm-accent) !important;
-        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14) !important;
-        backdrop-filter: blur(12px);
-      }
-      html.simple-mode .simple-mode-floating-toggle[aria-pressed="true"] {
-        background: #16a34a !important;
-        border-color: #16a34a !important;
-        color: #ffffff !important;
-      }
       html.simple-mode .hover-card:hover,
       html.simple-mode .comm-action:hover,
       html.simple-mode .calendar-action-btn:hover,
@@ -313,9 +296,9 @@
   }
 
   function init() {
+    removeLegacyFloatingToggle();
     injectModernSimpleModeStyles();
     applySimpleMode(getStoredState());
-    createFloatingToggle();
     createSimpleNotice();
     bindExistingToggles();
     addSimpleHints();

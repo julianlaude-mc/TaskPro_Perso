@@ -70,6 +70,7 @@ if not GOOGLE_API_KEY and not DEBUG:
     )
 
 ALLOWED_HOSTS = [
+    'taskprothesis.pythonanywhere.com',
     'TaskProThesis.pythonanywhere.com',
     'taskpro.pythonanywhere.com',
     'localhost',
@@ -77,9 +78,15 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://taskprothesis.pythonanywhere.com',
     'https://TaskProThesis.pythonanywhere.com',
     'https://taskpro.pythonanywhere.com',
 ]
+
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # =============================================================================
 # AUTH

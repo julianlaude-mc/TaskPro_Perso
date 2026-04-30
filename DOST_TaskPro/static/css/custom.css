@@ -407,32 +407,6 @@ html.simple-mode .dark .bg-white {
   background: var(--simple-card) !important;
 }
 
-.simple-mode-floating-toggle {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 9998;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-height: 46px;
-  border: 1px solid rgba(37, 99, 235, 0.35);
-  border-radius: 999px;
-  background: var(--simple-card);
-  color: var(--simple-accent);
-  padding: 0.7rem 1rem;
-  font-size: 0.95rem;
-  font-weight: 800;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
-  backdrop-filter: blur(12px);
-}
-
-.simple-mode-floating-toggle[aria-pressed="true"] {
-  background: #16a34a;
-  border-color: #16a34a;
-  color: #ffffff;
-}
-
 .simple-mode-page-notice {
   display: flex;
   align-items: center;
@@ -560,8 +534,12 @@ body.simple-mode .table-section:not([data-sm-minimized="revealed"]) {
 }
 
 /* Bigger buttons in simple mode */
-.simple-mode button:not(.theme-toggle):not(.sidebar-toggle-btn):not(.simple-mode-floating-toggle):not([aria-label]),
-.simple-mode .btn:not(.theme-toggle):not(.sidebar-toggle-btn):not(.simple-mode-floating-toggle),
+.simple-mode-floating-toggle {
+  display: none !important;
+}
+
+.simple-mode button:not(.theme-toggle):not(.sidebar-toggle-btn):not([aria-label]),
+.simple-mode .btn:not(.theme-toggle):not(.sidebar-toggle-btn),
 .simple-mode input[type="submit"],
 .simple-mode a[role="button"] {
   padding: 0.72rem 1rem !important;
@@ -637,12 +615,6 @@ html.simple-mode .text-slate-600 {
 }
 
 @media (max-width: 640px) {
-  .simple-mode-floating-toggle {
-    left: 1rem;
-    right: 1rem;
-    justify-content: center;
-  }
-
   .simple-mode-page-notice {
     align-items: flex-start;
     flex-direction: column;
